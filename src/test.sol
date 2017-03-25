@@ -8,5 +8,6 @@ contract Test is DSTest {
     function setUp() {
         yas = new YAS();
     }
-
+    function testFail() {
+    }
 }
