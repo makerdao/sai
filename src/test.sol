@@ -21,7 +21,8 @@ contract Test is DSTest {
         // price formula 
         tab.join(10 ether); 
         assertEq( tab.SAY().balanceOf(this), 20 ether );
-        
-        
+
+//        var cdp = tab.open();
+//        tab.lock(cdp, 10 ether); // lock SAY token
     }
 }

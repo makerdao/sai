@@ -27,48 +27,50 @@ contract Tab is DSAuth {
     // COL <-> SAY
     function join(uint128 amt) {
         uint128 price;
-        // this avoids 0 edge case / rounding errors
+
+        // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         if( _col.balanceOf(this) < 1 ether ) {
             price = 1;
         } else {
             price = uint128(_col.balanceOf(this) / _say.totalSupply());
         }
+
         var prize = amt * price;
         assert( _col.pull(msg.sender, amt) );
         _say.mint(prize);
         _say.push(msg.sender, prize);
     }
 
-    function exit(uint128 amt) {} // reverse join
+    function exit(uint128 amt) { throw; } // reverse join
 
     // CDP ops
-    function open() returns (uint256 urn) {}
-    function shut(uint256 urn) {}
+    function open() returns (uint256 urn) { throw; }
+    function shut(uint256 urn) { throw; }
 
     // lock/free SAY tokens
-    function lock(uint256 urn, uint128 amt) {}
-    function free(uint256 urn, uint128 amt) {}
+    function lock(uint256 urn, uint128 amt) { throw; }
+    function free(uint256 urn, uint128 amt) { throw; }
 
     // draw/wipe YAS tokens
-    function draw(uint256 urn, uint128 amt) {}
-    function wipe(uint256 urn, uint128 amt) {}
+    function draw(uint256 urn, uint128 amt) { throw; }
+    function wipe(uint256 urn, uint128 amt) { throw; }
 
     // keeper
     // REF:COL price
-    function tell(uint256 wut) {}
-    function bite(uint256 urn) {}
+    function tell(uint256 wut) { throw; }
+    function bite(uint256 urn) { throw; }
 
     // auto MM
-    function boom(uint128 amt) {}
-    function bust(uint128 amt) {}
+    function boom(uint128 amt) { throw; }
+    function bust(uint128 amt) { throw; }
 
     // settle backdoor
-    function kill(uint256 wut) {}
+    function kill(uint256 wut) { throw; }
 
     // admin, later prism of SAY
-    function mold() {} // ... lots of params
-    function vote() {} // this could be here, or on oracle object, using same prism
+    function mold() { throw; } // ... lots of params
+    function vote() { throw; } // this could be here, or on oracle object, using same prism
 
     // REF/COL is only external data  (e.g. USD/ETH)
     // SAY/COL is ratio of supply (outstanding SAY to locked COL)
