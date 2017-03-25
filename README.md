@@ -17,5 +17,3 @@
 `wut`: REF/COL ratio
 
 #### "virtual values"  (actually pre-virtual values)
-
-
