@@ -6,12 +6,12 @@ import 'ds-token/token.sol';
 import './yas.sol';
 
 contract Test is DSTest {
-    YAS yas;
+    Engine yas;
     DSToken _col;
     function setUp() {
         _col = new DSToken("collateral", "COL", 18);
         _col.mint(100 ether);
-        yas = new YAS(_col);
+        yas = new Engine(_col);
         _col.approve(yas, 100000 ether);
     }
     function testJoinExit() {

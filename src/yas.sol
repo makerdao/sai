@@ -3,9 +3,10 @@ pragma solidity ^0.4.8;
 import "ds-auth/auth.sol";
 import "ds-token/token.sol";
 
-contract YAS is DSAuth {
+contract Engine is DSAuth {
     struct Cup {
-        address lad;
+        address lad; // owner
+        uint256 rum; // debt unit
     }
     DSToken _col;
     function COL() returns (ERC20) {
@@ -20,7 +21,7 @@ contract YAS is DSAuth {
         return _yas;
     } 
 
-    function YAS(DSToken col) {
+    function Engine(DSToken col) {
         _col = col;
         _say = new DSToken("SAY", "SAY", 18);
         _yas = new DSToken("YAS", "YAS", 18);
@@ -41,13 +42,7 @@ contract YAS is DSAuth {
         _say.mint(prize);
         _say.push(msg.sender, prize);
     }
-    function exit(uint128 amt) {
-        var price = uint128(_col.balanceOf(this) / _say.totalSupply());
-            // TODO use formulas, delegate edge case via fee
-        var prize = amt * price; // prize for contract
-        assert( _say.pull(msg.sender, prize ) );
-        assert( _col.push(msg.sender, amt) );
-    }
+    function exit(uint128 amt) {}
 
     // CDP ops
     function open() returns (uint256 urn) {}
