@@ -6,20 +6,22 @@ import 'ds-token/token.sol';
 import './yas.sol';
 
 contract Test is DSTest {
-    Engine yas;
+    Tab tab;
     DSToken _col;
     function setUp() {
         _col = new DSToken("collateral", "COL", 18);
         _col.mint(100 ether);
-        yas = new Engine(_col);
-        _col.approve(yas, 100000 ether);
+        tab = new Tab(_col);
+        _col.approve(tab, 100000 ether);
     }
-    function testJoinExit() {
+    function testBasic() {
         // edge case
-        yas.join(10 ether);
-        assertEq( yas.SAY().balanceOf(this), 10 ether );
+        tab.join(10 ether);
+        assertEq( tab.SAY().balanceOf(this), 10 ether );
         // price formula 
-        yas.join(10 ether); 
-        assertEq( yas.SAY().balanceOf(this), 20 ether );
+        tab.join(10 ether); 
+        assertEq( tab.SAY().balanceOf(this), 20 ether );
+        
+        
     }
 }

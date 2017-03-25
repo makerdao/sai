@@ -3,28 +3,25 @@ pragma solidity ^0.4.8;
 import "ds-auth/auth.sol";
 import "ds-token/token.sol";
 
-contract Engine is DSAuth {
-    struct Cup {
-        address lad; // owner
-        uint256 rum; // debt unit
-    }
-    DSToken _col;
-    function COL() returns (ERC20) {
-        return _col;
-    }
-    DSToken _say;
-    function SAY() returns (ERC20) {
-        return _say;
-    } 
-    DSToken _yas;
-    function YAS() returns (ERC20) {
-        return _yas;
-    } 
-
-    function Engine(DSToken col) {
+contract Tab is DSAuth {
+    function Tab(DSToken col) { // constructor
         _col = col;
         _say = new DSToken("SAY", "SAY", 18);
         _yas = new DSToken("YAS", "YAS", 18);
+    }
+    DSToken _col; // Collateral: An "externally valuable" token (like ETH or gold)
+    DSToken _say; // Your 'Say': Claims on the pool of COL
+    DSToken _yas; // stablecoin: The stable-price loan token
+
+    // return ERC20 instead of DSToken, because consumers generally are not authed
+    function COL() constant returns (ERC20) { return _col; }
+    function SAY() constant returns (ERC20) { return _say; } 
+    function YAS() constant returns (ERC20) { return _yas; } 
+
+    struct Cup {
+        address lad; // owner
+        uint128 pro; // locked 'say'
+        uint128 rum; // cup debt (in debt unit)
     }
 
     // COL <-> SAY
@@ -42,14 +39,17 @@ contract Engine is DSAuth {
         _say.mint(prize);
         _say.push(msg.sender, prize);
     }
-    function exit(uint128 amt) {}
+
+    function exit(uint128 amt) {} // reverse join
 
     // CDP ops
     function open() returns (uint256 urn) {}
     function shut(uint256 urn) {}
+
     // lock/free SAY tokens
     function lock(uint256 urn, uint128 amt) {}
     function free(uint256 urn, uint128 amt) {}
+
     // draw/wipe YAS tokens
     function draw(uint256 urn, uint128 amt) {}
     function wipe(uint256 urn, uint128 amt) {}
