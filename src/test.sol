@@ -1,13 +1,12 @@
 pragma solidity ^0.4.8;
 
 import "ds-test/test.sol";
+import './yas.sol';
 
 contract Test is DSTest {
-    function test_basic_sanity() {
-        assert(true);
+    YAS yas;
+    function setUp() {
+        yas = new YAS();
     }
 
-    function testFail_basic_sanity() {
-        assert(false);
-    }
 }
