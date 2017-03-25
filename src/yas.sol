@@ -20,9 +20,44 @@ contract YAS is DSAuth {
         uint256 rum; // debt unit
     }
 
-    function lock(uint256 amt) {
-        _col.transferFrom(msg.sender, this, amt);
-    }
+    // COL <-> SAY
+    function join(uint256 amt) {}
+    function exit(uint256 amt) {}
+
+    // CDP ops
+    function open() returns (uint256 urn) {}
+    function shut() returns (uint256 urn) {}
+    function lock(uint256 urn, uint256 amt) {}
+    function free(uint256 urn, uint256 amt) {}
+    function draw(uint256 urn, uint256 amt) {}
+    function wipe(uint256 urn, uint256 amt) {}
+
+    // keeper
+    function tell(uint256 wut) {}
+    function bite(uint256 urn) {}
+
+    // auto MM
+    function boom(uint256 amt) {}
+    function bust(uint256 amt) {}
+
+    // settle backdoor
+    function kill(uint256 wut) {}
+
+    // admin, later prism of SAY
+    function mold() {} // ... lots of params
+    function vote() {} // this could be here, or on oracle object, using same prism
+
+    // REF/COL is only external data  (e.g. USD/ETH)
+    // SAY/COL is ratio of supply (outstanding SAY to locked COL)
+    // YAS/REF decays ("holder fee")
+    // SIN = -YAS
+    // RUM/SIN decays ("issuer fee")
+    // AWE updates on poke ("collect fees for CDP type")
+    // DIN updates on bite ("take on bad debt")
+
+    // constant SAY/YAS inflate/sell and buy/burn to process awe/din  (can print SAY)
+    // surplus also market makes for COL
+
     // (ethers per claim) := 
     // refprice(say) := (ethers per claim) * (wut)
     // risky := refprice(say):refprice(debt) too high
