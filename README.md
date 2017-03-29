@@ -9,9 +9,12 @@ There are three tokens in the system:
 
 Collateral holders deposit their collateral using `join` and receive
 `skr` tokens proportional to their deposit. `skr` can be redeemed for
-collateral with `exit`.
+collateral with `exit`. You will get more or less `gem` tokens for each
+`skr` depending whether the system made a profit or loss while you
+were exposed.
 
-The oracle updates the GEM:REF price feed using `mark`.
+The oracle updates the GEM:REF price feed using `mark`. This is the only
+external real-time input to the system.
 
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
@@ -32,6 +35,11 @@ the `sai` debt.
 - `SIN`: debt (negative SAI)
 - `SKR`: vote / lock-collateral coin
 - `GEM`: true raw collateral
+
+#### state variables
+
+- `JOY`: surplus `sai` owned by the system
+- `WOE`: bad debt owned by the system
 
 #### abstract concepts
 
