@@ -156,6 +156,10 @@ contract Tub is MakerMath, DSNote, DSAuth {
         sai.burn(wad);
         sin.burn(wad);
     }
+    function mend() internal {
+        var omm = min(joy, woe);
+        mend(omm);
+    }
 
     // TODO: woe updates on bite ("take on bad debt")
     function bite(bytes32 cup) {
@@ -165,13 +169,33 @@ contract Tub is MakerMath, DSNote, DSAuth {
         cups[cup].ink = 0; // TODO: leftover collateral
     }
 
+    // joy > 0 && woe > 0
+    //    mend(min(joy,woe))
+    // joy > 0
+    //    boom
+    // woe > 0
+    //    bust
+
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    // auto MM
+    // TODO one or both of these might work better with units inverted
+    //     (ie arg is sai instead of skr)
     function boom(uint128 wad) {
-        // TODO
+        mend();
+        var ret = 1; // wad * feed value
+        skr.pull(msg.sender, wad);
+        skr.burn(wad);
+
+        sai.push(msg.sender, ret);
     }
     function bust(uint128 wad) {
-        // TODO
+        mend();
+        var ret = 1; // wad * feed value;
+        assert( ret > woe );
+        skr.mint(wad);
+        skr.push(msg.sender, wad);
+
+        sai.pull(msg.sender, ret);
+        sai.burn(ret);
     }
 
     // TODO: could be here or on oracle object using same prism
