@@ -15,19 +15,24 @@ contract Test is DSTest {
         _gem.approve(tub, 100000 ether);
     }
     function testBasic() {
+        assertEq( tub.skr().balanceOf(tub), 0 ether );
+        assertEq( tub.skr().balanceOf(this), 0 ether );
+        assertEq( tub.gem().balanceOf(tub), 0 ether );
+
         // edge case
+        assertEq( uint256(tub.per()), 1 ether );
         tub.join(10 ether);
+        assertEq( uint256(tub.per()), 1 ether );
+
         assertEq( tub.skr().balanceOf(this), 10 ether );
+        assertEq( tub.gem().balanceOf(tub), 10 ether );
         // price formula 
         tub.join(10 ether); 
+        assertEq( uint256(tub.per()), 1 ether );
         assertEq( tub.skr().balanceOf(this), 20 ether );
-    }
-    function testScenario1() {
-        tub.join(10 ether);
-        assertEq( tub.skr().balanceOf(this), 10 ether );
+        assertEq( tub.gem().balanceOf(tub), 20 ether );
 
         var cup = tub.open();
-        tub.lock(cup, 10 ether); // lock skr token
-        tub.draw(5);
+//        tub.lock(cup, 10 ether); // lock skr token
     }
 }
