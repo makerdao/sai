@@ -16,13 +16,14 @@ import "./lib.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is MakerMath, DSAuth {
+contract Tub is MakerMath, DSNote, DSAuth {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
     uint128  public  tag;  // Gem price (in external reference unit)
+    // TODO          zzz;  // Gem price expiration
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
@@ -33,7 +34,7 @@ contract Tub is MakerMath, DSAuth {
     
     bool     public  off;  // Killswitch
 
-    // uint64   public  lax;  // Grace period?
+    // uint64   public  lax;  // Grace period? --> No, only expiring feeds and killswitch
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -74,7 +75,8 @@ contract Tub is MakerMath, DSAuth {
         mat = ray;
     }
     function calm(uint64 era) note authorized("mold") {
-        lax = era;
+        //lax = era;
+        throw;
     }
 
     // TODO: joy updates on drip ("collect fees")
@@ -90,7 +92,7 @@ contract Tub is MakerMath, DSAuth {
     }
 
     function join(uint128 jam) note {
-        jar.pull(msg.sender, jam);
+        gem.pull(msg.sender, jam);
         var ink = wmul(jam, per());
         skr.mint(ink);
         skr.push(msg.sender, ink);
@@ -99,7 +101,7 @@ contract Tub is MakerMath, DSAuth {
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         var jam = wdiv(ink, per());
-        jar.pull(msg.sender, jam);
+        gem.push(msg.sender, jam);
     }
 
     function open() note returns (bytes32 cup) {
@@ -153,7 +155,7 @@ contract Tub is MakerMath, DSAuth {
     }
 
     // TODO: woe updates on bite ("take on bad debt")
-    function bite(uint256 urn) {
+    function bite(uint256 cup) {
         var tab = rmul(cups[cup].art, axe);
 
         cups[cup].art = 0;
