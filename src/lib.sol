@@ -8,7 +8,6 @@ pragma solidity ^0.4.8;
 
 import "ds-auth/auth.sol";
 import "ds-note/note.sol";
-import "ds-vault/vault.sol";
 import "ds-aver/aver.sol";
 import "ds-math/math.sol";
 

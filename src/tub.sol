@@ -5,7 +5,11 @@
 
 pragma solidity ^0.4.8;
 
-import "./lib.sol";
+import "ds-auth/auth.sol";
+import "ds-note/note.sol";
+import "ds-math/math.sol";
+
+import "ds-token/token.sol";
 
 // ref/gem is only external data  (e.g. USD/ETH)
 // skr/gem is ratio of supply (outstanding skr to total locked gem)
@@ -16,7 +20,7 @@ import "./lib.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is MakerMath, DSNote, DSAuth {
+contract Tub is DSAuth, DSNote, DSMath {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSToken  public  skr;  // Abstracted collateral
