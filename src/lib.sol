@@ -9,14 +9,9 @@ pragma solidity ^0.4.8;
 import "ds-auth/auth.sol";
 import "ds-note/note.sol";
 import "ds-vault/vault.sol";
+import "ds-aver/aver.sol";
 
-contract MakerAver {
-    function aver(bool x) internal {
-        if (!x) throw;
-    }
-}
-
-contract MakerWarp is DSNote, MakerAver {
+contract MakerWarp is DSNote, DSAver {
     uint64  _era;
 
     function MakerWarp() {
@@ -33,7 +28,7 @@ contract MakerWarp is DSNote, MakerAver {
     }
 }
 
-contract MakerMath is MakerAver {
+contract MakerMath is DSAver {
     function incr(uint128 x, uint128 y) constant returns (uint128 z) {
         aver((z = x + y) >= x);
     }
