@@ -28,48 +28,4 @@ contract MakerWarp is DSNote, DSAver {
     }
 }
 
-contract MakerMath is DSAver {
-    function incr(uint128 x, uint128 y) constant returns (uint128 z) {
-        aver((z = x + y) >= x);
-    }
-
-    function decr(uint128 x, uint128 y) constant returns (uint128 z) {
-        aver((z = x - y) <= x);
-    }
-
-    function cast(uint256 x) constant returns (uint128 z) {
-        aver((z = uint128(x)) == x);
-    }
-
-    uint128 constant WAD = 10 ** 18;
-
-    function wmul(uint128 x, uint128 y) constant returns (uint128 z) {
-        z = cast((uint256(x) * y + WAD / 2) / WAD);
-    }
-
-    function wdiv(uint128 x, uint128 y) constant returns (uint128 z) {
-        z = cast((uint256(x) * WAD + y / 2) / y);
-    }
-
-    uint128 constant RAY = 10 ** 36;
-
-    function rmul(uint128 x, uint128 y) constant returns (uint128 z) {
-        z = cast((uint256(x) * y + RAY / 2) / RAY);
-    }
-
-    function rdiv(uint128 x, uint128 y) constant returns (uint128 z) {
-        z = cast((uint256(x) * RAY + y / 2) / y);
-    }
-
-    function rpow(uint128 x, uint64 n) constant returns (uint128 z) {
-        z = n % 2 != 0 ? x : RAY;
-
-        for (n /= 2; n != 0; n /= 2) {
-            x = rmul(x, x);
-
-            if (n % 2 != 0) {
-                z = rmul(z, x);
-            }
-        }
-    }
-}
+contract MakerMath is DSMath { }
