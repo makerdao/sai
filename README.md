@@ -2,18 +2,20 @@
 
 #### tokens
 
-`YAS`: stablecoin
+`SAI`: stablecoin
 
-`SAY`: vote / lock-collateral coin
+`SIN`: debt (negative SAI)
 
-`COL`: true raw collateral
+`SKR`: vote / lock-collateral coin
+
+`GEM`: true raw collateral
 
 #### abstract concepts
 
-`REF`: external asset (e.g. USD)
+`REF`: external asset (e.g. SDR)
 
 #### external data
 
-`wut`: REF/COL ratio
+`TAG`: REF/GEM ratio
 
 #### "virtual values"  (actually pre-virtual values)
