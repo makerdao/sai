@@ -92,8 +92,8 @@ contract Tub is MakerMath, DSNote, DSAuth {
     }
 
     function join(uint128 jam) note {
-        gem.transferFrom(msg.sender, this, jam);
         var ink = wmul(jam, per());
+        gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
