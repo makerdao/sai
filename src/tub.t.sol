@@ -13,6 +13,7 @@ contract Test is DSTest {
         _gem.mint(100 ether);
         tub = new Tub(_gem);
         _gem.approve(tub, 100000 ether);
+        tub.skr().approve(tub, 100000 ether);
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(tub), 0 ether );
@@ -33,6 +34,15 @@ contract Test is DSTest {
         assertEq( tub.gem().balanceOf(tub), 20 ether );
 
         var cup = tub.open();
-//        tub.lock(cup, 10 ether); // lock skr token
+
+        assertEq( tub.skr().balanceOf(this), 20 ether );
+        assertEq( tub.skr().balanceOf(tub), 0 ether );
+        tub.lock(cup, 10 ether); // lock skr token
+        assertEq( tub.skr().balanceOf(this), 10 ether );
+        assertEq( tub.skr().balanceOf(tub), 10 ether );
+
+        assertEq( tub.sai().balanceOf(this), 0 ether);
+        tub.draw(cup, 5 ether);
+        assertEq( tub.sai().balanceOf(this), 5 ether);
     }
 }
