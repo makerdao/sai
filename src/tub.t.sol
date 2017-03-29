@@ -3,26 +3,26 @@ pragma solidity ^0.4.8;
 import "ds-test/test.sol";
 
 import 'ds-token/token.sol';
-import './yas.sol';
+import './tub.sol';
 
 contract Test is DSTest {
-    Tab tab;
-    DSToken _col;
+    Tub tub;
+    DSToken _gem;
     function setUp() {
-        _col = new DSToken("collateral", "COL", 18);
-        _col.mint(100 ether);
-        tab = new Tab(_col);
-        _col.approve(tab, 100000 ether);
+        _gem = new DSToken("collateral", "COL", 18);
+        _gem.mint(100 ether);
+        tub = new Tub(_gem);
+        _gem.approve(tub, 100000 ether);
     }
     function testBasic() {
         // edge case
-        tab.join(10 ether);
-        assertEq( tab.SAY().balanceOf(this), 10 ether );
+        tub.join(10 ether);
+        assertEq( tub.skr().balanceOf(this), 10 ether );
         // price formula 
-        tab.join(10 ether); 
-        assertEq( tab.SAY().balanceOf(this), 20 ether );
+        tub.join(10 ether); 
+        assertEq( tub.skr().balanceOf(this), 20 ether );
 
-//        var cdp = tab.open();
-//        tab.lock(cdp, 10 ether); // lock SAY token
+//        var cdp = tub.open();
+//        tub.lock(cdp, 10 ether); // lock skr token
     }
 }

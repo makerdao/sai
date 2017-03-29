@@ -88,11 +88,11 @@ contract Tub is MakerMath, DSNote, DSAuth {
         // TODO delegate edge case via fee built into conversion formula
         return gem.balanceOf(this) < 1 ether
             ? 1
-            : wdiv(gem.balanceOf(this), skr.totalSupply());
+            : wdiv(uint128(gem.balanceOf(this)), uint128(skr.totalSupply()));
     }
 
     function join(uint128 jam) note {
-        gem.pull(msg.sender, jam);
+        gem.transferFrom(msg.sender, this, jam);
         var ink = wmul(jam, per());
         skr.mint(ink);
         skr.push(msg.sender, ink);
@@ -101,7 +101,7 @@ contract Tub is MakerMath, DSNote, DSAuth {
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         var jam = wdiv(ink, per());
-        gem.push(msg.sender, jam);
+        gem.transfer(msg.sender, jam);
     }
 
     function open() note returns (bytes32 cup) {
@@ -155,7 +155,7 @@ contract Tub is MakerMath, DSNote, DSAuth {
     }
 
     // TODO: woe updates on bite ("take on bad debt")
-    function bite(uint256 cup) {
+    function bite(bytes32 cup) {
         var tab = rmul(cups[cup].art, axe);
 
         cups[cup].art = 0;
