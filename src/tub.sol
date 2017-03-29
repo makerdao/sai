@@ -87,7 +87,7 @@ contract Tub is MakerMath, DSNote, DSAuth {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         return skr.totalSupply() < 1 ether
-            ? 1
+            ? 1 ether
             : wdiv(uint128(gem.balanceOf(this)), uint128(skr.totalSupply()));
     }
 
