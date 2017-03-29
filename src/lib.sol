@@ -10,6 +10,7 @@ import "ds-auth/auth.sol";
 import "ds-note/note.sol";
 import "ds-vault/vault.sol";
 import "ds-aver/aver.sol";
+import "ds-math/math.sol";
 
 contract MakerWarp is DSNote, DSAver {
     uint64  _era;
