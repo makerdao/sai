@@ -15,8 +15,8 @@ The oracle updates the GEM:REF price feed using `mark`.
 
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
-some `sai`. CDPs are wound down with `shut` which settles the `sai` debt
-with `wipe` and withdraws the `skr`.
+some `sai`. Debt is covered with `wipe`. Collateral can be reclaimed
+with `free` as long as the CDP remains "safe". 
 
 If the value of the collateral backing the CDP falls below the
 liquidation ratio `mat`, the CDP is vulnerable to liquidation via

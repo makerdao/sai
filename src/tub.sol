@@ -79,8 +79,8 @@ contract Tub is MakerMath, DSNote, DSAuth {
         throw;
     }
 
-    // TODO: joy updates on drip ("collect fees")
     function drip() note {
+        // update `joy` (collect fees)
     }
 
     function per() constant returns (uint128) {
@@ -131,16 +131,19 @@ contract Tub is MakerMath, DSNote, DSAuth {
         skr.push(msg.sender, wad);
     }
 
-    // TODO: art/sin decays ("issuer fee")
     function draw(bytes32 cup, uint128 wad) {
+        // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = incr(cups[cup].art, wad);
+        // TODO assert safe
         lend(wad);
         sai.push(msg.sender, wad);
     }
     function wipe(bytes32 cup, uint128 wad) {
+        // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = decr(cups[cup].art, wad);
+        // TODO assert safe
         sai.pull(msg.sender, wad);
         mend(wad);
     }

@@ -21,8 +21,13 @@ contract Test is DSTest {
         // price formula 
         tub.join(10 ether); 
         assertEq( tub.skr().balanceOf(this), 20 ether );
+    }
+    function testScenario1() {
+        tub.join(10 ether);
+        assertEq( tub.skr().balanceOf(this), 10 ether );
 
-//        var cdp = tub.open();
-//        tub.lock(cdp, 10 ether); // lock skr token
+        var cup = tub.open();
+        tub.lock(cup, 10 ether); // lock skr token
+        tub.draw(5);
     }
 }
