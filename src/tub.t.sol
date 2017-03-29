@@ -14,6 +14,7 @@ contract Test is DSTest {
         tub = new Tub(_gem);
         _gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
+        tub.sai().approve(tub, 100000 ether);
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(tub), 0 ether );
@@ -44,5 +45,16 @@ contract Test is DSTest {
         assertEq( tub.sai().balanceOf(this), 0 ether);
         tub.draw(cup, 5 ether);
         assertEq( tub.sai().balanceOf(this), 5 ether);
+
+
+        assertEq( tub.sai().balanceOf(this), 5 ether);
+        tub.wipe(cup, 2 ether);
+        assertEq( tub.sai().balanceOf(this), 3 ether);
+
+        assertEq( tub.sai().balanceOf(this), 3 ether);
+        assertEq( tub.skr().balanceOf(this), 10 ether );
+        tub.shut(cup);
+        assertEq( tub.sai().balanceOf(this), 0 ether);
+        assertEq( tub.skr().balanceOf(this), 20 ether );
     }
 }
