@@ -3,33 +3,40 @@ pragma solidity ^0.4.8;
 import "ds-test/test.sol";
 
 import 'ds-token/token.sol';
+import 'ds-vault/vault.sol';
+
 import './tub.sol';
 
 contract Test is DSTest {
     Tub tub;
-    DSToken _gem;
-    DSToken _sai;
-    DSToken _sin;
-    DSToken _skr;
+    DSToken gem;
+    DSToken sai;
+    DSToken sin;
+    DSToken skr;
+    DSVault ice;
+
     function setUp() {
-        _gem = new DSToken("collateral", "COL", 18);
-        _gem.mint(100 ether);
+        gem = new DSToken("collateral", "COL", 18);
+        gem.mint(100 ether);
 
-        _sai = new DSToken("SAI", "SAI", 18);
-        _sin = new DSToken("SIN", "SIN", 18);
-        _skr = new DSToken("SKR", "SKR", 18);
-        
-        tub = new Tub(_gem, _sai, _sin, _skr);
+        sai = new DSToken("SAI", "SAI", 18);
+        sin = new DSToken("SIN", "SIN", 18);
+        skr = new DSToken("SKR", "SKR", 18);
+        ice = new DSVault();
 
-        _sai.setOwner(tub);
-        _sin.setOwner(tub);
-        _skr.setOwner(tub);
+        tub = new Tub(gem, sai, sin, skr, ice);
 
-        _gem.approve(tub, 100000 ether);
+        sai.setOwner(tub);
+        sin.setOwner(tub);
+        skr.setOwner(tub);
+        ice.setOwner(tub);
+
+        gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
 
         tub.mark(1 ether);
+
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(tub), 0 ether );
@@ -43,8 +50,8 @@ contract Test is DSTest {
 
         assertEq( tub.skr().balanceOf(this), 10 ether );
         assertEq( tub.gem().balanceOf(tub), 10 ether );
-        // price formula 
-        tub.join(10 ether); 
+        // price formula
+        tub.join(10 ether);
         assertEq( uint256(tub.per()), 1 ether );
         assertEq( tub.skr().balanceOf(this), 20 ether );
         assertEq( tub.gem().balanceOf(tub), 20 ether );
@@ -79,13 +86,22 @@ contract Test is DSTest {
 
         tub.draw(cup, 11 ether);
     }
-    function testBite() {
+    function testUnsafe() {
         tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 9 ether);
 
-        tub.mark(2 ether);
+        assert(tub.safe(cup));
+        tub.mark(1 ether / 2);
+        assert(!tub.safe(cup));
+    }
+    function testBite() {
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 9 ether);
+        tub.mark(1 ether / 2);
 
         tub.bite(cup);
     }

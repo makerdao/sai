@@ -11,6 +11,7 @@ import "ds-note/note.sol";
 import "ds-math/math.sol";
 
 import "ds-token/token.sol";
+import "ds-vault/vault.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -98,6 +99,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         // update `joy` (collect fees)
     }
 
+    // skr per gem
     function per() constant returns (uint128) {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
@@ -133,13 +135,13 @@ contract Tub is DSAuth, DSNote, DSMath {
         cups[cup].lad = lad;
     }
 
-    function lock(bytes32 cup, uint128 wad) {
+    function lock(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         // TODO
         cups[cup].ink = incr(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
     }
-    function free(bytes32 cup, uint128 wad) {
+    function free(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         // TODO
         cups[cup].ink = decr(cups[cup].ink, wad);
@@ -155,7 +157,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         return (pro > min);
     }
 
-    function draw(bytes32 cup, uint128 wad) {
+    function draw(bytes32 cup, uint128 wad) note {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = incr(cups[cup].art, wad);
@@ -167,13 +169,13 @@ contract Tub is DSAuth, DSNote, DSMath {
         sin.push(ice, wad);
         sai.push(msg.sender, wad);
     }
-    function wipe(bytes32 cup, uint128 wad) {
+    function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = decr(cups[cup].art, wad);
         // TODO assert safe
         sai.pull(msg.sender, wad);
-        sin.pull(ice, wad);
+        ice.push(sin, this, wad);
         mend(wad);
     }
 
@@ -190,23 +192,30 @@ contract Tub is DSAuth, DSNote, DSMath {
         mend(omm);
     }
 
-    function bite(bytes32 cup) {
+    function bite(bytes32 cup) note {
         aver(!safe(cup));
 
         // take all of the debt
         var owe = cups[cup].art;
-        sin.pull(ice, owe);
+        ice.push(sin, this, owe);
         cups[cup].art = 0;
 
-        // axe the collateral
+        // // axe the collateral
         var tab = rmul(owe, axe);
         var tax = rdiv(rmul(tab, per()), tag);
-        cups[cup].ink = decr(cups[cup].ink, tax);
-        // TODO: leftover collateral. in principle we can do boom to sell
-        // it to ourselves for sai, which would then be joy
-        this.boom(tax)  // TODO: sanity? ^
+        var ink = cups[cup].ink;
 
-        // TODO: catch case that bite comes after collat already under parity
+        if (ink > tax) {
+            cups[cup].ink = decr(cups[cup].ink, tax);
+        } else {
+            cups[cup].ink = 0;  // collateralisation under parity
+            tax = ink;
+        }
+
+        // // TODO: leftover collateral. in principle we can do boom to sell
+        // // it to ourselves for sai, which would then be joy
+        skr.approve(this, tax);
+        this.boom(tax);  // TODO: sanity? ^
     }
 
     // joy > 0 && woe > 0
@@ -219,7 +228,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     // TODO one or both of these might work better with units inverted
     //     (ie arg is sai instead of skr)
-    function boom(uint128 wad) {
+    function boom(uint128 wad) note {
         mend();
 
         // price of wad in sai
@@ -231,7 +240,7 @@ contract Tub is DSAuth, DSNote, DSMath {
 
         sai.push(msg.sender, ret);
     }
-    function bust(uint128 wad) {
+    function bust(uint128 wad) note {
         mend();
 
         var ret = wdiv(wmul(wad, tag), per());
