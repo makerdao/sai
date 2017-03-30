@@ -231,7 +231,7 @@ contract Tub is DSAuth, DSNote, DSMath {
 
         // price of wad in sai
         var ret = wdiv(wmul(wad, tag), per());
-        aver(ret > joy());
+        aver(ret <= joy());
 
         skr.pull(msg.sender, wad);
         skr.burn(wad);
@@ -242,7 +242,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         mend();
 
         var ret = wdiv(wmul(wad, tag), per());
-        aver(ret > woe());
+        aver(ret <= woe());
 
         if (skr.balanceOf(this) >= wad) {
             skr.push(msg.sender, wad);
