@@ -59,12 +59,11 @@ contract Tub is DSAuth, DSNote, DSMath {
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function Tub(ERC20 gem_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_) {
         gem = gem_;
-
-        sai = new DSToken("SAI", "SAI", 18);
-        sin = new DSToken("SIN", "SIN", 18);
-        skr = new DSToken("SKR", "SKR", 18);
+        sai = sai_;
+        sin = sin_;
+        skr = skr_;
 
         axe = RAY;
         mat = RAY;
