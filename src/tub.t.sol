@@ -28,6 +28,8 @@ contract Test is DSTest {
         _gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
+
+        tub.mark(1 ether);
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(tub), 0 ether );
@@ -70,4 +72,19 @@ contract Test is DSTest {
         assertEq( tub.sai().balanceOf(this), 0 ether);
         assertEq( tub.skr().balanceOf(this), 20 ether );
     }
+    function testFailOverDraw() {
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        tub.draw(cup, 11 ether);
+    }
+    // function testBite() {
+        // tub.join(10 ether);
+        // var cup = tub.open();
+        // tub.lock(cup, 10 ether);
+        // tub.draw(cup, 10 ether);
+
+        // tub.bite(cup);
+    // }
 }

@@ -147,7 +147,15 @@ contract Tub is DSAuth, DSNote, DSMath {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = incr(cups[cup].art, wad);
-        // TODO assert safe
+
+        // assert still overcollateralised
+        var jam = wdiv(cups[cup].ink, per());
+        var pro = wmul(jam, tag);
+        var con = cups[cup].art;
+        var min = rmul(con, mat);
+        aver(pro > min);
+        // TODO assert not over debt ceiling
+
         lend(wad);
         sai.push(msg.sender, wad);
     }
