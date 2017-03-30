@@ -203,17 +203,17 @@ contract Tub is DSAuth, DSNote, DSMath {
 
         // // axe the collateral
         var tab = rmul(owe, axe);
-        var tax = rdiv(rmul(tab, per()), tag);
+        var cab = rdiv(rmul(tab, per()), tag);
         var ink = cups[cup].ink;
 
-        if (ink > tax) {
-            cups[cup].ink = decr(cups[cup].ink, tax);
+        if (ink > cab) {
+            cups[cup].ink = decr(cups[cup].ink, cab);
         } else {
             cups[cup].ink = 0;  // collateralisation under parity
-            tax = ink;
+            cab = ink;
         }
 
-        ice.push(skr, this, tax);
+        ice.push(skr, this, cab);
 
         // // TODO: leftover collateral. in principle we can do boom to sell
         // // it to ourselves for sai, which would then be joy
