@@ -48,6 +48,11 @@ contract Tub is DSAuth, DSNote, DSMath {
     function woe() constant returns (uint128) {
         return uint128(sin.balanceOf(this));
     }
+    // Pending liquidation
+    // TODO improve meme. This isn't even a noun.
+    function rue() constant returns (uint128) {
+        return uint128(skr.balanceOf(this));
+    }
 
     bool     public  off;  // Killswitch
 
@@ -244,10 +249,10 @@ contract Tub is DSAuth, DSNote, DSMath {
         var ret = wdiv(wmul(wad, tag), per());
         aver(ret <= woe());
 
-        if (skr.balanceOf(this) >= wad) {
+        if (rue() >= wad) {
             skr.push(msg.sender, wad);
         } else {
-            var bal = uint128(skr.balanceOf(this));
+            var bal = uint128(rue());
             skr.push(msg.sender, bal);
             skr.mint(wad - bal);
             skr.push(msg.sender, wad - bal);
