@@ -214,11 +214,6 @@ contract Tub is DSAuth, DSNote, DSMath {
         }
 
         ice.push(skr, this, cab);
-
-        // // TODO: leftover collateral. in principle we can do boom to sell
-        // // it to ourselves for sai, which would then be joy
-        // skr.approve(this, tax);
-        // this.boom(tax);  // TODO: sanity? ^
     }
 
     // joy > 0 && woe > 0
@@ -249,8 +244,14 @@ contract Tub is DSAuth, DSNote, DSMath {
         var ret = wdiv(wmul(wad, tag), per());
         aver(ret > woe());
 
-        skr.mint(wad);
-        skr.push(msg.sender, wad);
+        if (skr.balanceOf(this) >= wad) {
+            skr.push(msg.sender, wad);
+        } else {
+            var bal = uint128(skr.balanceOf(this));
+            skr.push(msg.sender, bal);
+            skr.mint(wad - bal);
+            skr.push(msg.sender, wad - bal);
+        }
 
         sai.pull(msg.sender, ret);
     }
