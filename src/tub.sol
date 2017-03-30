@@ -11,7 +11,8 @@ import "ds-math/math.sol";
 
 import "ds-token/token.sol";
 
-// ref/gem is only external data  (e.g. USD/ETH)
+// ref/gem is the only piece external data  (e.g. USD/ETH)
+//    so there is a strong separation between "data feeds" and "policy"
 // skr/gem is ratio of supply (outstanding skr to total locked gem)
 // sai/ref decays ("holder fee")
 
@@ -32,13 +33,21 @@ contract Tub is DSAuth, DSNote, DSMath {
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
+    // uint64   public  lax;  // Grace period? --> No, only expiring feeds and killswitch
+    // holder fee param
+    // issuer fee param
 
-    uint128  public  joy;  // Unprocessed fees
-    uint128  public  woe;  // Bad debt
+    // surplus
+    function joy() constant returns (uint128) {
+        return uint128(sai.balanceOf(this));
+    }
+    // Bad debt
+    function woe() constant returns (uint128) {
+        return uint128(sin.balanceOf(this));
+    }
     
     bool     public  off;  // Killswitch
 
-    // uint64   public  lax;  // Grace period? --> No, only expiring feeds and killswitch
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -161,7 +170,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         sin.burn(wad);
     }
     function mend() internal {
-        var omm = min(joy, woe);
+        var omm = min(joy(), woe());
         mend(omm);
     }
 
@@ -194,7 +203,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     function bust(uint128 wad) {
         mend();
         var ret = 1; // wad * feed value;
-        assert( ret > woe );
+        assert( ret > woe() );
         skr.mint(wad);
         skr.push(msg.sender, wad);
 
