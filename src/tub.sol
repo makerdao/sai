@@ -162,7 +162,6 @@ contract Tub is DSAuth, DSNote, DSMath {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = incr(cups[cup].art, wad);
-
         aver(safe(cup));
         // TODO assert not over debt ceiling
 
@@ -174,7 +173,8 @@ contract Tub is DSAuth, DSNote, DSMath {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = decr(cups[cup].art, wad);
-        // TODO assert safe
+        aver(safe(cup));
+
         sai.pull(msg.sender, wad);
         ice.push(sin, this, wad);
         mend(wad);
