@@ -24,6 +24,7 @@ import "ds-token/token.sol";
 contract Tub is DSAuth, DSNote, DSMath {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
+    DSVault  public  ice;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
@@ -45,7 +46,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     function woe() constant returns (uint128) {
         return uint128(sin.balanceOf(this));
     }
-    
+
     bool     public  off;  // Killswitch
 
 
@@ -54,16 +55,17 @@ contract Tub is DSAuth, DSNote, DSMath {
 
     struct Cup {
         address  lad;      // CDP owner
-        
+
         uint128  art;      // Outstanding debt (in debt unit)
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault ice_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
         skr = skr_;
+        ice = ice_;
 
         axe = RAY;
         mat = RAY;
@@ -72,7 +74,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     function stop() note authorized("stop") {
         off = true;
     }
-    
+
     function mark(uint128 wad) note authorized("mark") {
         tag = wad;
     }
@@ -143,20 +145,25 @@ contract Tub is DSAuth, DSNote, DSMath {
         skr.push(msg.sender, wad);
     }
 
-    function draw(bytes32 cup, uint128 wad) {
-        // TODO poke
-        aver(msg.sender == cups[cup].lad);
-        cups[cup].art = incr(cups[cup].art, wad);
-
+    function safe(bytes32 cup) returns (bool) {
         // assert still overcollateralised
         var jam = wdiv(cups[cup].ink, per());
         var pro = wmul(jam, tag);
         var con = cups[cup].art;
         var min = rmul(con, mat);
-        aver(pro > min);
+        return (pro > min);
+    }
+
+    function draw(bytes32 cup, uint128 wad) {
+        // TODO poke
+        aver(msg.sender == cups[cup].lad);
+        cups[cup].art = incr(cups[cup].art, wad);
+
+        aver(safe(cup));
         // TODO assert not over debt ceiling
 
         lend(wad);
+        sin.push(ice, wad);
         sai.push(msg.sender, wad);
     }
     function wipe(bytes32 cup, uint128 wad) {
@@ -165,6 +172,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         cups[cup].art = decr(cups[cup].art, wad);
         // TODO assert safe
         sai.pull(msg.sender, wad);
+        sin.pull(ice, wad);
         mend(wad);
     }
 
@@ -181,12 +189,21 @@ contract Tub is DSAuth, DSNote, DSMath {
         mend(omm);
     }
 
-    // TODO: woe updates on bite ("take on bad debt")
     function bite(bytes32 cup) {
-        var tab = rmul(cups[cup].art, axe);
+        aver(!safe(cup));
 
+        // take all of the debt
+        var owe = cups[cup].art;
+        sin.pull(ice, owe);
         cups[cup].art = 0;
-        cups[cup].ink = 0; // TODO: leftover collateral
+
+        // axe the collateral
+        var tab = rmul(owe, axe);
+        var tax = rdiv(rmul(tab, per()), tag);
+        cups[cup].ink = decr(cups[cup].ink, tax);
+        // TODO: leftover collateral
+
+        // TODO: catch case that bite comes after collat already under parity
     }
 
     // joy > 0 && woe > 0

@@ -79,12 +79,14 @@ contract Test is DSTest {
 
         tub.draw(cup, 11 ether);
     }
-    // function testBite() {
-        // tub.join(10 ether);
-        // var cup = tub.open();
-        // tub.lock(cup, 10 ether);
-        // tub.draw(cup, 10 ether);
+    function testBite() {
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 9 ether);
 
-        // tub.bite(cup);
-    // }
+        tub.mark(2 ether);
+
+        tub.bite(cup);
+    }
 }
