@@ -8,10 +8,23 @@ import './tub.sol';
 contract Test is DSTest {
     Tub tub;
     DSToken _gem;
+    DSToken _sai;
+    DSToken _sin;
+    DSToken _skr;
     function setUp() {
         _gem = new DSToken("collateral", "COL", 18);
         _gem.mint(100 ether);
-        tub = new Tub(_gem);
+
+        _sai = new DSToken("SAI", "SAI", 18);
+        _sin = new DSToken("SIN", "SIN", 18);
+        _skr = new DSToken("SKR", "SKR", 18);
+        
+        tub = new Tub(_gem, _sai, _sin, _skr);
+
+        _sai.setOwner(tub);
+        _sin.setOwner(tub);
+        _skr.setOwner(tub);
+
         _gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
