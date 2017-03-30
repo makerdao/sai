@@ -140,12 +140,13 @@ contract Tub is DSAuth, DSNote, DSMath {
         // TODO
         cups[cup].ink = incr(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
+        skr.push(ice, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         // TODO
         cups[cup].ink = decr(cups[cup].ink, wad);
-        skr.push(msg.sender, wad);
+        ice.push(skr, msg.sender, wad);
     }
 
     function safe(bytes32 cup) returns (bool) {
@@ -212,10 +213,12 @@ contract Tub is DSAuth, DSNote, DSMath {
             tax = ink;
         }
 
+        ice.push(skr, this, tax);
+
         // // TODO: leftover collateral. in principle we can do boom to sell
         // // it to ourselves for sai, which would then be joy
-        skr.approve(this, tax);
-        this.boom(tax);  // TODO: sanity? ^
+        // skr.approve(this, tax);
+        // this.boom(tax);  // TODO: sanity? ^
     }
 
     // joy > 0 && woe > 0

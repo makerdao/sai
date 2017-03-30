@@ -39,7 +39,7 @@ contract Test is DSTest {
 
     }
     function testBasic() {
-        assertEq( tub.skr().balanceOf(tub), 0 ether );
+        assertEq( tub.skr().balanceOf(ice), 0 ether );
         assertEq( tub.skr().balanceOf(this), 0 ether );
         assertEq( tub.gem().balanceOf(tub), 0 ether );
 
@@ -59,10 +59,10 @@ contract Test is DSTest {
         var cup = tub.open();
 
         assertEq( tub.skr().balanceOf(this), 20 ether );
-        assertEq( tub.skr().balanceOf(tub), 0 ether );
+        assertEq( tub.skr().balanceOf(ice), 0 ether );
         tub.lock(cup, 10 ether); // lock skr token
         assertEq( tub.skr().balanceOf(this), 10 ether );
-        assertEq( tub.skr().balanceOf(tub), 10 ether );
+        assertEq( tub.skr().balanceOf(ice), 10 ether );
 
         assertEq( tub.sai().balanceOf(this), 0 ether);
         tub.draw(cup, 5 ether);
