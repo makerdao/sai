@@ -2,6 +2,7 @@
 
 // Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
+// Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
 pragma solidity ^0.4.8;
 
@@ -201,7 +202,9 @@ contract Tub is DSAuth, DSNote, DSMath {
         var tab = rmul(owe, axe);
         var tax = rdiv(rmul(tab, per()), tag);
         cups[cup].ink = decr(cups[cup].ink, tax);
-        // TODO: leftover collateral
+        // TODO: leftover collateral. in principle we can do boom to sell
+        // it to ourselves for sai, which would then be joy
+        this.boom(tax)  // TODO: sanity? ^
 
         // TODO: catch case that bite comes after collat already under parity
     }
@@ -218,7 +221,11 @@ contract Tub is DSAuth, DSNote, DSMath {
     //     (ie arg is sai instead of skr)
     function boom(uint128 wad) {
         mend();
-        var ret = 1; // wad * feed value
+
+        // price of wad in sai
+        var ret = wdiv(wmul(wad, tag), per());
+        aver(ret > joy());
+
         skr.pull(msg.sender, wad);
         skr.burn(wad);
 
@@ -226,13 +233,14 @@ contract Tub is DSAuth, DSNote, DSMath {
     }
     function bust(uint128 wad) {
         mend();
-        var ret = 1; // wad * feed value;
-        assert( ret > woe() );
+
+        var ret = wdiv(wmul(wad, tag), per());
+        aver(ret > woe());
+
         skr.mint(wad);
         skr.push(msg.sender, wad);
 
         sai.pull(msg.sender, ret);
-        sai.burn(ret);
     }
 
     // TODO: could be here or on oracle object using same prism
