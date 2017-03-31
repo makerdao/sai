@@ -161,7 +161,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         pot.push(skr, msg.sender, wad);
     }
 
-    function safe(bytes32 cup) returns (bool) {
+    function safe(bytes32 cup) constant returns (bool) {
         // assert still overcollateralised
         var jam = wdiv(cups[cup].ink, per());
         var pro = wmul(jam, tag);
