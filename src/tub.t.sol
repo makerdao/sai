@@ -41,6 +41,7 @@ contract Test is DSTest {
         tub.sai().approve(tub, 100000 ether);
 
         tub.mark(1 ether);
+        tub.cork(20 ether);
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(ice), 0 ether );
@@ -151,5 +152,13 @@ contract Test is DSTest {
         tub.draw(cup, 4 ether);  // 250% collateralisation
 
         tub.free(cup, 3 ether);  // 175% -- fails
+    }
+    function testFailDrawOverDebtCeiling() {
+        tub.cork(4 ether);
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        tub.draw(cup, 5 ether);
     }
 }
