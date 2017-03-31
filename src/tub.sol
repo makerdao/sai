@@ -180,7 +180,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         sai.push(msg.sender, wad);
 
         // ensure under debt ceiling
-        aver(ice() <= hat);  // under debt ceiling
+        aver((ice() + woe()) <= hat);  // under debt ceiling
     }
     function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke
