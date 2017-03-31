@@ -36,9 +36,9 @@ contract Tub is DSAuth, DSNote, DSMath {
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
-    // uint64   public  lax;  // Grace period? --> No, only expiring feeds and killswitch
-    // holder fee param
-    // issuer fee param
+    // TODO holder fee param
+    // TODO issuer fee param
+    // TODO spread??
 
     // Good debt
     function ice() constant returns (uint128) {
@@ -87,6 +87,7 @@ contract Tub is DSAuth, DSNote, DSMath {
 
     function stop() note authorized("stop") {
         off = true;
+        // TODO implement killswitch
     }
 
     function mark(uint128 wad) note authorized("mark") {
@@ -109,6 +110,7 @@ contract Tub is DSAuth, DSNote, DSMath {
 
     function drip() note {
         // update `joy` (collect fees)
+        // TODO implement fees
     }
 
     // skr per gem
