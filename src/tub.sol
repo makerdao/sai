@@ -26,7 +26,7 @@ import "ds-vault/vault.sol";
 contract Tub is DSAuth, DSNote, DSMath {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
-    DSVault  public  ice;  // Good debt vault
+    DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
@@ -40,6 +40,14 @@ contract Tub is DSAuth, DSNote, DSMath {
     // holder fee param
     // issuer fee param
 
+    // Good debt
+    function ice() constant returns (uint128) {
+        return uint128(sin.balanceOf(pot));
+    }
+    // Backing collateral
+    function air() constant returns (uint128) {
+        return uint128(skr.balanceOf(pot));
+    }
     // surplus
     function joy() constant returns (uint128) {
         return uint128(sai.balanceOf(this));
@@ -48,7 +56,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     function woe() constant returns (uint128) {
         return uint128(sin.balanceOf(this));
     }
-    // Pending liquidation
+    // Collateral pending liquidation
     // TODO improve meme. This isn't even a noun.
     function rue() constant returns (uint128) {
         return uint128(skr.balanceOf(this));
@@ -67,12 +75,12 @@ contract Tub is DSAuth, DSNote, DSMath {
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault ice_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
         skr = skr_;
-        ice = ice_;
+        pot = pot_;
 
         axe = RAY;
         mat = RAY;
@@ -143,13 +151,13 @@ contract Tub is DSAuth, DSNote, DSMath {
     function lock(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         cups[cup].ink = incr(cups[cup].ink, wad);
-        ice.pull(skr, msg.sender, wad);
+        pot.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         cups[cup].ink = decr(cups[cup].ink, wad);
         aver(safe(cup));
-        ice.push(skr, msg.sender, wad);
+        pot.push(skr, msg.sender, wad);
     }
 
     function safe(bytes32 cup) returns (bool) {
@@ -168,12 +176,11 @@ contract Tub is DSAuth, DSNote, DSMath {
         aver(safe(cup));
 
         lend(wad);
-        sin.push(ice, wad);
+        sin.push(pot, wad);
         sai.push(msg.sender, wad);
 
         // ensure under debt ceiling
-        var rum = uint128(sin.balanceOf(ice));
-        aver(rum <= hat);  // under debt ceiling
+        aver(ice() <= hat);  // under debt ceiling
     }
     function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke
@@ -181,7 +188,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         cups[cup].art = decr(cups[cup].art, wad);
 
         sai.pull(msg.sender, wad);
-        ice.push(sin, this, wad);
+        pot.push(sin, this, wad);
         mend(wad);
     }
 
@@ -203,7 +210,7 @@ contract Tub is DSAuth, DSNote, DSMath {
 
         // take all of the debt
         var owe = cups[cup].art;
-        ice.push(sin, this, owe);
+        pot.push(sin, this, owe);
         cups[cup].art = 0;
 
         // axe the collateral
@@ -218,7 +225,7 @@ contract Tub is DSAuth, DSNote, DSMath {
             cab = ink;
         }
 
-        ice.push(skr, this, cab);
+        pot.push(skr, this, cab);
     }
 
     // joy > 0 && woe > 0

@@ -13,7 +13,7 @@ contract Test is DSTest {
     DSToken sai;
     DSToken sin;
     DSToken skr;
-    DSVault ice;
+    DSVault pot;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 1 ether;
@@ -26,25 +26,25 @@ contract Test is DSTest {
         sai = new DSToken("SAI", "SAI", 18);
         sin = new DSToken("SIN", "SIN", 18);
         skr = new DSToken("SKR", "SKR", 18);
-        ice = new DSVault();
+        pot = new DSVault();
 
-        tub = new Tub(gem, sai, sin, skr, ice);
+        tub = new Tub(gem, sai, sin, skr, pot);
 
         sai.setOwner(tub);
         sin.setOwner(tub);
         skr.setOwner(tub);
-        ice.setOwner(tub);
+        pot.setOwner(tub);
 
         gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
-        tub.skr().approve(ice, 100000 ether);
+        tub.skr().approve(pot, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
 
         tub.mark(1 ether);
         tub.cork(20 ether);
     }
     function testBasic() {
-        assertEq( tub.skr().balanceOf(ice), 0 ether );
+        assertEq( tub.skr().balanceOf(pot), 0 ether );
         assertEq( tub.skr().balanceOf(this), 0 ether );
         assertEq( tub.gem().balanceOf(tub), 0 ether );
 
@@ -64,10 +64,10 @@ contract Test is DSTest {
         var cup = tub.open();
 
         assertEq( tub.skr().balanceOf(this), 20 ether );
-        assertEq( tub.skr().balanceOf(ice), 0 ether );
+        assertEq( tub.skr().balanceOf(pot), 0 ether );
         tub.lock(cup, 10 ether); // lock skr token
         assertEq( tub.skr().balanceOf(this), 10 ether );
-        assertEq( tub.skr().balanceOf(ice), 10 ether );
+        assertEq( tub.skr().balanceOf(pot), 10 ether );
 
         assertEq( tub.sai().balanceOf(this), 0 ether);
         tub.draw(cup, 5 ether);
