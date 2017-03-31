@@ -29,3 +29,31 @@ contract MakerWarp is DSNote, DSAver {
 }
 
 contract MakerMath is DSMath { }
+
+contract SaiSin is DSToken('sin', 'SIN', 18) {
+    DSToken public sai;
+    function SaiSin(DSToken sai_) {
+        sai = sai_;
+    }
+    function lend(uint128 wad) auth {
+        sai.mint(wad);
+        mint(wad);
+
+        sai.transfer(msg.sender, wad);
+        this.transfer(msg.sender, wad);
+    }
+    function mend(uint128 wad) {
+        // TODO: use push on sender? should sender always be a vault?
+        sai.transferFrom(msg.sender, wad);
+        this.transferFrom(msg.sender, wad);
+
+        sai.burn(wad);
+        burn(wad);
+    }
+    function heal() {
+        var joy = sai.balanceOf(msg.sender);
+        var wor = this.balanceOf(msg.sender);
+        var omm = min(joy(), woe());
+        mend(omm);
+    }
+}
