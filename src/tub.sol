@@ -150,6 +150,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         aver(msg.sender == cups[cup].lad);
         // TODO safety
         cups[cup].ink = decr(cups[cup].ink, wad);
+        aver(safe(cup));
         ice.push(skr, msg.sender, wad);
     }
 
@@ -159,7 +160,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         var pro = wmul(jam, tag);
         var con = cups[cup].art;
         var min = rmul(con, mat);
-        return (pro > min);
+        return (pro >= min);
     }
 
     function draw(bytes32 cup, uint128 wad) note {

@@ -129,7 +129,27 @@ contract Test is DSTest {
 
         // cdp should now be safe with 0 sai debt and 2 skr remaining
         var skr_before = skr.balanceOf(this);
-        tub.free(cup, 2 ether);
+        tub.free(cup, 1 ether);
+        assertEq(skr.balanceOf(this) - skr_before, 1 ether);
+    }
+    function testFree() {
+        tub.cuff(ray(2 ether));  // require 200% collateralisation
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 4 ether);  // 250% collateralisation
+
+        var skr_before = skr.balanceOf(this);
+        tub.free(cup, 2 ether);  // 225%
         assertEq(skr.balanceOf(this) - skr_before, 2 ether);
+    }
+    function testFailFreeToUnderCollat() {
+        tub.cuff(ray(2 ether));  // require 200% collateralisation
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 4 ether);  // 250% collateralisation
+
+        tub.free(cup, 3 ether);  // 175% -- fails
     }
 }
