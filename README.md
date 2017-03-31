@@ -19,12 +19,19 @@ external real-time input to the system.
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
 some `sai`. Debt is covered with `wipe`. Collateral can be reclaimed
-with `free` as long as the CDP remains "safe". 
+with `free` as long as the CDP remains "safe".
 
 If the value of the collateral backing the CDP falls below the
 liquidation ratio `mat`, the CDP is vulnerable to liquidation via
 `bite`. On liquidation, the CDP `skr` collateral is sold off to cover
 the `sai` debt.
+
+Under-collateralized CDPs can be liquidated with `bite`. Liquidation is
+immediate: backing `skr` is taken to cover the `sai` debt at the time of
+`bite`, plus a liquidation fee (`axe`); any excess remains in the CDP.
+
+`skr` seized from bad CDPs can be purchased with `bust`, in exchange for
+`sai` at the current feed price. This `sai` pays down the bad CDP debt.
 
 
 ### glossary
