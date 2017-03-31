@@ -57,8 +57,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         return uint128(sin.balanceOf(this));
     }
     // Collateral pending liquidation
-    // TODO improve meme. This isn't even a noun.
-    function rue() constant returns (uint128) {
+    function fog() constant returns (uint128) {
         return uint128(skr.balanceOf(this));
     }
 
@@ -256,10 +255,10 @@ contract Tub is DSAuth, DSNote, DSMath {
         var ret = wdiv(wmul(wad, tag), per());
         aver(ret <= woe());
 
-        if (wad <= rue()) {
+        if (wad <= fog()) {
             skr.push(msg.sender, wad);
         } else {
-            var bal = uint128(rue());
+            var bal = fog();
             skr.push(msg.sender, bal);
             skr.mint(wad - bal);
             skr.push(msg.sender, wad - bal);

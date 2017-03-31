@@ -109,9 +109,9 @@ contract Test is DSTest {
         tub.draw(cup, 5 ether);  // 200% collateralisation
         tub.mark(1 ether / 4);   // 50% collateralisation
 
-        assertEq(tub.rue(), uint(0));
+        assertEq(tub.fog(), uint(0));
         tub.bite(cup);
-        assertEq(tub.rue(), uint(10 ether));
+        assertEq(tub.fog(), uint(10 ether));
     }
     function testBiteOverParity() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation
@@ -124,9 +124,9 @@ contract Test is DSTest {
         tub.mark(1 ether / 2);   // 125% collateralisation
         assert(!tub.safe(cup));
 
-        assertEq(tub.rue(), uint(0));
+        assertEq(tub.fog(), uint(0));
         tub.bite(cup);
-        assertEq(tub.rue(), uint(8 ether));
+        assertEq(tub.fog(), uint(8 ether));
 
         // cdp should now be safe with 0 sai debt and 2 skr remaining
         var skr_before = skr.balanceOf(this);
