@@ -37,6 +37,7 @@ contract Test is DSTest {
 
         gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
+        tub.skr().approve(ice, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
 
         tub.mark(1 ether);

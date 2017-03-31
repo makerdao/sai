@@ -144,12 +144,11 @@ contract Tub is DSAuth, DSNote, DSMath {
         aver(msg.sender == cups[cup].lad);
         // TODO
         cups[cup].ink = incr(cups[cup].ink, wad);
-        skr.pull(msg.sender, wad);
-        skr.push(ice, wad);
+        ice.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
-        // TODO
+        // TODO safety
         cups[cup].ink = decr(cups[cup].ink, wad);
         ice.push(skr, msg.sender, wad);
     }
@@ -178,7 +177,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = decr(cups[cup].art, wad);
-        aver(safe(cup));
+        aver(safe(cup));  // TODO is this necessary?
 
         sai.pull(msg.sender, wad);
         ice.push(sin, this, wad);
