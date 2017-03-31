@@ -15,6 +15,10 @@ contract Test is DSTest {
     DSToken skr;
     DSVault ice;
 
+    function ray(uint128 wad) returns (uint128) {
+        return wad * 1 ether;
+    }
+
     function setUp() {
         gem = new DSToken("collateral", "COL", 18);
         gem.mint(100 ether);
@@ -36,7 +40,6 @@ contract Test is DSTest {
         tub.sai().approve(tub, 100000 ether);
 
         tub.mark(1 ether);
-
     }
     function testBasic() {
         assertEq( tub.skr().balanceOf(ice), 0 ether );
@@ -96,13 +99,36 @@ contract Test is DSTest {
         tub.mark(1 ether / 2);
         assert(!tub.safe(cup));
     }
-    function testBite() {
+    function testBiteUnderParity() {
+        assertEq(uint(tub.axe()), uint(ray(1 ether)));  // 100% collateralisation limit
         tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
-        tub.draw(cup, 9 ether);
-        tub.mark(1 ether / 2);
+        tub.draw(cup, 5 ether);  // 200% collateralisation
+        tub.mark(1 ether / 4);   // 50% collateralisation
 
+        assertEq(tub.rue(), uint(0));
         tub.bite(cup);
+        assertEq(tub.rue(), uint(10 ether));
+    }
+    function testBiteOverParity() {
+        tub.cuff(ray(2 ether));  // require 200% collateralisation
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        tub.draw(cup, 4 ether);  // 250% collateralisation
+        assert(tub.safe(cup));
+        tub.mark(1 ether / 2);   // 125% collateralisation
+        assert(!tub.safe(cup));
+
+        assertEq(tub.rue(), uint(0));
+        tub.bite(cup);
+        assertEq(tub.rue(), uint(8 ether));
+
+        // cdp should now be safe with 0 sai debt and 2 skr remaining
+        var skr_before = skr.balanceOf(this);
+        tub.free(cup, 2 ether);
+        assertEq(skr.balanceOf(this) - skr_before, 2 ether);
     }
 }
