@@ -33,6 +33,10 @@ immediate: backing `skr` is taken to cover the `sai` debt at the time of
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
 `sai` at the current feed price. This `sai` pays down the bad CDP debt.
 
+`sai` is fee free currently (FIXME). If there were fees, they would go
+into the `sai` balance of the `tub` (known as `joy`). `joy` is sold off
+with `boom` in exchange for `skr`, which is burned.
+
 
 ### glossary
 
