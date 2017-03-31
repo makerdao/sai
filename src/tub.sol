@@ -206,7 +206,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         ice.push(sin, this, owe);
         cups[cup].art = 0;
 
-        // // axe the collateral
+        // axe the collateral
         var tab = rmul(owe, axe);
         var cab = rdiv(rmul(tab, per()), tag);
         var ink = cups[cup].ink;
@@ -249,7 +249,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         var ret = wdiv(wmul(wad, tag), per());
         aver(ret <= woe());
 
-        if (rue() >= wad) {
+        if (wad <= rue()) {
             skr.push(msg.sender, wad);
         } else {
             var bal = uint128(rue());
