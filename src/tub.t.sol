@@ -161,4 +161,32 @@ contract Test is DSTest {
 
         tub.draw(cup, 5 ether);
     }
+    function testDebtCeiling() {
+        tub.cork(5 ether);
+        tub.cuff(ray(2 ether));  // require 200% collat
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        tub.draw(cup, 5 ether);  // 200% collat, full debt ceiling
+        tub.mark(1 ether / 2);   // 100% collat
+
+        assertEq(tub.air(), uint(10 ether));
+        assertEq(tub.fog(), uint(0 ether));
+        tub.bite(cup);
+        assertEq(tub.air(), uint(0 ether));
+        assertEq(tub.fog(), uint(10 ether));
+
+        tub.join(10 ether);
+        // skr hasn't been diluted yet so still 1:1 skr:gem
+        assertEq(skr.balanceOf(this), 10 ether);
+
+        // open another cdp and see if we can draw against it, given
+        // that the previous cdp maxed out the debt ceiling
+        var mug = tub.open();
+        tub.lock(mug, 10 ether);
+        // TODO: this fails, but should it? depends on whether ceiling
+        // compared against ice or ice + woe
+        // tub.draw(mug, 1 ether);
+    }
 }
