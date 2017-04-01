@@ -95,15 +95,15 @@ contract Tub is DSAuth, DSNote, DSMath {
         off = true;
         // price - sai per gem
 
-        pot.push(sin, this);   // take on the debt
-        bye = woe() / price;   // gems needed to cover debt
+        pot.push(sin, this);       // take on the debt
+        var bye = woe() / price;   // gems needed to cover debt
 
         if (bye < lol()) {
-            ooh = bye / woe()                        // share bye between all sai
-            ahh = (bye - lol()) / skr.totalSupply(); // skr gets the remainder
+            ooh = bye / woe();                             // share bye between all sai
+            ahh = (bye - lol()) / cast(skr.totalSupply()); // skr gets the remainder
         } else {
-            ooh = lol() / woe();                     // share lol between all sai
-            ahh = 0;                                 // skr gets nothing (skr / gem)
+            ooh = lol() / woe();                           // share lol between all sai
+            ahh = 0;                                       // skr gets nothing (skr / gem)
         }
     }
     function save() note {
@@ -115,11 +115,11 @@ contract Tub is DSAuth, DSNote, DSMath {
         aver(off);
 
         var hai = sai.balanceOf(msg.sender);
-        sai.pull(msg.sender, hai);
+        sai.pull(msg.sender, cast(hai));
         gem.transfer(msg.sender, hai / ooh);
 
         var kek = skr.balanceOf(msg.sender);
-        skr.pull(msg.sender, kek);
+        skr.pull(msg.sender, cast(kek));
         gem.transfer(msg.sender, kek / ahh);
 
         mend();
