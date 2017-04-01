@@ -87,7 +87,28 @@ contract Tub is DSAuth, DSNote, DSMath {
 
     function stop() note authorized("stop") {
         off = true;
-        // TODO implement killswitch
+        // TODO implement freeze, stop tokens
+    }
+
+    // TODO
+    function kill(uint128 price) note authorized("kill") {
+        // _price = price;
+        var ratio = RAY; // TODO global ratio of say/sin
+        // _ratio = ratio;
+        if (ratio > RAY) {
+            ratio = RAY;  // if we are net overcollateralized, redeem at 1:1
+        } else if (ratio < RAY) {
+            // if we are undercollateralized, immediately mint enough skr
+            // at the killswitch price
+        }
+        // killed = true;
+    }
+    // TODO
+    function save() note {
+        // assert killed
+        // take your sai, give you back gem
+        // take your skr, give you back gem
+        // chop your collateral at ratio, give you back gem
     }
 
     function mark(uint128 wad) note authorized("mark") {
