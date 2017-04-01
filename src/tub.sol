@@ -60,9 +60,12 @@ contract Tub is DSAuth, DSNote, DSMath {
     function fog() constant returns (uint128) {
         return uint128(skr.balanceOf(this));
     }
+    // Raw collateral
+    function lol() constant returns (uint128) {
+        return uint128(gem.balanceOf(this));
+    }
 
     bool     public  off;  // Killswitch
-
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -85,27 +88,47 @@ contract Tub is DSAuth, DSNote, DSMath {
         mat = RAY;
     }
 
-    // TODO
-    function stop() note authorized("stop") {
-        off = true;
-        // TODO implement freeze, stop tokens
-    }
+    uint128  public  ooh;  // sai kill price
+    uint128  public  ahh;  // skr kill price
 
-    // TODO
     function kill(uint128 price) note authorized("kill") {
-        // take on all debt
-        // how many gems is 1 sai?
-        //    use the price - apply discount if not enough gems
-        // how many gems is 1 skr?
-        //    split the gems not reserved for sai
+        off = true;
+        // price - sai per gem
+
+        pot.push(sin, this);   // take on the debt
+        bye = woe() / price;   // gems needed to cover debt
+
+        if (bye < lol()) {
+            ooh = bye / woe()                        // share bye between all sai
+            ahh = (bye - lol()) / skr.totalSupply(); // skr gets the remainder
+        } else {
+            ooh = lol() / woe();                     // share lol between all sai
+            ahh = 0;                                 // skr gets nothing (skr / gem)
+        }
     }
-    // TODO
-    function save(bytes32 cup) note {
+    function save() note {
         // assert killed
         // take your sai, give you back gem
         //    extinguishes bad debt
         // take your skr, give you back gem
         // chop your collateral at ratio, give you back gem
+        aver(off);
+
+        var hai = sai.balanceOf(msg.sender);
+        sai.pull(msg.sender, hai);
+        gem.transfer(msg.sender, hai / ooh);
+
+        var kek = skr.balanceOf(msg.sender);
+        skr.pull(msg.sender, kek);
+        gem.transfer(msg.sender, kek / ahh);
+
+        mend();
+    }
+    function save(bytes32 cup) note {
+        save();
+        // TODO this penalises all cup holders the same, whether under
+        // or over collat
+        gem.transfer(msg.sender, cups[cup].ink / ahh);
     }
 
     function mark(uint128 wad) note authorized("mark") {
