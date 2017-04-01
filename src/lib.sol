@@ -11,6 +11,8 @@ import "ds-note/note.sol";
 import "ds-aver/aver.sol";
 import "ds-math/math.sol";
 
+import "ds-token/token.sol";
+
 contract MakerWarp is DSNote, DSAver {
     uint64  _era;
 
@@ -30,7 +32,7 @@ contract MakerWarp is DSNote, DSAver {
 
 contract MakerMath is DSMath { }
 
-contract SaiSin is DSToken('sin', 'SIN', 18) {
+contract SaiSin is DSToken('sin', 'SIN', 18), DSMath {
     DSToken public sai;
     function SaiSin(DSToken sai_) {
         sai = sai_;
@@ -44,16 +46,15 @@ contract SaiSin is DSToken('sin', 'SIN', 18) {
     }
     function mend(uint128 wad) {
         // TODO: use push on sender? should sender always be a vault?
-        sai.transferFrom(msg.sender, wad);
-        this.transferFrom(msg.sender, wad);
+        sai.transferFrom(msg.sender, this, wad);
+        this.transferFrom(msg.sender, this, wad);
 
         sai.burn(wad);
         burn(wad);
     }
     function heal() {
-        var joy = sai.balanceOf(msg.sender);
-        var wor = this.balanceOf(msg.sender);
-        var omm = min(joy(), woe());
-        mend(omm);
+        var joy = cast(sai.balanceOf(msg.sender));
+        var woe = cast(this.balanceOf(msg.sender));
+        mend(min(joy, woe));
     }
 }
