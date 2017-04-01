@@ -85,6 +85,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         mat = RAY;
     }
 
+    // TODO
     function stop() note authorized("stop") {
         off = true;
         // TODO implement freeze, stop tokens
@@ -92,21 +93,17 @@ contract Tub is DSAuth, DSNote, DSMath {
 
     // TODO
     function kill(uint128 price) note authorized("kill") {
-        // _price = price;
-        var ratio = RAY; // TODO global ratio of say/sin
-        // _ratio = ratio;
-        if (ratio > RAY) {
-            ratio = RAY;  // if we are net overcollateralized, redeem at 1:1
-        } else if (ratio < RAY) {
-            // if we are undercollateralized, immediately mint enough skr
-            // at the killswitch price
-        }
-        // killed = true;
+        // take on all debt
+        // how many gems is 1 sai?
+        //    use the price - apply discount if not enough gems
+        // how many gems is 1 skr?
+        //    split the gems not reserved for sai
     }
     // TODO
-    function save() note {
+    function save(bytes32 cup) note {
         // assert killed
         // take your sai, give you back gem
+        //    extinguishes bad debt
         // take your skr, give you back gem
         // chop your collateral at ratio, give you back gem
     }
@@ -249,16 +246,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         pot.push(skr, this, cab);
     }
 
-    // joy > 0 && woe > 0
-    //    mend(min(joy,woe))
-    // joy > 0
-    //    boom
-    // woe > 0
-    //    bust
-
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    // TODO one or both of these might work better with units inverted
-    //     (ie arg is sai instead of skr)
     function boom(uint128 wad) note {
         mend();
 
@@ -288,7 +276,4 @@ contract Tub is DSAuth, DSNote, DSMath {
 
         sai.pull(msg.sender, ret);
     }
-
-    // TODO: could be here or on oracle object using same prism
-    // function vote() {}
 }
