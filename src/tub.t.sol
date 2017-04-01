@@ -185,8 +185,8 @@ contract Test is DSTest {
         // that the previous cdp maxed out the debt ceiling
         var mug = tub.open();
         tub.lock(mug, 10 ether);
-        // TODO: this fails, but should it? depends on whether ceiling
-        // compared against ice or ice + woe
-        // tub.draw(mug, 1 ether);
+        // this should suceed as the debt ceiling is defined by ice, not
+        // ice + woe
+        tub.draw(mug, 1 ether);
     }
 }
