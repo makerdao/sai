@@ -78,7 +78,7 @@ contract Tub is DSThing {
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tag_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
@@ -87,6 +87,7 @@ contract Tub is DSThing {
 
         axe = RAY;
         mat = RAY;
+        _tag = tag_;
     }
 
     uint128  public  ooh;  // sai kill price

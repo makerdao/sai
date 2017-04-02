@@ -4,6 +4,8 @@ import "ds-test/test.sol";
 
 import 'ds-token/token.sol';
 import 'ds-vault/vault.sol';
+import 'ds-roles/roles.sol';
+import 'ds-value/value.sol';
 
 import './tub.sol';
 
@@ -14,6 +16,7 @@ contract Test is DSTest {
     DSToken sin;
     DSToken skr;
     DSVault pot;
+    DSValue tag;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 1 ether;
@@ -28,8 +31,9 @@ contract Test is DSTest {
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();
 
-        tub = new Tub(gem, sai, sin, skr, pot);
-        var dad = new DSRoles();
+        tub = new Tub(gem, sai, sin, skr, pot, tag);
+
+        var dad = new DSRoles(); // TODO
         var mom = DSAuthority(tub);
 
         sai.setAuthority(mom);
@@ -42,7 +46,8 @@ contract Test is DSTest {
         tub.skr().approve(pot, 100000 ether);
         tub.sai().approve(tub, 100000 ether);
 
-        tub.mark(1 ether);
+        tag.poke(bytes32(1 ether));
+
         tub.cork(20 ether);
     }
     function testBasic() {
@@ -100,7 +105,7 @@ contract Test is DSTest {
         tub.draw(cup, 9 ether);
 
         assert(tub.safe(cup));
-        tub.mark(1 ether / 2);
+        tag.poke(bytes32(1 ether / 2));
         assert(!tub.safe(cup));
     }
     function testBiteUnderParity() {
@@ -109,7 +114,7 @@ contract Test is DSTest {
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);  // 200% collateralisation
-        tub.mark(1 ether / 4);   // 50% collateralisation
+        tag.poke(bytes32(1 ether / 4));   // 50% collateralisation
 
         assertEq(tub.fog(), uint(0));
         tub.bite(cup);
@@ -123,7 +128,7 @@ contract Test is DSTest {
 
         tub.draw(cup, 4 ether);  // 250% collateralisation
         assert(tub.safe(cup));
-        tub.mark(1 ether / 2);   // 125% collateralisation
+        tag.poke(bytes32(1 ether / 2));   // 125% collateralisation
         assert(!tub.safe(cup));
 
         assertEq(tub.fog(), uint(0));
@@ -171,7 +176,7 @@ contract Test is DSTest {
         tub.lock(cup, 10 ether);
 
         tub.draw(cup, 5 ether);  // 200% collat, full debt ceiling
-        tub.mark(1 ether / 2);   // 100% collat
+        tag.poke(bytes32(1 ether / 2));   // 100% collat
 
         assertEq(tub.air(), uint(10 ether));
         assertEq(tub.fog(), uint(0 ether));
