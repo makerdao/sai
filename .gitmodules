@@ -7,9 +7,6 @@
 [submodule "lib/ds-auth"]
 	path = lib/ds-auth
 	url = https://github.com/dapphub/ds-auth
-[submodule "lib/ds-note"]
-	path = lib/ds-note
-	url = https://github.com/dapphub/ds-note
 [submodule "lib/ds-vault"]
 	path = lib/ds-vault
 	url = https://github.com/dapphub/ds-vault
