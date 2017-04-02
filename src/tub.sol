@@ -21,14 +21,15 @@ import "ds-value/value.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is DSThings {
+contract Tub is DSThing {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    DSValue  public  tag;  // Gem price (in external reference unit)
+    // TODO name
+    DSValue  public  _tag;  // Gem price feed (in external reference unit)
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
@@ -38,6 +39,9 @@ contract Tub is DSThings {
     // TODO spread??
 
     // Good debt
+    function tag() constant returns (uint128) {
+        return uint128(_tag.read());
+    }
     function ice() constant returns (uint128) {
         return uint128(sin.balanceOf(pot));
     }
@@ -198,7 +202,7 @@ contract Tub is DSThings {
     // returns true if overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
         var jam = wdiv(cups[cup].ink, per());
-        var pro = wmul(jam, tag.read());
+        var pro = wmul(jam, tag());
         var con = cups[cup].art;
         var min = rmul(con, mat);
         return (pro >= min);
@@ -249,7 +253,7 @@ contract Tub is DSThings {
 
         // axe the collateral
         var tab = rmul(owe, axe);
-        var cab = rdiv(rmul(tab, per()), tag.read());
+        var cab = rdiv(rmul(tab, per()), tag());
         var ink = cups[cup].ink;
 
         if (ink > cab) {
@@ -267,7 +271,7 @@ contract Tub is DSThings {
         mend();
 
         // price of wad in sai
-        var ret = wdiv(wmul(wad, tag.read()), per());
+        var ret = wdiv(wmul(wad, tag()), per());
         aver(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -278,7 +282,7 @@ contract Tub is DSThings {
     function bust(uint128 wad) note {
         mend();
 
-        var ret = wdiv(wmul(wad, tag.read()), per());
+        var ret = wdiv(wmul(wad, tag()), per());
         aver(ret <= woe());
 
         if (wad <= fog()) {
