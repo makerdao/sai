@@ -131,10 +131,6 @@ contract Tub is DSThings {
         gem.transfer(msg.sender, cups[cup].ink / ahh);
     }
 
-    function mark(uint128 wad) note authorized("mark") {
-        tag = wad;
-    }
-
     function chop(uint128 ray) note authorized("mold") {
         axe = ray;
     }
@@ -202,7 +198,7 @@ contract Tub is DSThings {
     // returns true if overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
         var jam = wdiv(cups[cup].ink, per());
-        var pro = wmul(jam, tag);
+        var pro = wmul(jam, tag.read());
         var con = cups[cup].art;
         var min = rmul(con, mat);
         return (pro >= min);
@@ -253,7 +249,7 @@ contract Tub is DSThings {
 
         // axe the collateral
         var tab = rmul(owe, axe);
-        var cab = rdiv(rmul(tab, per()), tag);
+        var cab = rdiv(rmul(tab, per()), tag.read());
         var ink = cups[cup].ink;
 
         if (ink > cab) {
@@ -271,7 +267,7 @@ contract Tub is DSThings {
         mend();
 
         // price of wad in sai
-        var ret = wdiv(wmul(wad, tag), per());
+        var ret = wdiv(wmul(wad, tag.read()), per());
         aver(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -282,7 +278,7 @@ contract Tub is DSThings {
     function bust(uint128 wad) note {
         mend();
 
-        var ret = wdiv(wmul(wad, tag), per());
+        var ret = wdiv(wmul(wad, tag.read()), per());
         aver(ret <= woe());
 
         if (wad <= fog()) {
