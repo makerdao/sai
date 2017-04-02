@@ -6,12 +6,10 @@
 
 pragma solidity ^0.4.8;
 
-import "ds-auth/auth.sol";
-import "ds-note/note.sol";
-import "ds-math/math.sol";
-
+import "ds-thing/thing.sol";
 import "ds-token/token.sol";
 import "ds-vault/vault.sol";
+import "ds-value/value.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -23,15 +21,14 @@ import "ds-vault/vault.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is DSAuth, DSNote, DSMath {
+contract Tub is DSThings {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    uint128  public  tag;  // Gem price (in external reference unit)
-    // TODO          zzz;  // Gem price expiration
+    DSValue  public  tag;  // Gem price (in external reference unit)
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
