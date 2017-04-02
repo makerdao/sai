@@ -29,11 +29,13 @@ contract Test is DSTest {
         pot = new DSVault();
 
         tub = new Tub(gem, sai, sin, skr, pot);
+        var dad = new DSRoles();
+        var mom = DSAuthority(tub);
 
-        sai.setAuthority(tub);
-        sin.setAuthority(tub);
-        skr.setAuthority(tub);
-        pot.setAuthority(tub);
+        sai.setAuthority(mom);
+        sin.setAuthority(mom);
+        skr.setAuthority(mom);
+        pot.setAuthority(mom);
 
         gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
