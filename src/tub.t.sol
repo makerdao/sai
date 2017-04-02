@@ -30,10 +30,10 @@ contract Test is DSTest {
 
         tub = new Tub(gem, sai, sin, skr, pot);
 
-        sai.setOwner(tub);
-        sin.setOwner(tub);
-        skr.setOwner(tub);
-        pot.setOwner(tub);
+        sai.setAuthority(tub);
+        sin.setAuthority(tub);
+        skr.setAuthority(tub);
+        pot.setAuthority(tub);
 
         gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
