@@ -22,6 +22,14 @@ contract Test is DSTest {
         return wad * 1 ether;
     }
 
+    // for later export to factory
+    function roleSetup(address dad, address rat) returns (DSRoles) {
+        uint8 DAD = 0;
+        uint8 RAT = 1;
+        var roles = new DSRoles();
+        
+    }
+
     function setUp() {
         gem = new DSToken("collateral", "COL", 18);
         gem.mint(100 ether);
@@ -35,12 +43,13 @@ contract Test is DSTest {
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
         var dad = new DSRoles(); // TODO
+
         var mom = DSAuthority(tub);
 
-        sai.setAuthority(mom);
-        sin.setAuthority(mom);
-        skr.setAuthority(mom);
-        pot.setAuthority(mom);
+        sai.setOwner(mom);
+        sin.setOwner(mom);
+        skr.setOwner(mom);
+        pot.setOwner(mom);
 
         gem.approve(tub, 100000 ether);
         tub.skr().approve(tub, 100000 ether);
