@@ -101,6 +101,8 @@ contract Tub is DSAuth, DSNote, DSMath {
         if (bye < lol()) {
             ooh = bye / woe();                             // share bye between all sai
             ahh = (bye - lol()) / cast(skr.totalSupply()); // skr gets the remainder
+            // TODO ^ no. need to only share with skr backing over collat cups.
+            //            under collat cups get nothing.
         } else {
             ooh = lol() / woe();                           // share lol between all sai
             ahh = 0;                                       // skr gets nothing (skr / gem)
