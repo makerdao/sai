@@ -23,7 +23,11 @@ import "ds-vault/vault.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is DSAuth, DSNote, DSMath {
+contract TubEvents {
+    event LogMark(address who, uint128 wad);
+}
+
+contract Tub is DSAuth, DSNote, DSMath, TubEvents {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault

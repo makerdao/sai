@@ -5,15 +5,18 @@ import "ds-test/test.sol";
 import 'ds-token/token.sol';
 import 'ds-vault/vault.sol';
 
-import './tub.sol';
+import './fab.sol';
 
 contract Test is DSTest {
-    Tub tub;
+    TubFab  fab;
+    Tub     tub;
     DSToken gem;
     DSToken sai;
     DSToken sin;
     DSToken skr;
     DSVault pot;
+    DSTell  tell;
+    DSGuard guard;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 1 ether;
@@ -28,7 +31,15 @@ contract Test is DSTest {
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();
 
-        tub = new Tub(gem, sai, sin, skr, pot);
+        guard = new DSGuard();
+        tell = new DSTell();
+        fab = new TubFab();
+        guard.setAuthority(fab);
+        
+        tub = fab.newTub(guard, gem, sai, sai, skr, pot);
+
+        tell.set(tub);
+        guard.okay(tell, tub, bytes4("mark"));
 
         sai.setAuthority(tub);
         sin.setAuthority(tub);
@@ -36,11 +47,11 @@ contract Test is DSTest {
         pot.setAuthority(tub);
 
         gem.approve(tub, 100000 ether);
-        tub.skr().approve(tub, 100000 ether);
-        tub.skr().approve(pot, 100000 ether);
-        tub.sai().approve(tub, 100000 ether);
+        skr.approve(tub, 100000 ether);
+        skr.approve(pot, 100000 ether);
+        sai.approve(tub, 100000 ether);
 
-        tub.mark(1 ether);
+        tell.mark(1 ether);
         tub.cork(20 ether);
     }
     function testBasic() {
@@ -98,7 +109,7 @@ contract Test is DSTest {
         tub.draw(cup, 9 ether);
 
         assert(tub.safe(cup));
-        tub.mark(1 ether / 2);
+        tell.mark(1 ether / 2);
         assert(!tub.safe(cup));
     }
     function testBiteUnderParity() {
@@ -107,7 +118,7 @@ contract Test is DSTest {
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);  // 200% collateralisation
-        tub.mark(1 ether / 4);   // 50% collateralisation
+        tell.mark(1 ether / 4);   // 50% collateralisation
 
         assertEq(tub.fog(), uint(0));
         tub.bite(cup);
@@ -121,7 +132,7 @@ contract Test is DSTest {
 
         tub.draw(cup, 4 ether);  // 250% collateralisation
         assert(tub.safe(cup));
-        tub.mark(1 ether / 2);   // 125% collateralisation
+        tell.mark(1 ether / 2);   // 125% collateralisation
         assert(!tub.safe(cup));
 
         assertEq(tub.fog(), uint(0));
@@ -169,7 +180,7 @@ contract Test is DSTest {
         tub.lock(cup, 10 ether);
 
         tub.draw(cup, 5 ether);  // 200% collat, full debt ceiling
-        tub.mark(1 ether / 2);   // 100% collat
+        tell.mark(1 ether / 2);   // 100% collat
 
         assertEq(tub.air(), uint(10 ether));
         assertEq(tub.fog(), uint(0 ether));
@@ -188,5 +199,15 @@ contract Test is DSTest {
         // this should suceed as the debt ceiling is defined by ice, not
         // ice + woe
         tub.draw(mug, 1 ether);
+    }
+}
+
+contract DSTell {
+    Tub tub;
+    function set(Tub tub_) {
+        tub = tub_;
+    }
+    function mark(uint128 wad) {
+        tub.mark(wad);
     }
 }
