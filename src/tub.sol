@@ -61,7 +61,7 @@ contract Tub is DSAuth, DSNote, DSMath {
         return uint128(skr.balanceOf(this));
     }
     // Raw collateral
-    function lol() constant returns (uint128) {
+    function pie() constant returns (uint128) {
         return uint128(gem.balanceOf(this));
     }
 
@@ -98,13 +98,13 @@ contract Tub is DSAuth, DSNote, DSMath {
         pot.push(sin, this);       // take on the debt
         var bye = woe() / price;   // gems needed to cover debt
 
-        if (bye < lol()) {
+        if (bye < pie()) {
             ooh = bye / woe();                             // share bye between all sai
-            ahh = (bye - lol()) / cast(skr.totalSupply()); // skr gets the remainder
+            ahh = (bye - pie()) / cast(skr.totalSupply()); // skr gets the remainder
             // TODO ^ no. need to only share with skr backing over collat cups.
             //            under collat cups get nothing.
         } else {
-            ooh = lol() / woe();                           // share lol between all sai
+            ooh = pie() / woe();                           // share pie between all sai
             ahh = 0;                                       // skr gets nothing (skr / gem)
         }
     }
