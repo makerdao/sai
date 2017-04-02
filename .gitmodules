@@ -13,3 +13,6 @@
 [submodule "lib/ds-thing"]
 	path = lib/ds-thing
 	url = https://github.com/dapphub/ds-thing
+[submodule "lib/ds-value"]
+	path = lib/ds-value
+	url = https://github.com/dapphub/ds-value
