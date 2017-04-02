@@ -31,6 +31,7 @@ contract Test is DSTest {
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();
 
+        tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
         var dad = new DSRoles(); // TODO
