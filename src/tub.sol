@@ -103,6 +103,7 @@ contract Tub is DSAuth, DSNote, DSMath {
             ahh = (bye - pie()) / cast(skr.totalSupply()); // skr gets the remainder
             // TODO ^ no. need to only share with skr backing over collat cups.
             //            under collat cups get nothing.
+            //     ---> but actually this is right, you do the cut per cup at `save`
         } else {
             ooh = pie() / woe();                           // share pie between all sai
             ahh = 0;                                       // skr gets nothing (skr / gem)
@@ -146,10 +147,6 @@ contract Tub is DSAuth, DSNote, DSMath {
     function cuff(uint128 ray) note authorized("mold") {
         mat = ray;
     }
-    function calm(uint64 era) note authorized("mold") {
-        //lax = era;
-        throw;
-    }
 
     function drip() note {
         // update `joy` (collect fees)
@@ -160,6 +157,7 @@ contract Tub is DSAuth, DSNote, DSMath {
     function per() constant returns (uint128) {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
+        // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
         return skr.totalSupply() < 1 ether
             ? 1 ether
             : wdiv(uint128(gem.balanceOf(this)), uint128(skr.totalSupply()));
@@ -204,8 +202,8 @@ contract Tub is DSAuth, DSNote, DSMath {
         pot.push(skr, msg.sender, wad);
     }
 
+    // returns true if overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        // assert still overcollateralised
         var jam = wdiv(cups[cup].ink, per());
         var pro = wmul(jam, tag);
         var con = cups[cup].art;
