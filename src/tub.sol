@@ -38,10 +38,11 @@ contract Tub is DSThing {
     // TODO issuer fee param
     // TODO spread??
 
-    // Good debt
+    // Price of gem in ref
     function tag() constant returns (uint128) {
         return uint128(_tag.read());
     }
+    // Good debt
     function ice() constant returns (uint128) {
         return uint128(sin.balanceOf(pot));
     }
