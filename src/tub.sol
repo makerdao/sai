@@ -98,7 +98,7 @@ contract Tub is DSThing {
         off = true;
         // price - sai per gem
 
-        pot.push(sin, this);       // take on the debt
+        pot.push(sin, this);            // take on the debt
         var bye = wdiv(woe(), price);   // gems needed to cover debt
 
         if (bye < pie()) {
@@ -203,13 +203,26 @@ contract Tub is DSThing {
         pot.push(skr, msg.sender, wad);
     }
 
-    // returns true if overcollateralized
+    // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
         var jam = wdiv(cups[cup].ink, per());
         var pro = wmul(jam, tag());
         var con = cups[cup].art;
         var min = rmul(con, mat);
         return (pro >= min);
+    }
+    // returns true if system overcollateralized
+    function safe() constant returns (bool) {
+        var pro = wmul(air(), tag());
+        var con = cast(sin.totalSupply());
+        var min = rmul(con, mat);
+        return (pro >= min);
+    }
+    // returns true if system in deficit
+    function eek() constant returns (bool) {
+        var pro = wmul(air(), tag());
+        var con = cast(sin.totalSupply());
+        return (pro < con);
     }
 
     function draw(bytes32 cup, uint128 wad) note {
