@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-exit -- sell SKR
+set -e
+ink=$(sai wad -h "$1")
+echo >&2 "Sending $ink SKR to TUB..."
+ink=$(sai wad "$1")
+(set -x; seth send "${SAI_TUB?}" "exit(uint128)" $(seth --to-uint256 "$ink"))
