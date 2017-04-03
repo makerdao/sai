@@ -22,12 +22,16 @@ contract Test is DSTest {
         return wad * 1 ether;
     }
 
+    function assertEqWad(uint128 x, uint128 y) {
+        assertEq(uint256(x), uint256(y));
+    }
+
     // for later export to factory
     function roleSetup(address dad, address rat) returns (DSRoles) {
         uint8 DAD = 0;
         uint8 RAT = 1;
         var roles = new DSRoles();
-        
+
     }
 
     function setUp() {
