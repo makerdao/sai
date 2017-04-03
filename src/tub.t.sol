@@ -214,7 +214,7 @@ contract Test is DSTest, DSMath {
     }
 
     // ensure kill sets the settle prices right
-    function testKillSafeOverCollat() {
+    function killSetup() {
         tub.cork(5 ether);            // 5 sai debt ceiling
         tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
         tub.cuff(ray(2 ether));       // require 200% collat
@@ -222,7 +222,9 @@ contract Test is DSTest, DSMath {
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);       // 200% collateralisation
-
+    }
+    function testKillSafeOverCollat() {
+        killSetup();
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.fit(), 0);
@@ -236,13 +238,7 @@ contract Test is DSTest, DSMath {
         assertEqWad(tub.fit(), 1 ether / 2);   // skr redeems 2:1 with gem
     }
     function testKillUnsafeOverCollat() {
-        tub.cork(5 ether);            // 5 sai debt ceiling
-        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
-        tub.cuff(ray(2 ether));       // require 200% collat
-        tub.join(10 ether);
-        var cup = tub.open();
-        tub.lock(cup, 10 ether);
-        tub.draw(cup, 5 ether);       // 200% collateralisation
+        killSetup();
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.fit(), 0);
@@ -254,13 +250,7 @@ contract Test is DSTest, DSMath {
         assertEqWad(tub.fit(), wdiv(1 ether, 3 ether)); // skr redeems 3:1 with gem
     }
     function testKillAtCollat() {
-        tub.cork(5 ether);            // 5 sai debt ceiling
-        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
-        tub.cuff(ray(2 ether));       // require 200% collat
-        tub.join(10 ether);
-        var cup = tub.open();
-        tub.lock(cup, 10 ether);
-        tub.draw(cup, 5 ether);       // 200% collateralisation
+        killSetup();
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.fit(), 0);
@@ -272,13 +262,7 @@ contract Test is DSTest, DSMath {
         assertEqWad(tub.fit(), 0 ether);   // skr redeems 1:0 with gem
     }
     function testKillUnderCollat() {
-        tub.cork(5 ether);            // 5 sai debt ceiling
-        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
-        tub.cuff(ray(2 ether));       // require 200% collat
-        tub.join(10 ether);
-        var cup = tub.open();
-        tub.lock(cup, 10 ether);
-        tub.draw(cup, 5 ether);       // 200% collateralisation
+        killSetup();
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.fit(), 0);
