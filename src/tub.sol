@@ -90,8 +90,8 @@ contract Tub is DSThing {
         _tag = tag_;
     }
 
-    uint128  public  ooh;  // sai kill price
-    uint128  public  ahh;  // skr kill price
+    uint128  public  fix;  // sai kill price
+    uint128  public  fit;  // skr kill price
 
     function kill(uint128 price) note authorized("kill") {
         off = true;
@@ -101,14 +101,14 @@ contract Tub is DSThing {
         var bye = woe() / price;   // gems needed to cover debt
 
         if (bye < pie()) {
-            ooh = bye / woe();                             // share bye between all sai
-            ahh = (bye - pie()) / cast(skr.totalSupply()); // skr gets the remainder
+            fix = bye / woe();                             // share bye between all sai
+            fit = (bye - pie()) / cast(skr.totalSupply()); // skr gets the remainder
             // TODO ^ no. need to only share with skr backing over collat cups.
             //            under collat cups get nothing.
             //     ---> but actually this is right, you do the cut per cup at `save`
         } else {
-            ooh = pie() / woe();                           // share pie between all sai
-            ahh = 0;                                       // skr gets nothing (skr / gem)
+            fix = pie() / woe();                           // share pie between all sai
+            fit = 0;                                       // skr gets nothing (skr / gem)
         }
     }
     function save() note {
@@ -121,11 +121,11 @@ contract Tub is DSThing {
 
         var hai = sai.balanceOf(msg.sender);
         sai.pull(msg.sender, cast(hai));
-        gem.transfer(msg.sender, hai / ooh);
+        gem.transfer(msg.sender, hai / fix);
 
         var kek = skr.balanceOf(msg.sender);
         skr.pull(msg.sender, cast(kek));
-        gem.transfer(msg.sender, kek / ahh);
+        gem.transfer(msg.sender, kek / fit);
 
         mend();
     }
@@ -133,7 +133,7 @@ contract Tub is DSThing {
         save();
         // TODO this penalises all cup holders the same, whether under
         // or over collat
-        gem.transfer(msg.sender, cups[cup].ink / ahh);
+        gem.transfer(msg.sender, cups[cup].ink / fit);
     }
 
     function chop(uint128 ray) note authorized("mold") {
