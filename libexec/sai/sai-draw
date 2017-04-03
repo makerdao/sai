@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-draw -- issue the specified amount of sai stablecoins
+set -e
+wad=$(sai wad -h "$1")
+echo >&2 "Drawing $wad SAI from cup ${SAI_CUP?}..."
+wad=$(sai wad "$1")
+(set -x; seth send "${SAI_TUB?}" "draw(bytes32,uint128)" "$SAI_CUP" "$wad")

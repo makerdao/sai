@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+/// sai-wad -- parse and display a 18-decimal fixed-point number
+var BigNumber = require("bignumber.js")
+var wad = process.argv[2], match
+var rpad = (x, y, n) => x + repeat(y, n - x.length)
+var lpad = (x, y, n) => repeat(y, n - x.length) + x
+var repeat = (x, n) => n > 0 ? new Array(n + 1).join(x) : ""
+var toHex = wad => new BigNumber(wad.replace(".", "")).toString(16)
+   
+if (match = wad.match(/^(\d+\.)(\d{1,18})$/)) {
+  wad = match[1] + rpad(match[2], "0", 18)
+} else if (/^0x[0-9a-f]+/.test(wad)) {
+  wad = lpad(new BigNumber(wad).toString(), "0", 18)
+  wad = wad.replace(/.{18}$/, ".$&").replace(/^\./, "0.")
+} else {
+  console.error("sai---wad: error: number must have decimal point")
+  process.exit(1)
+}
+
+if (process.env.SAI_HUMAN) {
+  console.log(wad)
+} else {
+  console.log(`0x${lpad(toHex(wad), "0", 32)}`)
+}

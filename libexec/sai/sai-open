@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-open -- create a new cup (collateralized debt position)
+set -e
+echo >&2 "Opening cup..."
+(set -x; seth send "${SAI_TUB?}" "open()(bytes32)")

@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+### sai -- command-line Ethereum RPC client
+### Usage: sai [<options>] <command> [<args>]
+###    or: sai <command> --help
+###
+### Sai is a simple version of the diversely collateralized Dai stablecoin.
+###
+### In this model there is one type of underlying collateral (called gems).
+### The SKR token represents claims on the system's excess gems, and is the
+### only admissible type of collateral.  Gems can be converted to/from SKR.
+###
+### Any transfers of sai or SKR are done using the normal ERC20 interface;
+### until settlement mode is triggered, sai users should only need ERC20.
+###
+### To conveniently perform ERC20 transfers, see the token(1) program
+### available at <https://github.com/dapphub/token>.
+###
+### Sai options:
+###
+###    -C, --cup=<id>             ID of cup to perform operation on
+###        --tub=<address>        address of cup to perform operation on
+###
+### Transaction options:
+###
+###    -F, --from=<account>       account from which to send transaction
+###    -G, --gas=<number>         amount of gas to provide with transaction
+
+OPTS="sai [<options>] <command> [<args>]
+sai <command> --help
+--
+  Options
+C,cup=id             ID of cup to perform operation on
+tub=address          address of tub (default: \`@sai_tub')
+F,from=address       account from which to send transaction
+G,gas=number         amount of gas to provide with transaction
+h                    display output in human-readable form
+"
+
+set -e
+
+if [[ $2 = --help ]]; then
+  exec "${0##*/}" help -- "$1"
+elif [[ $1 = -* ]] && which "${0##*/}-$1" &>/dev/null; then
+  exec "${0##*/}-$1" "${@:2}"
+fi
+
+eval "$(git rev-parse --parseopt -- "$@" <<<"$OPTS" || echo exit $?)"
+
+while [[ $1 ]]; do
+  case $1 in
+    --)              shift; break;;
+
+    -C|--cup)        shift; export SAI_CUP=$1;;
+       --tub)        shift; export SAI_TUB=$1;;
+    
+    -F|--from)       shift; export ETH_FROM=$1;;
+    -G|--gas)        shift; export ETH_GAS=$1;;
+    
+    -h)                     export SAI_HUMAN=1;;
+
+    *) printf "${0##*/}: internal error: %q\n" "$1"; exit 1
+  esac; shift
+done
+
+export SAI_TUB=${SAI_TUB:-@sai_tub}
+
+"${0##*/}-${1-help}" "${@:2}"
