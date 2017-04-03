@@ -2,6 +2,8 @@ pragma solidity ^0.4.8;
 
 import "ds-test/test.sol";
 
+import "ds-math/math.sol";
+
 import 'ds-token/token.sol';
 import 'ds-vault/vault.sol';
 import 'ds-roles/roles.sol';
@@ -9,7 +11,7 @@ import 'ds-value/value.sol';
 
 import './tub.sol';
 
-contract Test is DSTest {
+contract Test is DSTest, DSMath {
     Tub tub;
     DSToken gem;
     DSToken sai;
@@ -209,5 +211,91 @@ contract Test is DSTest {
         // this should suceed as the debt ceiling is defined by ice, not
         // ice + woe
         tub.draw(mug, 1 ether);
+    }
+
+    // ensure kill sets the settle prices right
+    function testKillSafeOverCollat() {
+        tub.cork(5 ether);            // 5 sai debt ceiling
+        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
+        tub.cuff(ray(2 ether));       // require 200% collat
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 5 ether);       // 200% collateralisation
+
+
+        assertEqWad(tub.fix(), 0);
+        assertEqWad(tub.fit(), 0);
+        assertEqWad(tub.woe(), 0);         // no bad debt
+        assertEqWad(tub.pie(), 10 ether);
+
+        tub.kill(1 ether);
+
+        assertEqWad(tub.woe(), 5 ether);       // all good debt now bad debt
+        assertEqWad(tub.fix(), 1 ether);       // sai redeems 1:1 with gem
+        assertEqWad(tub.fit(), 1 ether / 2);   // skr redeems 2:1 with gem
+    }
+    function testKillUnsafeOverCollat() {
+        tub.cork(5 ether);            // 5 sai debt ceiling
+        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
+        tub.cuff(ray(2 ether));       // require 200% collat
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 5 ether);       // 200% collateralisation
+
+        assertEqWad(tub.fix(), 0);
+        assertEqWad(tub.fit(), 0);
+
+        var price = wdiv(3 ether, 4 ether);
+        tub.kill(price);        // 150% collat
+
+        assertEqWad(tub.fix(), wdiv(1 ether, price));   // sai redeems 4:3 with gem
+        assertEqWad(tub.fit(), wdiv(1 ether, 3 ether)); // skr redeems 3:1 with gem
+    }
+    function testKillAtCollat() {
+        tub.cork(5 ether);            // 5 sai debt ceiling
+        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
+        tub.cuff(ray(2 ether));       // require 200% collat
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 5 ether);       // 200% collateralisation
+
+        assertEqWad(tub.fix(), 0);
+        assertEqWad(tub.fit(), 0);
+
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
+        tub.kill(price);
+
+        assertEqWad(tub.fix(), 2 ether);   // sai redeems 1:2 with gem, 1:1 with ref
+        assertEqWad(tub.fit(), 0 ether);   // skr redeems 1:0 with gem
+    }
+    function testKillUnderCollat() {
+        tub.cork(5 ether);            // 5 sai debt ceiling
+        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
+        tub.cuff(ray(2 ether));       // require 200% collat
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 5 ether);       // 200% collateralisation
+
+        assertEqWad(tub.fix(), 0);
+        assertEqWad(tub.fit(), 0);
+
+        var price = wdiv(1 ether, 4 ether);   // 50% collat
+        tub.kill(price);
+
+        assertEq(2 * sai.totalSupply(), tub.pie());
+        assertEqWad(tub.fix(), 2 ether);      // sai redeems 1:2 with gem, 2:1 with ref
+        assertEqWad(tub.fit(), 0 ether);      // skr redeems 1:0 with gem
+    }
+
+    // ensure save returns the expected amount
+    function testSaveSafeOverCollat() {
+    }
+    function testSaveUnsafeOverCollat() {
+    }
+    function testSaveUnderCollat() {
     }
 }

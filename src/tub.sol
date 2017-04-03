@@ -99,17 +99,19 @@ contract Tub is DSThing {
         // price - sai per gem
 
         pot.push(sin, this);       // take on the debt
-        var bye = woe() / price;   // gems needed to cover debt
+        var bye = wdiv(woe(), price);   // gems needed to cover debt
 
         if (bye < pie()) {
-            fix = bye / woe();                             // share bye between all sai
-            fit = (bye - pie()) / cast(skr.totalSupply()); // skr gets the remainder
+            // share bye between all sai
+            fix = wdiv(bye, woe());
+            // skr gets the remainder
+            fit = wdiv(decr(pie(), bye), uint128(skr.totalSupply()));
             // TODO ^ no. need to only share with skr backing over collat cups.
             //            under collat cups get nothing.
             //     ---> but actually this is right, you do the cut per cup at `save`
         } else {
-            fix = pie() / woe();                           // share pie between all sai
-            fit = 0;                                       // skr gets nothing (skr / gem)
+            fix = wdiv(pie(), woe());                  // share pie between all sai
+            fit = 0;                                   // skr gets nothing (skr / gem)
         }
     }
     function save() note {
