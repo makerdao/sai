@@ -119,6 +119,16 @@ contract Test is DSTest, DSMath {
         assertEq(skr.balanceOf(this),  5 ether);
         assertEq(gem.balanceOf(this), 95 ether);
         assertEq(gem.balanceOf(tub),   5 ether);
+
+        tub.join(2 ether);
+        assertEq(skr.balanceOf(this),  7 ether);
+        assertEq(gem.balanceOf(this), 93 ether);
+        assertEq(gem.balanceOf(tub),   7 ether);
+
+        tub.exit(1 ether);
+        assertEq(skr.balanceOf(this),  6 ether);
+        assertEq(gem.balanceOf(this), 94 ether);
+        assertEq(gem.balanceOf(tub),   6 ether);
     }
     function testFailOverDraw() {
         tub.join(10 ether);
