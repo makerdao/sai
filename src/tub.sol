@@ -171,9 +171,9 @@ contract Tub is DSThing {
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
+        var jam = wdiv(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
-        var jam = wdiv(ink, per());
         gem.transfer(msg.sender, jam);
     }
 
