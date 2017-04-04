@@ -91,27 +91,125 @@ contract Tub is DSThing {
         _tag = tag_;
     }
 
-    uint128  public  fix;  // sai kill price
-    uint128  public  fit;  // skr kill price
+    uint128  public  fix;  // sai kill price (gems per sai)
+    uint128  public  fit;  // skr kill price (gems per skr)
+
+    uint128 public fux;
+    uint128 public par;
 
     function kill(uint128 price) note authorized("kill") {
         off = true;
         // price - sai per gem
+        fux = price;
+
+        // jam = air / per
+        // pro = jam * tag
+        // con = woe
+        // collat = pro / con = air * tag / (per * woe)
+        // xxx = air / collat = woe * per / tag = bye * per
 
         pot.push(sin, this);            // take on the debt
         var bye = wdiv(woe(), price);   // gems needed to cover debt
+
+        skr.burn(cast(skr.balanceOf(this)));
+
+        par = wdiv(decr(pie(), 0), cast(skr.totalSupply()));
 
         if (bye < pie()) {
             // share bye between all sai
             fix = wdiv(bye, woe());
             // skr gets the remainder
-            fit = wdiv(decr(pie(), bye), uint128(skr.totalSupply()));
+            // fit = wdiv(decr(pie(), bye), air());
+            // var rem = decr(pie(), bye);
+
+            // send the bye off to a separate vault so it doesn't
+            // interfere with per
+            var xxx = wmul(bye, per());          // burn the skr needed to cover the debt
+            gem.transfer(pot, bye);
+
+            pot.push(skr, this, xxx);
+            skr.burn(xxx);
+
+            fit = wdiv(pie(), cast(skr.totalSupply()));
+
             // TODO ^ no. need to only share with skr backing over collat cups.
             //            under collat cups get nothing.
             //     ---> but actually this is right, you do the cut per cup at `save`
+            // also, what about free skr?
+
+            // ok, so this is an average price over all skr, free locked whatever
+            // we need a multiplier for each subclass
+
+            // another way to think of it..
+            // gems are partitioned off for sai holders (bye)
+            // the remainder is for skr holders
+            // *but* some of those skr holders are locked in
+            // cups, the debt of which has been met
+            // skr that is 100% backing the debt is in air, along with
+            // the overcollat skr
+
+            // so what does price mean?
+            // we have the price of sai / gem
+            // we also have the amount of gems remaining
+            // and the debt that was backed by the skr
+            // so we can work out the proportion by which to slash skr
+
+            // fit should actually be calculated with the debt taken
+            // into account, i.e. its the gem price of the skr *after*
+            // the skr 100% backing the debt is taken away
+
+            // air - xxx
+
+            // how do we work out xxx?
+            // outstanding debt = ice (careful, maybe all woe??)
+            // settlement price = price (sai per gem)
+            // debt in gems = ice / price
+            // remaining gems = pie - bye
+            // proportion = (ice / price) / (pie - bye) = p
+
+            // (woe / price) / (pie - bye) = 1 / (pie / bye - 1)
+
+            // xxx = air * p
+            // fit = (pie - bye) / air (1 - p)
+
+            // this is kind of it but doesn't tell the whole story.
+            // there is also free skr.
+
+            // burn xxx skr
+
+            // limits:
+            // system collat
+            // 100%         xxx == air
+            // 200%         xxx < air           xxx == air / 2 ??
+            //  50%         xxx > air           xxx == air * 2 ??
+
+            // how to determine system collat?
+            // we have sai / gem
+            // we have debt in sai
+            // we have debt in gems
+
+            // jam = air / per
+            // pro = jam * tag
+            // con = woe
+            // collat = pro / con = air * tag / (per * woe)
+            // xxx = air / collat = woe * per / tag
+
+            // woah crazy, air drops out of it
+            // ok so now burn xxx
+            // now the remaining skr can be paid
+            // per can be calculated with the remaining gems and skr
+            // if free:
+            //   payout at per
+            // if overcollat:
+            //   slash by ratio
+            //   payout at per
+            // if undercollat:
+            //   nothing
         } else {
             fix = wdiv(pie(), woe());                  // share pie between all sai
             fit = 0;                                   // skr gets nothing (skr / gem)
+            pot.push(skr, this, air());
+            skr.burn(air());
         }
     }
     function save() note {
@@ -122,21 +220,52 @@ contract Tub is DSThing {
         // chop your collateral at ratio, give you back gem
         aver(off);
 
-        var hai = sai.balanceOf(msg.sender);
-        sai.pull(msg.sender, cast(hai));
-        gem.transfer(msg.sender, hai / fix);
+        var hai = cast(sai.balanceOf(msg.sender));
+        sai.pull(msg.sender, hai);
+        // gem.transfer(msg.sender, wmul(fix, hai));
+        pot.push(gem, msg.sender, wmul(fix, hai));
 
-        var kek = skr.balanceOf(msg.sender);
-        skr.pull(msg.sender, cast(kek));
-        gem.transfer(msg.sender, kek / fit);
+        var ink = cast(skr.balanceOf(msg.sender));
+        // var jam = wdiv(ink, per());
+        var jam = wmul(ink, fit);
+        skr.pull(msg.sender, ink);
+        skr.burn(ink);
+        gem.transfer(msg.sender, jam);
 
         mend();
     }
+    event Log(string what, uint128 wad);
     function save(bytes32 cup) note {
-        save();
-        // TODO this penalises all cup holders the same, whether under
-        // or over collat
-        gem.transfer(msg.sender, cups[cup].ink / fit);
+        aver(msg.sender == cups[cup].lad);
+        // undercollat
+        if (!safe(cup)) {
+            delete cups[cup];
+            return;
+        }
+        // how much should we give back an overcollat cup holder?
+        // they should get back everything!
+        // but we have to bear in mind that we've already given them
+        // some sai, so need to subtract that.
+
+        var pro = cups[cup].ink;
+
+        var con = cups[cup].art;
+
+        // fix is gems per sai
+        // fit is gems per skr
+        var ret = decr(wmul(par, pro), wmul(fix, con));
+        // var ret = wmul(fit, pro);
+        Log('par', par);
+        Log('fit', fit);
+        Log('fux', fux);
+        Log('fit * pro', wmul(fit, pro));
+        Log('par * pro', wmul(par, pro));
+        Log('fux * con', wmul(fux, con));
+        Log('ret', ret);
+
+        gem.transfer(msg.sender, ret)
+
+        delete cups[cup];
     }
 
     function chop(uint128 ray) note authorized("mold") {
