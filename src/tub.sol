@@ -34,6 +34,10 @@ contract Tub is DSThing {
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
+
+    uint128  public  fix;  // sai kill price (sai per gem)
+    uint128  public  fit;  // skr kill price (gem per skr)
+    uint128  public  par;  // ratio of gem to skr on kill
     // TODO holder fee param
     // TODO issuer fee param
     // TODO spread??
@@ -91,52 +95,69 @@ contract Tub is DSThing {
         _tag = tag_;
     }
 
-    uint128  public  fix;  // sai kill price
-    uint128  public  fit;  // skr kill price
-
+    // force settlement of the system at a given price (ref per gem).
+    // This is nearly the equivalent of biting all cups at once.
+    // Important consideration: the gems associated with free skr can
+    // be tapped to make sai whole.
     function kill(uint128 price) note authorized("kill") {
         off = true;
-        // price - sai per gem
+        // take on the debt
+        pot.push(sin, this);
+        // absorb any pending fees
+        mend();
+        // burn pending sale skr
+        skr.burn(cast(skr.balanceOf(this)));
 
-        pot.push(sin, this);       // take on the debt
-        var bye = wdiv(woe(), price);   // gems needed to cover debt
+        // save current gem per skr for collateral calc.
+        // we need to know this to work out the gem value of a cups pro
+        par = per();
 
-        if (bye < pie()) {
-            // share bye between all sai
-            fix = wdiv(bye, woe());
-            // skr gets the remainder
-            fit = wdiv(decr(pie(), bye), uint128(skr.totalSupply()));
-            // TODO ^ no. need to only share with skr backing over collat cups.
-            //            under collat cups get nothing.
-            //     ---> but actually this is right, you do the cut per cup at `save`
-        } else {
-            fix = wdiv(pie(), woe());                  // share pie between all sai
-            fit = 0;                                   // skr gets nothing (skr / gem)
-        }
+        // most gems we can get per sai is the full balance
+        fix = max(price, wdiv(woe(), pie()));
+        // gems needed to cover debt, or at most all of the gems we have
+        var bye = min(pie(), wdiv(woe(), price));
+        // skr associated with gems, or at most all the backing skr
+        var xxx = min(air(), wdiv(bye, per()));
+        // There can be free skr as well, and gems associated with this
+        // are used to make sai whole.
+
+        // put the gems backing sai in a safe place and burn the
+        // associated skr.
+        pot.push(skr, this, xxx);
+        skr.burn(xxx);
+        gem.transfer(pot, bye);
+
+        // the remaining pie gets shared out among remaining skr
+        fit = (pie() == 0) ? 0 : per();
     }
+    // exchange free sai / skr for gems after kill
     function save() note {
-        // assert killed
-        // take your sai, give you back gem
-        //    extinguishes bad debt
-        // take your skr, give you back gem
-        // chop your collateral at ratio, give you back gem
         aver(off);
 
-        var hai = sai.balanceOf(msg.sender);
-        sai.pull(msg.sender, cast(hai));
-        gem.transfer(msg.sender, hai / fix);
+        var hai = cast(sai.balanceOf(msg.sender));
+        sai.pull(msg.sender, hai);
+        mend(hai);
+        pot.push(gem, msg.sender, wdiv(hai, fix));
 
-        var kek = skr.balanceOf(msg.sender);
-        skr.pull(msg.sender, cast(kek));
-        gem.transfer(msg.sender, kek / fit);
-
-        mend();
+        var ink = cast(skr.balanceOf(msg.sender));
+        var jam = wmul(ink, fit);
+        skr.pull(msg.sender, ink);
+        skr.burn(ink);
+        gem.transfer(msg.sender, jam);
     }
     function save(bytes32 cup) note {
-        save();
-        // TODO this penalises all cup holders the same, whether under
-        // or over collat
-        gem.transfer(msg.sender, cups[cup].ink / fit);
+        aver(off);
+        aver(msg.sender == cups[cup].lad);
+
+        var pro = wmul(cups[cup].ink, par);
+        var con = wdiv(cups[cup].art, fix);
+
+        // at least 100% collat?
+        if (pro > con) {
+            gem.transfer(msg.sender, decr(pro, con));
+        }
+
+        delete cups[cup];
     }
 
     function chop(uint128 ray) note authorized("mold") {
@@ -171,9 +192,9 @@ contract Tub is DSThing {
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
+        var jam = wdiv(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
-        var jam = wdiv(ink, per());
         gem.transfer(msg.sender, jam);
     }
 
@@ -203,13 +224,26 @@ contract Tub is DSThing {
         pot.push(skr, msg.sender, wad);
     }
 
-    // returns true if overcollateralized
+    // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
         var jam = wdiv(cups[cup].ink, per());
         var pro = wmul(jam, tag());
         var con = cups[cup].art;
         var min = rmul(con, mat);
         return (pro >= min);
+    }
+    // returns true if system overcollateralized
+    function safe() constant returns (bool) {
+        var pro = wmul(air(), tag());
+        var con = cast(sin.totalSupply());
+        var min = rmul(con, mat);
+        return (pro >= min);
+    }
+    // returns true if system in deficit
+    function eek() constant returns (bool) {
+        var pro = wmul(air(), tag());
+        var con = cast(sin.totalSupply());
+        return (pro < con);
     }
 
     function draw(bytes32 cup, uint128 wad) note {
