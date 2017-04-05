@@ -38,6 +38,21 @@ into the `sai` balance of the `tub` (known as `joy`). `joy` is sold off
 with `boom` in exchange for `skr`, which is burned.
 
 
+### Settlement
+
+`sai` can be shutdown with `kill`, after which `sai` and `skr` can be
+exchanged for `gems` via `save`. All outstanding `cups` are liquidated
+and the *entire pool of `gem`* is tapped to redeem `sai` at their face
+value. Any remaining `gems` are shared between `skr` holders.
+
+Practically this means that if the system is undercollateralized on
+`kill`, holders of free `skr` will have their `gem` share diluted as
+much as necessary to make `sai` whole. *`skr` is a risk bearing token*.
+
+Excess collateral contained within a single `cup` can be reclaimed with
+`save(cup)`.
+
+
 ### glossary
 
 #### tokens
