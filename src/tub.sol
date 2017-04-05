@@ -101,8 +101,11 @@ contract Tub is DSThing {
     // be tapped to make sai whole.
     function kill(uint128 price) note authorized("kill") {
         off = true;
-        pot.push(sin, this);            // take on the debt
+        // take on the debt
+        pot.push(sin, this);
+        // absorb any pending fees
         mend();
+        // burn pending sale skr
         skr.burn(cast(skr.balanceOf(this)));
 
         // save current gem per skr for collateral calc.
@@ -112,23 +115,20 @@ contract Tub is DSThing {
         // most gems we can get per sai is the full balance
         fix = max(price, wdiv(woe(), pie()));
         // gems needed to cover debt, or at most all of the gems we have
-        var bye = min(wdiv(woe(), price), pie());
+        var bye = min(pie(), wdiv(woe(), price));
+        // skr associated with gems, or at most all the backing skr
+        var xxx = min(air(), wdiv(bye, per()));
+        // There can be free skr as well, and gems associated with this
+        // are used to make sai whole.
 
-        // send the bye to a separate vault and burn the associated skr,
-        // or at most all the backing skr. There can be free skr as
-        // well, and gems associated with this are used to make sai
-        // whole.
-        var xxx = min(wdiv(bye, per()), air());
+        // put the gems backing sai in a safe place and burn the
+        // associated skr.
         pot.push(skr, this, xxx);
         skr.burn(xxx);
         gem.transfer(pot, bye);
 
         // the remaining pie gets shared out among remaining skr
-        if (pie() == 0) {
-            fit = 0;
-        } else {
-            fit = wdiv(pie(), cast(skr.totalSupply()));
-        }
+        fit = (pie() == 0) ? 0 : per();
     }
     // exchange free sai / skr for gems after kill
     function save() note {
