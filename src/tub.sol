@@ -136,6 +136,7 @@ contract Tub is DSThing {
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
+        mend(hai);
         pot.push(gem, msg.sender, wdiv(hai, fix));
 
         var ink = cast(skr.balanceOf(msg.sender));
@@ -143,20 +144,17 @@ contract Tub is DSThing {
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
-
-        mend();
     }
     function save(bytes32 cup) note {
         aver(off);
         aver(msg.sender == cups[cup].lad);
 
-        var pro = cups[cup].ink;
-        var con = cups[cup].art;
+        var pro = wmul(cups[cup].ink, par);
+        var con = wdiv(cups[cup].art, fix);
 
         // at least 100% collat?
-        if (wmul(par, pro) >= wdiv(con, fix)) {
-            var ret = decr(wmul(par, pro), wdiv(con, fix));
-            gem.transfer(msg.sender, ret);
+        if (pro > con) {
+            gem.transfer(msg.sender, decr(pro, con));
         }
 
         delete cups[cup];
