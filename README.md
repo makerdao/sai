@@ -1,11 +1,11 @@
-`sai` is a simple, single collateral, stable coin that is dependent on a
+`sai` is a simple single-collateral stablecoin that is dependent on a
 trusted oracle and has a kill-switch.
 
 There are three tokens in the system:
 
-- `gem`: collateral, e.g. ETH
-- `sai`: the stablecoin
-- `skr`: a claim to locked collateral
+- `gem`: externally valuable token e.g. ETH
+- `skr`: a claim to locked `gem`s
+- `sai`: the stablecoin, a variable claim on some quantity of `gem`s
 
 Collateral holders deposit their collateral using `join` and receive
 `skr` tokens proportional to their deposit. `skr` can be redeemed for
@@ -33,17 +33,13 @@ immediate: backing `skr` is taken to cover the `sai` debt at the time of
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
 `sai` at the current feed price. This `sai` pays down the bad CDP debt.
 
-`sai` is fee free currently (FIXME). If there were fees, they would go
-into the `sai` balance of the `tub` (known as `joy`). `joy` is sold off
-with `boom` in exchange for `skr`, which is burned.
-
-
 ### Settlement
 
-`sai` can be shutdown with `kill`, after which `sai` and `skr` can be
+`sai` can be shut down with `kill`, after which `sai` and `skr` can be
 exchanged for `gems` via `save`. All outstanding `cups` are liquidated
 and the *entire pool of `gem`* is tapped to redeem `sai` at their face
-value. Any remaining `gems` are shared between `skr` holders.
+value, as if the boom/bust trades were instantly settled at the kill price.
+Any remaining `gems` are shared between `skr` holders.
 
 Practically this means that if the system is undercollateralized on
 `kill`, holders of free `skr` will have their `gem` share diluted as
