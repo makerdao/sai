@@ -30,8 +30,6 @@ contract MakerWarp is DSNote, DSAver {
     }
 }
 
-contract MakerMath is DSMath { }
-
 contract SaiSin is DSToken('sin', 'SIN', 18), DSMath {
     DSToken public sai;
     function SaiSin(DSToken sai_) {
