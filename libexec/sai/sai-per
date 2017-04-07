@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-per -- get the current entry price (skr per gem)
+set -e
+wad=$(seth call "${SAI_TUB?}" "per()")
+echo $(SAI_HUMAN=1 sai wad $wad)
