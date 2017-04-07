@@ -215,7 +215,8 @@ contract Tub is DSThing {
     function lock(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
         cups[cup].ink = incr(cups[cup].ink, wad);
-        pot.pull(skr, msg.sender, wad);
+        skr.pull(msg.sender, wad);
+        skr.push(pot, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
         aver(msg.sender == cups[cup].lad);
