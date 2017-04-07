@@ -2,4 +2,4 @@
 ### sai-fog -- get the amount of skr pending liquidation
 set -e
 wad=$(seth call "${SAI_TUB?}" "fog()")
-echo $(SAI_HUMAN=1 sai wad $wad)
+echo $(sai wad -h $wad)

@@ -2,4 +2,4 @@
 ### sai-ice -- get the good debt
 set -e
 wad=$(seth call "${SAI_TUB?}" "ice()")
-echo $(SAI_HUMAN=1 sai wad $wad)
+echo $(sai wad -h $wad)

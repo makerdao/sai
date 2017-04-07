@@ -2,4 +2,4 @@
 ### sai-ink -- get how much skr collateral in a cup
 set -e
 wad=$(sai cup | tail -n 1)
-echo $(SAI_HUMAN=1 sai wad $wad)
+echo $(sai wad -h $wad)
