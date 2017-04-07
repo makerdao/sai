@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-chop -- update the liquidation ratio
+set -e
+gem=$(seth call "${SAI_TUB?}" 'gem()')
+echo "0x$(seth --abi-decode 'f()(address)' "$gem")"

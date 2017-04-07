@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-air -- get the amount of backing collateral
+set -e
+wad=$(seth call "${SAI_TUB?}" "air()")
+echo $(SAI_HUMAN=1 sai wad $wad)

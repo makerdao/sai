@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-hat -- get the debt ceiling
+set -e
+wad=$(seth call "${SAI_TUB?}" "hat()")
+echo $(SAI_HUMAN=1 sai wad $wad)

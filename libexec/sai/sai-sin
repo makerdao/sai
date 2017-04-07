@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-chop -- update the liquidation ratio
+set -e
+sin=$(seth call "${SAI_TUB?}" 'sin()')
+echo "0x$(seth --abi-decode 'f()(address)' "$sin")"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-tag -- get the reference price (ref per gem)
+set -e
+wad=$(seth call "${SAI_TUB?}" "axe()")
+echo $(SAI_HUMAN=1 sai wad $wad)
