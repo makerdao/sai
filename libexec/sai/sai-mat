@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-hat -- get the liquidation ratio
 set -e
-wad=$(seth call "${SAI_TUB?}" "mat()")
-echo $(SAI_HUMAN=1 sai wad $wad)
+ray=$(seth call "${SAI_TUB?}" "mat()")
+echo $(sai ray -h $ray)
