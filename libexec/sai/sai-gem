@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-chop -- update the liquidation ratio
+### sai-gem -- get the collateral token
 set -e
 gem=$(seth call "${SAI_TUB?}" 'gem()')
 echo "0x$(seth --abi-decode 'f()(address)' "$gem")"

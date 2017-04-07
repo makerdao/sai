@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-chop -- update the liquidation ratio
+### sai-skr -- get the skr token
 set -e
 skr=$(seth call "${SAI_TUB?}" 'skr()')
 echo "0x$(seth --abi-decode 'f()(address)' "$skr")"
