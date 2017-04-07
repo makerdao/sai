@@ -2,4 +2,4 @@
 ### sai-hat -- get the liquidation ratio
 set -e
 ray=$(seth call "${SAI_TUB?}" "mat()")
-echo $(sai ray -h $ray)
+sai ray -h "$ray"

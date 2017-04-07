@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-safe -- determine if a cup is safe
 set -e
-safe=$(seth call "${SAI_TUB?}" 'safe(bytes32)' ${SAI_CUP?})
-echo "$(seth --abi-decode 'f(bytes32)(bool)' "$safe")"
+safe=$(seth call "${SAI_TUB?}" 'safe(bytes32)' "${SAI_CUP?}")
+seth --abi-decode 'f(bytes32)(bool)' "$safe"

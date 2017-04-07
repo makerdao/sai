@@ -2,4 +2,4 @@
 ### sai-axe -- get the liquidation penalty
 set -e
 ray=$(seth call "${SAI_TUB?}" "axe()")
-echo $(sai ray -h $ray)
+sai ray -h "$ray"

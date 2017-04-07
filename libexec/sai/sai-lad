@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 ### sai-lad -- get the owner of a cup
 set -e
-echo $(sai cup | head -n 1)
+sai cup | head -n 1

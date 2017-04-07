@@ -2,4 +2,4 @@
 ### sai-air -- get the amount of backing collateral
 set -e
 wad=$(seth call "${SAI_TUB?}" "air()")
-echo $(sai wad -h $wad)
+sai wad -h "$wad"

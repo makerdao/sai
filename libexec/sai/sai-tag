@@ -2,4 +2,4 @@
 ### sai-tag -- get the reference price (ref per gem)
 set -e
 wad=$(seth call "${SAI_TUB?}" "tag()")
-echo $(sai wad -h $wad)
+sai wad -h "$wad"

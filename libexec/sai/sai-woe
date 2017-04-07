@@ -2,4 +2,4 @@
 ### sai-woe -- get the amount of bad debt
 set -e
 wad=$(seth call "${SAI_TUB?}" "woe()")
-echo $(sai wad -h $wad)
+sai wad -h "$wad"

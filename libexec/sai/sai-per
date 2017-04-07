@@ -2,4 +2,4 @@
 ### sai-per -- get the current entry price (skr per gem)
 set -e
 wad=$(seth call "${SAI_TUB?}" "per()")
-echo $(sai wad -h $wad)
+sai wad -h "$wad"

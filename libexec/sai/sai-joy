@@ -2,4 +2,4 @@
 ### sai-joy -- get the amount of surplus sai
 set -e
 wad=$(seth call "${SAI_TUB?}" "joy()")
-echo $(sai wad -h $wad)
+sai wad -h "$wad"

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ### sai-sin -- get the sin token
 set -e
-cup=$(seth call "${SAI_TUB?}" 'cups(bytes32)' ${SAI_CUP?})
-seth --abi-decode 'f()(address,uint128,uint128)' "$cup" | while IFS= read line
+cup=$(seth call "${SAI_TUB?}" 'cups(bytes32)' "${SAI_CUP?}")
+seth --abi-decode 'f()(address,uint128,uint128)' "$cup" | while IFS= read -r line
 do echo "0x$line"
 done

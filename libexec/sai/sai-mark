@@ -6,4 +6,4 @@ echo >&2 "Setting tag to $wad..."
 wad=$(sai wad "$1")
 tag=$(seth call "${SAI_TUB}" "_tag()")
 tag=$(seth --abi-decode 'f()(address)' "$tag")
-(set -x; seth send $tag 'poke(bytes32)' $wad)
+(set -x; seth send "$tag" 'poke(bytes32)' "$wad")
