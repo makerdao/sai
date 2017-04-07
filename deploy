@@ -34,7 +34,7 @@ token approve $SKR $POT $(seth --to-wei 100000 ETH)
 seth send $TAG "poke(bytes32)" $(seth --to-uint256 $(seth --to-wei 1 ETH))
 seth send $TUB "cork(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
 
-cat > addr-loader << EOF
+cat > load-env << EOF
 #!/bin/bash
 
 export GEM=$GEM
