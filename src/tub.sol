@@ -160,7 +160,7 @@ contract Tub is DSThing {
         delete cups[cup];
     }
 
-    function chop(uint128 ray) note auth) {
+    function chop(uint128 ray) note auth {
         axe = ray;
     }
     function cork(uint128 wad) note auth {
