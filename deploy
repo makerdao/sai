@@ -33,3 +33,17 @@ token approve $SKR $POT $(seth --to-wei 100000 ETH)
 
 seth send $TAG "poke(bytes32)" $(seth --to-uint256 $(seth --to-wei 1 ETH))
 seth send $TUB "cork(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
+
+cat > addr-loader << EOF
+#!/bin/bash
+
+export GEM=$GEM
+export SAI=$SAI
+export SIN=$SIN
+export SKR=$SKR
+export POT=$POT
+export TAG=$TAG
+export SAI_TUB=$TUB
+EOF
+
+echo SAI TUB DEPLOYED AT: $SAI_TUB
