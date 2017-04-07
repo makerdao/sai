@@ -3,5 +3,5 @@
 set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Wiping $wad SAI from cup ${SAI_CUP?}..."
-wad=$(seth --to-uint256 $(sai wad "$1"))
+wad=$(sai wad "$1")
 (set -x; seth send "${SAI_TUB?}" "wipe(bytes32,uint128)" "$SAI_CUP" "$wad")

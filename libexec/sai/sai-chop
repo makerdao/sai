@@ -3,5 +3,5 @@
 set -e
 ray=$(sai ray -h "$1")
 echo >&2 "Setting axe to $ray..."
-ray=$(seth --to-uint256 $(sai ray "$1"))
+ray=$(sai ray "$1")
 (set -x; seth send "${SAI_TUB?}" "chop(uint128)" "$ray")

@@ -20,5 +20,5 @@ if (match = ray.match(/^(\d+\.)(\d{1,36})$/)) {
 if (process.env.SAI_HUMAN) {
   console.log(ray)
 } else {
-  console.log(`0x${lpad(toHex(ray), "0", 32)}`)
+  console.log(`0x${lpad(toHex(ray), "0", 64)}`)
 }

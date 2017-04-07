@@ -20,5 +20,5 @@ if (match = wad.match(/^(\d+\.)(\d{1,18})$/)) {
 if (process.env.SAI_HUMAN) {
   console.log(wad)
 } else {
-  console.log(`0x${lpad(toHex(wad), "0", 32)}`)
+  console.log(`0x${lpad(toHex(wad), "0", 64)}`)
 }

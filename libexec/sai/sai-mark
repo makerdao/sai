@@ -3,7 +3,7 @@
 set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Setting tag to $wad..."
-wad=$(seth --to-uint256 $(sai wad "$1"))
+wad=$(sai wad "$1")
 tag=$(seth call "${SAI_TUB}" "_tag()")
 tag=$(seth --abi-decode 'f()(address)' "$tag")
 (set -x; seth send $tag 'poke(bytes32)' $wad)
