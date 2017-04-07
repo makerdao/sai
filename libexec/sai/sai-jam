@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-jam -- get how much jam in a cup
+set -e
+wad=$(sai cup | tail -n 1)
+echo $(SAI_HUMAN=1 sai wad $wad)

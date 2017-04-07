@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-tab -- get how much debt in a cup
+set -e
+wad=$(sai cup | head -n 2 | tail -n 1)
+echo $(SAI_HUMAN=1 sai wad $wad)
