@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-cupi -- get the last cup id
+set -e
+id=$(seth call "${SAI_TUB?}" "cupi()")
+echo "$(seth --abi-decode 'f()(uint256)' "$id")"
