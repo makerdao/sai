@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-ice -- get the good debt
 set -e
-wad=$(seth call "${SAI_TUB?}" "axe()")
+wad=$(seth call "${SAI_TUB?}" "ice()")
 echo $(SAI_HUMAN=1 sai wad $wad)
