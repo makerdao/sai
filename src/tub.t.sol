@@ -167,7 +167,7 @@ contract Test is DSTest, DSMath {
         tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
-        tub.draw(cup, 5 ether);  // 200% collateralisation
+        tub.draw(cup, 5 ether);           // 200% collateralisation
         tag.poke(bytes32(1 ether / 4));   // 50% collateralisation
 
         assertEq(tub.fog(), uint(0));
@@ -229,8 +229,8 @@ contract Test is DSTest, DSMath {
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
-        tub.draw(cup, 5 ether);  // 200% collat, full debt ceiling
-        tag.poke(bytes32(1 ether / 2));   // 100% collat
+        tub.draw(cup, 5 ether);          // 200% collat, full debt ceiling
+        tag.poke(bytes32(1 ether / 2));  // 100% collat
 
         assertEq(tub.air(), uint(10 ether));
         assertEq(tub.fog(), uint(0 ether));
@@ -278,11 +278,11 @@ contract Test is DSTest, DSMath {
         assertEqWad(tub.fix(), 1 ether);       // sai redeems 1:1 with gem
         assertEqWad(tub.fit(), 1 ether);       // skr redeems 1:1 with gem
 
-        assertEq(skr.totalSupply(),   25 ether);
-        assertEq(skr.balanceOf(pot),   5 ether);  // burn skr linked with backing gems
+        assertEq(skr.totalSupply(),  25 ether);
+        assertEq(skr.balanceOf(pot),  5 ether);  // burn skr linked with backing gems
 
-        assertEq(gem.balanceOf(pot),   5 ether);  // saved for sai
-        assertEq(gem.balanceOf(tub),  25 ether);  // saved for skr
+        assertEq(gem.balanceOf(pot),  5 ether);  // saved for sai
+        assertEq(gem.balanceOf(tub), 25 ether);  // saved for skr
     }
     function testKillUnsafeOverCollat() {
         killSetup();
@@ -294,18 +294,18 @@ contract Test is DSTest, DSMath {
         var price = wdiv(3 ether, 4 ether);
         tub.kill(price);        // 150% collat
 
-        assertEqWad(tub.fix(), price);   // sai redeems 4:3 with gem
-        assertEqWad(tub.fit(), 1 ether);                  // skr redeems 1:1 with gem
+        assertEqWad(tub.fix(), wdiv(1 ether, price));  // sai redeems 4:3 with gem
+        assertEqWad(tub.fit(), 1 ether);               // skr redeems 1:1 with gem
 
         // gem needed for sai is 5 * 4 / 3
         // skr linked with these gems is burned
-        var burned = wdiv(5 ether, price);
+        var burned = wmul(5 ether, wdiv(4 ether, 3 ether));
         assertEq(skr.totalSupply(),   30 ether - burned);
         assertEq(skr.balanceOf(pot),  10 ether - burned);
 
         // as skr:gem is 1:1, burned is also equal to the gem reserved for sai
         var saved = wmul(1 ether, burned);
-        assertEq(gem.balanceOf(pot),  saved);  // saved for sai
+        assertEq(gem.balanceOf(pot),  saved);             // saved for sai
         assertEq(gem.balanceOf(tub),  30 ether - saved);  // saved for skr
     }
     function testKillAtCollat() {
@@ -317,8 +317,8 @@ contract Test is DSTest, DSMath {
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.kill(price);
 
-        assertEqWad(tub.fix(), price);   // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.fit(), 0 ether);   // skr redeems 1:0 with gem
+        assertEqWad(tub.fix(), 2 ether);  // sai redeems 1:2 with gem, 1:1 with ref
+        assertEqWad(tub.fit(), 0 ether);  // skr redeems 1:0 with gem
     }
     function testKillAtCollatFreeSkr() {
         killSetup();
@@ -330,8 +330,8 @@ contract Test is DSTest, DSMath {
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.kill(price);
 
-        assertEqWad(tub.fix(), price);   // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.fit(), 1 ether);   // skr redeems 1:1 with gem
+        assertEqWad(tub.fix(), 2 ether);  // sai redeems 1:2 with gem, 1:1 with ref
+        assertEqWad(tub.fit(), 1 ether);  // skr redeems 1:1 with gem
     }
     function testKillUnderCollat() {
         killSetup();
@@ -343,8 +343,8 @@ contract Test is DSTest, DSMath {
         tub.kill(price);
 
         assertEq(2 * sai.totalSupply(), gem.balanceOf(pot));
-        assertEqWad(tub.fix(), 2 * price);  // sai redeems 1:2 with gem, 2:1 with ref
-        assertEqWad(tub.fit(), 0 ether);    // skr redeems 1:0 with gem
+        assertEqWad(tub.fix(), 2 ether);  // sai redeems 1:2 with gem, 2:1 with ref
+        assertEqWad(tub.fit(), 0 ether);  // skr redeems 1:0 with gem
     }
     function testKillUnderCollatFreeSkr() {
         killSetup();
@@ -357,7 +357,7 @@ contract Test is DSTest, DSMath {
         tub.kill(price);
 
         assertEq(4 * sai.totalSupply(), gem.balanceOf(pot));
-        assertEqWad(tub.fix(),  price);       // sai redeems 1:4 with gem, 1:1 with ref
+        assertEqWad(tub.fix(), 4 ether);                 // sai redeems 1:4 with gem, 1:1 with ref
         assertEqWad(tub.fit(), wdiv(1 ether, 2 ether));  // skr redeems 2:1 with gem
     }
 
@@ -419,7 +419,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
-        var saved = wdiv(5 ether, price);
+        var saved = wmul(5 ether, wdiv(4 ether, 3 ether));
 
         assertEq(gem.balanceOf(this),  90 ether + saved);
         assertEq(gem.balanceOf(tub),   10 ether - saved);

@@ -37,7 +37,7 @@ contract Tub is DSThing {
 
     bool     public  off;  // Killswitch
 
-    uint128  public  fix;  // sai kill price (sai per gem)
+    uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  fit;  // skr kill price (gem per skr)
     uint128  public  par;  // ratio of gem to skr on kill
     // TODO holder fee param
@@ -293,9 +293,10 @@ contract Tub is DSThing {
         par = per();
 
         // most gems we can get per sai is the full balance
-        fix = max(price, wdiv(woe(), pie()));
-        // gems needed to cover debt, or at most all of the gems we have
-        var bye = min(pie(), wdiv(woe(), price));
+        fix = min(wdiv(1 ether, price), wdiv(pie(), woe()));
+        // gems needed to cover debt
+        var bye = wmul(fix, woe());
+
         // skr associated with gems, or at most all the backing skr
         var xxx = min(air(), wdiv(bye, per()));
         // There can be free skr as well, and gems associated with this
@@ -317,7 +318,7 @@ contract Tub is DSThing {
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
         mend(hai);
-        pot.push(gem, msg.sender, wdiv(hai, fix));
+        pot.push(gem, msg.sender, wmul(hai, fix));
 
         var ink = cast(skr.balanceOf(msg.sender));
         var jam = wmul(ink, fit);
@@ -330,7 +331,7 @@ contract Tub is DSThing {
         aver(msg.sender == cups[cup].lad);
 
         var pro = wmul(cups[cup].ink, par);
-        var con = wdiv(cups[cup].art, fix);
+        var con = wmul(cups[cup].art, fix);
 
         // at least 100% collat?
         if (pro > con) {
