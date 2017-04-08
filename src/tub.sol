@@ -281,12 +281,9 @@ contract Tub is DSThing {
     // be tapped to make sai whole.
     function cage(uint128 price) note auth {
         off = true;
-        // take on the debt
-        pot.push(sin, this);
-        // absorb any pending fees
-        mend();
-        // burn pending sale skr
-        skr.burn(cast(skr.balanceOf(this)));
+        pot.push(sin, this);  // take on the debt
+        mend();               // absorb any pending fees
+        skr.burn(fog());      // burn pending sale skr
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the gem value of a cups pro
