@@ -68,6 +68,16 @@ contract Tub is DSThing {
         _tag = tag_;
     }
 
+    function chop(uint128 ray) note auth {
+        axe = ray;
+    }
+    function cork(uint128 wad) note auth {
+        hat = wad;
+    }
+    function cuff(uint128 ray) note auth {
+        mat = ray;
+    }
+
     // Good debt
     function ice() constant returns (uint128) {
         return uint128(sin.balanceOf(pot));
@@ -129,15 +139,6 @@ contract Tub is DSThing {
         return (pro < con);
     }
 
-    function chop(uint128 ray) note auth {
-        axe = ray;
-    }
-    function cork(uint128 wad) note auth {
-        hat = wad;
-    }
-    function cuff(uint128 ray) note auth {
-        mat = ray;
-    }
     //------------------------------------------------------------------
 
     function join(uint128 jam) note {
@@ -233,24 +234,20 @@ contract Tub is DSThing {
         aver(!off);
         aver(!safe(cup));
 
-        // take all of the debt
+        // take on all of the debt
         var owe = cups[cup].art;
         pot.push(sin, this, owe);
         cups[cup].art = 0;
 
         // axe the collateral
-        var tab = rmul(owe, axe);
-        var cab = rdiv(rmul(tab, per()), tag());
-        var ink = cups[cup].ink;
+        var tab = rmul(owe, axe);                 // amount owed inc. penalty
+        var cab = rdiv(rmul(tab, per()), tag());  // equivalent in skr
+        var ink = cups[cup].ink;                  // available skr
 
-        if (ink > cab) {
-            cups[cup].ink = decr(cups[cup].ink, cab);
-        } else {
-            cups[cup].ink = 0;  // collateralisation under parity
-            cab = ink;
-        }
+        if (ink < cab) cab = ink;                 // take at most all the skr
 
         pot.push(skr, this, cab);
+        cups[cup].ink = decr(cups[cup].ink, cab);
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) note {
@@ -273,15 +270,8 @@ contract Tub is DSThing {
         var ret = wdiv(wmul(wad, tag()), per());
         aver(ret <= woe());
 
-        if (wad <= fog()) {
-            skr.push(msg.sender, wad);
-        } else {
-            var bal = fog();
-            skr.push(msg.sender, bal);
-            skr.mint(wad - bal);
-            skr.push(msg.sender, wad - bal);
-        }
-
+        if (wad > fog()) skr.mint(wad - fog());
+        skr.push(msg.sender, wad);
         sai.pull(msg.sender, ret);
     }
 
@@ -293,7 +283,8 @@ contract Tub is DSThing {
     // be tapped to make sai whole.
     function cage(uint128 price) note auth {
         off = true;
-        pot.push(sin, this);  // take on the debt
+
+        pot.push(sin, this);  // take on all the debt
         mend();               // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
 
