@@ -141,12 +141,14 @@ contract Tub is DSThing {
     //------------------------------------------------------------------
 
     function join(uint128 jam) note {
+        aver(!off);
         var ink = wmul(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
+        aver(!off);
         var jam = wdiv(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
@@ -154,22 +156,26 @@ contract Tub is DSThing {
     }
 
     function open() note returns (bytes32 cup) {
+        aver(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
     }
     function shut(bytes32 cup) note {
+        aver(!off);
         wipe(cup, cups[cup].art);
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
     function lock(bytes32 cup, uint128 wad) note {
+        aver(!off);
         aver(msg.sender == cups[cup].lad);
         cups[cup].ink = incr(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
         skr.push(pot, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
+        aver(!off);
         aver(msg.sender == cups[cup].lad);
         cups[cup].ink = decr(cups[cup].ink, wad);
         aver(safe(cup));
@@ -177,6 +183,7 @@ contract Tub is DSThing {
     }
 
     function draw(bytes32 cup, uint128 wad) note {
+        aver(!off);
         // TODO poke
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = incr(cups[cup].art, wad);
@@ -190,6 +197,7 @@ contract Tub is DSThing {
     }
     function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke
+        aver(!off);
         aver(msg.sender == cups[cup].lad);
         cups[cup].art = decr(cups[cup].art, wad);
 
@@ -221,6 +229,7 @@ contract Tub is DSThing {
     //------------------------------------------------------------------
 
     function bite(bytes32 cup) note {
+        aver(!off);
         aver(!safe(cup));
 
         // take all of the debt
@@ -244,6 +253,7 @@ contract Tub is DSThing {
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) note {
+        aver(!off);
         mend();
 
         // price of wad in sai
@@ -256,6 +266,7 @@ contract Tub is DSThing {
         sai.push(msg.sender, ret);
     }
     function bust(uint128 wad) note {
+        aver(!off);
         mend();
 
         var ret = wdiv(wmul(wad, tag()), per());
