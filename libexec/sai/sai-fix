@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-fix -- get the SAI settlement price
+set -e
+wad=$(seth call "${SAI_TUB?}" "fix()")
+sai wad -h "$wad"
