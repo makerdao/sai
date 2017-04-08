@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-off -- is the tub killed?
+### sai-off -- is the tub caged?
 set -e
 off=$(seth call "${SAI_TUB?}" 'off()')
 seth --abi-decode 'f()(bool)' "$off"
