@@ -371,7 +371,7 @@ contract Test is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 90 ether);
         assertEq(gem.balanceOf(tub),   5 ether);
         assertEq(gem.balanceOf(pot),   5 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this),  95 ether);
@@ -380,7 +380,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
 
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -392,7 +392,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -402,7 +402,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
 
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -415,7 +415,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -432,7 +432,7 @@ contract Test is DSTest, DSMath {
         // at the kill price, 5 * 4 / 3 are 100% collat,
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -444,7 +444,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -460,7 +460,7 @@ contract Test is DSTest, DSMath {
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -473,7 +473,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -489,7 +489,7 @@ contract Test is DSTest, DSMath {
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -501,7 +501,7 @@ contract Test is DSTest, DSMath {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -517,7 +517,7 @@ contract Test is DSTest, DSMath {
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }
@@ -531,7 +531,7 @@ contract Test is DSTest, DSMath {
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        tub.save();
+        tub.cash();
         assertEq(sai.balanceOf(this),  0 ether);
         // returns 20 gems, taken from the free skr,
         // sai is made whole
@@ -539,7 +539,7 @@ contract Test is DSTest, DSMath {
 
         tmp.push(skr, this);  // unstash skr
         assertEq(skr.balanceOf(this),  20 ether);
-        tub.save();
+        tub.cash();
         assertEq(skr.balanceOf(this),   0 ether);
         // the skr has taken a 50% loss - 10 gems returned from 20 put in
         assertEq(gem.balanceOf(this), 100 ether);
@@ -553,7 +553,7 @@ contract Test is DSTest, DSMath {
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
-        tub.save(cup);
+        tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
     }

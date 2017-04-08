@@ -312,7 +312,7 @@ contract Tub is DSThing {
         fit = (pie() == 0) ? 0 : per();
     }
     // exchange free sai / skr for gems after kill
-    function save() note {
+    function cash() note {
         aver(off);
 
         var hai = cast(sai.balanceOf(msg.sender));
@@ -326,7 +326,8 @@ contract Tub is DSThing {
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
     }
-    function save(bytes32 cup) note {
+    // retrieve gems from a cup
+    function bail(bytes32 cup) note {
         aver(off);
         aver(msg.sender == cups[cup].lad);
 
