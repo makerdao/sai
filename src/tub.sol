@@ -279,7 +279,7 @@ contract Tub is DSThing {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function kill(uint128 price) note auth {
+    function cage(uint128 price) note auth {
         off = true;
         // take on the debt
         pot.push(sin, this);

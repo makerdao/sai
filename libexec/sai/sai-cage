@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-kill -- lock the system and initiate settlement
+### sai-cage -- lock the system and initiate settlement
 set -e
 echo >&2 "Killing the tub..."
 (set -x; seth send "${SAI_TUB?}" "kill()")
