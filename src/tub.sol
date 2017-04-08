@@ -208,6 +208,7 @@ contract Tub is DSThing {
 
     function give(bytes32 cup, address lad) note {
         aver(msg.sender == cups[cup].lad);
+        aver(lad != 0);
         cups[cup].lad = lad;
     }
 
