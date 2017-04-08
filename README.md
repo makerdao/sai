@@ -35,18 +35,19 @@ immediate: backing `skr` is taken to cover the `sai` debt at the time of
 
 ### Settlement
 
-`sai` can be shut down with `kill`, after which `sai` and `skr` can be
-exchanged for `gems` via `save`. All outstanding `cups` are liquidated
-and the *entire pool of `gem`* is tapped to redeem `sai` at their face
-value, as if the boom/bust trades were instantly settled at the kill price.
-Any remaining `gems` are shared between `skr` holders.
+`sai` can be shut down at a given price with `cage`, after which `sai`
+and `skr` can be exchanged for `gems` via `cash`. All outstanding `cups`
+are liquidated and the *entire pool* of `gem` is tapped to redeem `sai`
+at their face value, as if the boom/bust trades were instantly settled
+at the cage price.  Any remaining `gems` are shared between `skr`
+holders.
 
 Practically this means that if the system is undercollateralized on
-`kill`, holders of free `skr` will have their `gem` share diluted as
+`cage`, holders of free `skr` will have their `gem` share diluted as
 much as necessary to make `sai` whole. *`skr` is a risk bearing token*.
 
 Excess collateral contained within a single `cup` can be reclaimed with
-`save(cup)`.
+`bail(cup)`.
 
 
 ### glossary
