@@ -112,9 +112,9 @@ contract Tub is DSThing {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
-        return skr.totalSupply() < 1 ether
-            ? 1 ether
-            : wdiv(uint128(gem.balanceOf(this)), uint128(skr.totalSupply()));
+        return skr.totalSupply() < WAD
+            ? WAD
+            : wdiv(uint128(skr.totalSupply()), pie());
     }
 
     // returns true if cup overcollateralized
@@ -290,15 +290,15 @@ contract Tub is DSThing {
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the gem value of a cups pro
-        par = per();
+        par = wdiv(WAD, per());
 
         // most gems we can get per sai is the full balance
-        fix = min(wdiv(1 ether, price), wdiv(pie(), woe()));
+        fix = min(wdiv(WAD, price), wdiv(pie(), woe()));
         // gems needed to cover debt
         var bye = wmul(fix, woe());
 
         // skr associated with gems, or at most all the backing skr
-        var xxx = min(air(), wdiv(bye, per()));
+        var xxx = min(air(), wmul(bye, per()));
         // There can be free skr as well, and gems associated with this
         // are used to make sai whole.
 
@@ -309,7 +309,7 @@ contract Tub is DSThing {
         gem.transfer(pot, bye);
 
         // the remaining pie gets shared out among remaining skr
-        fit = (pie() == 0) ? 0 : per();
+        fit = (pie() == 0) ? 0 : wdiv(WAD, per());
     }
     // exchange free sai / skr for gems after kill
     function cash() note {
