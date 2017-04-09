@@ -383,6 +383,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveSafeOverCollatWithFreeSkr() {
         var cup = cageSetup();
@@ -405,6 +407,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveUnsafeOverCollat() {
         var cup = cageSetup();
@@ -435,6 +439,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveAtCollat() {
         var cup = cageSetup();
@@ -463,6 +469,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveAtCollatFreeSkr() {
         var cup = cageSetup();
@@ -492,6 +500,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveUnderCollat() {
         var cup = cageSetup();
@@ -520,6 +530,8 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
     function testSaveUnderCollatFreeSkr() {
         var cup = cageSetup();
@@ -556,5 +568,7 @@ contract Test is DSTest, DSMath {
         tub.bail(cup);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
+
+        assertEq(skr.totalSupply(), 0);
     }
 }

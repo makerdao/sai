@@ -337,6 +337,9 @@ contract Tub is DSThing {
         // at least 100% collat?
         if (pro > con) {
             gem.transfer(msg.sender, decr(pro, con));
+            var del = wdiv(decr(pro, con), fit);
+            pot.push(skr, this, del);
+            skr.burn(del);
         }
 
         delete cups[cup];
