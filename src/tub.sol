@@ -21,7 +21,11 @@ import "ds-value/value.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract Tub is DSThing {
+contract TubEvents {
+    event LogNewCup(address indexed lad, bytes32 cup);
+}
+
+contract Tub is DSThing, TubEvents {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
@@ -160,6 +164,8 @@ contract Tub is DSThing {
         aver(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
+        // TODO replace this event with another solution
+        LogNewCup(msg.sender, cup);
     }
     function shut(bytes32 cup) note {
         aver(!off);
