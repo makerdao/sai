@@ -164,6 +164,7 @@ contract Tub is DSThing, TubEvents {
         aver(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
+        // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
     function shut(bytes32 cup) note {
