@@ -573,10 +573,8 @@ contract TubTest is DSTest, DSMath {
         // compute the liquidation price of a cup
         var jam = wdiv(tub.ink(cup), tub.per());
         var min = rmul(tub.tab(cup), tub.mat());
-
         return wdiv(min, jam);
     }
-
     function testLiq() {
         tub.cork(100 ether);
         mark(2 ether);
@@ -603,5 +601,39 @@ contract TubTest is DSTest, DSMath {
 
         tub.lock(cup, 10 ether);  // now 40 drawn on 20 gem == 120 ref
         assertEqWad(liq(cup), 3 ether);
+    }
+    function collat(bytes32 cup) returns (uint128) {
+        // compute the collateralised fraction of a cup
+        var jam = wdiv(tub.ink(cup), tub.per());
+        var pro = wmul(jam, tub.tag());
+        var con = tub.tab(cup);
+        return wdiv(pro, con);
+    }
+    function testCollat() {
+        tub.cork(100 ether);
+        mark(2 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 10 ether);
+
+        assertEqWad(collat(cup), 2 ether);  // 200%
+
+        mark(4 ether);
+        assertEqWad(collat(cup), 4 ether);  // 400%
+
+        tub.draw(cup, 15 ether);
+        assertEqWad(collat(cup), wdiv(8 ether, 5 ether));  // 160%
+
+        mark(5 ether);
+        tub.free(cup, 5 ether);
+        assertEqWad(collat(cup), 1 ether);  // 100%
+
+        mark(4 ether);
+        assertEqWad(collat(cup), wdiv(4 ether, 5 ether));  // 80%
+
+        tub.wipe(cup, 9 ether);
+        assertEqWad(collat(cup), wdiv(5 ether, 4 ether));  // 125%
     }
 }
