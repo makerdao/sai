@@ -58,6 +58,16 @@ contract Tub is DSThing, TubEvents {
         uint128  ink;      // Locked collateral (in skr)
     }
 
+    function art(bytes32 cup) constant returns (uint128) {
+        return cups[cup].art;
+    }
+    function ink(bytes32 cup) constant returns (uint128) {
+        return cups[cup].ink;
+    }
+    function lad(bytes32 cup) constant returns (address) {
+        return cups[cup].lad;
+    }
+
     //------------------------------------------------------------------
 
     function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tag_) {
