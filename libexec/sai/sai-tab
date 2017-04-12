@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-tab -- get how much debt in a cup
 set -e
-wad=$(sai cup | head -n 2 | tail -n 1)
+wad=$(seth call "${SAI_TUB?}" "tab(bytes32)" "${SAI_CUP?}")
 sai wad -h "$wad"

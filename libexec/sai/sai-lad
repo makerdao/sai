@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 ### sai-lad -- get the owner of a cup
 set -e
-sai cup | head -n 1
+lad=$(seth call "${SAI_TUB?}" 'lad(bytes32)' "${SAI_CUP?}")
+echo "0x$(seth --abi-decode 'f()(address)' "$lad")"
