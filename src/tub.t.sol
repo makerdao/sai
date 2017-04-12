@@ -572,7 +572,7 @@ contract TubTest is DSTest, DSMath {
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
         var jam = wdiv(tub.ink(cup), tub.per());
-        var min = rmul(tub.art(cup), tub.mat());
+        var min = rmul(tub.tab(cup), tub.mat());
 
         return wdiv(min, jam);
     }

@@ -58,7 +58,7 @@ contract Tub is DSThing, TubEvents {
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function art(bytes32 cup) constant returns (uint128) {
+    function tab(bytes32 cup) constant returns (uint128) {
         return cups[cup].art;
     }
     function ink(bytes32 cup) constant returns (uint128) {
