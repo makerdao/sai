@@ -212,7 +212,7 @@ contract Tub is DSThing, TubEvents {
         sin.push(pot, wad);
         sai.push(msg.sender, wad);
 
-        aver(ice() <= hat);  // ensure under debt ceiling
+        aver(cast(sin.totalSupply()) <= hat);
     }
     function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke

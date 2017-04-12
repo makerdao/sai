@@ -238,14 +238,6 @@ contract TubTest is DSTest, DSMath {
         tub.join(10 ether);
         // skr hasn't been diluted yet so still 1:1 skr:gem
         assertEq(skr.balanceOf(this), 10 ether);
-
-        // open another cdp and see if we can draw against it, given
-        // that the previous cdp maxed out the debt ceiling
-        var mug = tub.open();
-        tub.lock(mug, 10 ether);
-        // this should suceed as the debt ceiling is defined by ice, not
-        // ice + woe
-        tub.draw(mug, 1 ether);
     }
 
     // ensure cage sets the settle prices right
