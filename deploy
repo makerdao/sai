@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 export SETH_GAS=4300000
 export SOLC_FLAGS=--optimize
