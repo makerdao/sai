@@ -25,7 +25,6 @@ seth send $SKR "setOwner(address)" $TUB
 seth send $POT "setOwner(address)" $TUB
 
 seth send $GEM "mint(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
-token approve $GEM $TUB $(seth --to-wei 100 ETH)
 
 token approve $GEM $TUB $(seth --to-wei 100000 ETH)
 token approve $SAI $TUB $(seth --to-wei 100000 ETH)
