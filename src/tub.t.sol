@@ -11,7 +11,8 @@ import 'ds-value/value.sol';
 
 import './tub.sol';
 
-contract Test is DSTest, DSMath {
+
+contract TubTest is DSTest, DSMath {
     Tub tub;
     DSToken gem;
     DSToken sai;
@@ -29,12 +30,8 @@ contract Test is DSTest, DSMath {
         assertEq(uint256(x), uint256(y));
     }
 
-    // for later export to factory
-    function roleSetup(address dad, address rat) returns (DSRoles) {
-        uint8 DAD = 0;
-        uint8 RAT = 1;
-        var roles = new DSRoles();
-
+    function mark(uint128 price) {
+        tag.poke(bytes32(price));
     }
 
     function setUp() {
@@ -570,5 +567,41 @@ contract Test is DSTest, DSMath {
         assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(skr.totalSupply(), 0);
+    }
+
+    function liq(bytes32 cup) returns (uint128) {
+        // compute the liquidation price of a cup
+        var jam = wdiv(tub.ink(cup), tub.per());
+        var min = rmul(tub.art(cup), tub.mat());
+
+        return wdiv(min, jam);
+    }
+
+    function testLiq() {
+        tub.cork(100 ether);
+        mark(2 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 10 ether);        // 200% collateralisation
+
+        tub.cuff(ray(1 ether));         // require 100% collateralisation
+        assertEqWad(liq(cup), 1 ether);
+
+        tub.cuff(ray(3 ether / 2));     // require 150% collateralisation
+        assertEqWad(liq(cup), wdiv(3 ether, 2 ether));
+
+        mark(6 ether);
+        assertEqWad(liq(cup), wdiv(3 ether, 2 ether));
+
+        tub.draw(cup, 30 ether);
+        assertEqWad(liq(cup), 6 ether);
+
+        tub.join(10 ether);
+        assertEqWad(liq(cup), 6 ether);
+
+        tub.lock(cup, 10 ether);  // now 40 drawn on 20 gem == 120 ref
+        assertEqWad(liq(cup), 3 ether);
     }
 }
