@@ -358,8 +358,8 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.fit(), wdiv(1 ether, 2 ether));  // skr redeems 2:1 with gem
     }
 
-    // ensure save returns the expected amount
-    function testSaveSafeOverCollat() {
+    // ensure cash returns the expected amount
+    function testCashSafeOverCollat() {
         var cup = cageSetup();
         tub.cage(1 ether);
 
@@ -383,7 +383,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveSafeOverCollatWithFreeSkr() {
+    function testCashSafeOverCollatWithFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         tub.cage(1 ether);
@@ -407,7 +407,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveUnsafeOverCollat() {
+    function testCashUnsafeOverCollat() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
@@ -439,7 +439,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveAtCollat() {
+    function testCashAtCollat() {
         var cup = cageSetup();
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
@@ -469,7 +469,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveAtCollatFreeSkr() {
+    function testCashAtCollatFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
@@ -500,7 +500,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveUnderCollat() {
+    function testCashUnderCollat() {
         var cup = cageSetup();
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         tub.cage(price);
@@ -530,7 +530,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testSaveUnderCollatFreeSkr() {
+    function testCashUnderCollatFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
