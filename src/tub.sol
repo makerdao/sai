@@ -291,6 +291,7 @@ contract Tub is DSThing, TubEvents {
         if (wad > fog()) skr.mint(wad - fog());
         skr.push(msg.sender, wad);
         sai.pull(msg.sender, ret);
+        mend();
     }
 
     //------------------------------------------------------------------
