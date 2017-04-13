@@ -628,4 +628,52 @@ contract TubTest is DSTest, DSMath {
         tub.wipe(cup, 9 ether);
         assertEqWad(collat(cup), wdiv(5 ether, 4 ether));  // 125%
     }
+
+    function testBust() {
+        tub.cork(100 ether);
+        tub.cuff(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
+        mark(2 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        mark(3 ether);
+        tub.draw(cup, 16 ether);  // 125% collat
+        mark(2 ether);
+
+        assert(!tub.safe(cup));
+        tub.bite(cup);
+        // 20 ref of gem on 16 ref of sai
+        // 125%
+        // 100% = 16ref of gem == 8 gem
+        assertEqWad(tub.fog(), 8 ether);
+
+        // 8 skr for sale
+        assertEqWad(tub.per(), 1 ether);
+
+        // get 2 skr, pay 4 sai (25% of the debt)
+        var sai_before = sai.balanceOf(this);
+        var skr_before = skr.balanceOf(this);
+        assertEq(sai_before, 16 ether);
+        tub.bust(2 ether);
+        var sai_after = sai.balanceOf(this);
+        var skr_after = skr.balanceOf(this);
+        assertEq(sai_before - sai_after, 4 ether);
+        assertEq(skr_after - skr_before, 2 ether);
+
+        // price drop. now remaining 6 skr cannot cover bad debt (12 sai)
+        mark(1 ether);
+
+        // get 6 skr, pay 6 sai
+        tub.bust(6 ether);
+        // no more skr remaining to sell
+        assertEqWad(tub.fog(), 0);
+        // but skr supply unchanged
+        assertEq(skr.totalSupply(), 10 ether);
+
+        // now skr will be minted
+        tub.bust(2 ether);
+        assertEq(skr.totalSupply(), 12 ether);
+    }
 }
