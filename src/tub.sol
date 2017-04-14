@@ -128,6 +128,8 @@ contract Tub is DSThing, TubEvents {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
+
+        // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
         return skr.totalSupply() < WAD
             ? WAD
             : wdiv(uint128(skr.totalSupply()), pie());
