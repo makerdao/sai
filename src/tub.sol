@@ -84,12 +84,14 @@ contract Tub is DSThing, TubEvents {
 
     function chop(uint128 ray) note auth {
         axe = ray;
+        aver((RAY <= axe) && (axe <= mat));
     }
     function cork(uint128 wad) note auth {
         hat = wad;
     }
     function cuff(uint128 ray) note auth {
         mat = ray;
+        aver((RAY <= axe) && (axe <= mat));
     }
 
     // Good debt

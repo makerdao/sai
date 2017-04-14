@@ -110,6 +110,19 @@ contract TubTest is DSTest, DSMath {
         assertEq( tub.sai().balanceOf(this), 0 ether);
         assertEq( tub.skr().balanceOf(this), 20 ether );
     }
+    function testMold() {
+        var chop = bytes4(sha3('chop(uint128)'));
+        var cork = bytes4(sha3('cork(uint128)'));
+        var cuff = bytes4(sha3('cuff(uint128)'));
+
+        assert(tub.call(cork, 0 ether));
+        assert(tub.call(cork, 5 ether));
+
+        assert(!tub.call(chop, ray(2 ether)));
+        assert(tub.call(cuff, ray(2 ether)));
+        assert(tub.call(chop, ray(2 ether)));
+        assert(!tub.call(cuff, ray(1 ether)));
+    }
     function testJoinExit() {
         assertEq(skr.balanceOf(this), 0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
