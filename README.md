@@ -57,22 +57,22 @@ Read commands:
 
    air             get the amount of backing collateral
    axe             get the liquidation penalty
+   cup             show the cup info
    fit             get the SKR settlement price
    fix             get the SAI settlement price
    fog             get the amount of skr pending liquidation
    gem             get the collateral token
    hat             get the debt ceiling
-   hat             get the liquidation ratio
    ice             get the good debt
    ink             get how much skr collateral in a cup
    joy             get the amount of surplus sai
    lad             get the owner of a cup
+   mat             get the liquidation ratio
    off             is the tub caged?
    per             get the current entry price (skr per gem)
    pie             get the amount of raw collateral
    ray             parse and display a 36-decimal fixed-point number
    sai             get the sai token
-   sin             get the sin token
    sin             get the sin token
    skr             get the skr token
    tab             get how much debt in a cup
@@ -90,6 +90,7 @@ Commands:
    cork            update the debt ceiling
    cuff            update the liquidation ratio
    cupi            get the last cup id
+   cups            list your cups
    draw            issue the specified amount of sai stablecoins
    exit            sell SKR
    free            remove excess SKR collateral from a cup
@@ -102,6 +103,4 @@ Commands:
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
    wipe            repay some portion of your existing sai debt
-
-
 ```
