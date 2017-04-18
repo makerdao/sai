@@ -300,6 +300,7 @@ contract Tub is DSThing, TubEvents {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint128 price) note auth {
+        aver(!off);
         off = true;
 
         pot.push(sin, this);  // take on all the debt
