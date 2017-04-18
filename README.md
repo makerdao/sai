@@ -1,3 +1,4 @@
+
 `sai` is a simple single-collateral stablecoin that is dependent on a
 trusted oracle and has a kill-switch.
 
@@ -50,24 +51,56 @@ Excess collateral contained within a single `cup` can be reclaimed with
 `bail(cup)`.
 
 
-### glossary
+### glossary (`sai help`)
+```
+Read commands:
 
-#### tokens
+   air             get the amount of backing collateral
+   axe             get the liquidation penalty
+   cup             show the cup info
+   fit             get the SKR settlement price
+   fix             get the SAI settlement price
+   fog             get the amount of skr pending liquidation
+   gem             get the collateral token
+   hat             get the debt ceiling
+   ice             get the good debt
+   ink             get how much skr collateral in a cup
+   joy             get the amount of surplus sai
+   lad             get the owner of a cup
+   mat             get the liquidation ratio
+   off             is the tub caged?
+   per             get the current entry price (skr per gem)
+   pie             get the amount of raw collateral
+   ray             parse and display a 36-decimal fixed-point number
+   sai             get the sai token
+   sin             get the sin token
+   skr             get the skr token
+   tab             get how much debt in a cup
+   tag             get the reference price (ref per gem)
+   wad             parse and display a 18-decimal fixed-point number
+   woe             get the amount of bad debt
 
-- `SAI`: stablecoin
-- `SIN`: debt (negative SAI)
-- `SKR`: vote / lock-collateral coin
-- `GEM`: true raw collateral
+Commands:
 
-#### state variables
-
-- `JOY`: surplus `sai` owned by the system
-- `WOE`: bad debt owned by the system
-
-#### abstract concepts
-
-- `REF`: external asset (e.g. SDR, USD)
-
-#### external data
-
-- `TAG`: REF/GEM ratio
+   bail            bail the gems out of a cup after kill
+   bite            initiate liquidation of an undercollateral cup
+   cage            lock the system and initiate settlement
+   cash            cash in sai / skr balance for gems after kill
+   chop            update the liquidation penalty
+   cork            update the debt ceiling
+   cuff            update the liquidation ratio
+   cupi            get the last cup id
+   cups            list your cups
+   draw            issue the specified amount of sai stablecoins
+   exit            sell SKR
+   free            remove excess SKR collateral from a cup
+   give            transfer ownership of a cup
+   help            print help about sai(1) or one of its subcommands
+   join            buy SKR
+   jump            redeem sai and SKR for gems (settlement mode only)
+   lock            post additional SKR collateral to a cup
+   mark            update the tag
+   open            create a new cup (collateralized debt position)
+   safe            determine if a cup is safe
+   wipe            repay some portion of your existing sai debt
+```

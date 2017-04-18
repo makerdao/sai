@@ -110,6 +110,19 @@ contract TubTest is DSTest, DSMath {
         assertEq( tub.sai().balanceOf(this), 0 ether);
         assertEq( tub.skr().balanceOf(this), 20 ether );
     }
+    function testMold() {
+        var chop = bytes4(sha3('chop(uint128)'));
+        var cork = bytes4(sha3('cork(uint128)'));
+        var cuff = bytes4(sha3('cuff(uint128)'));
+
+        assert(tub.call(cork, 0 ether));
+        assert(tub.call(cork, 5 ether));
+
+        assert(!tub.call(chop, ray(2 ether)));
+        assert(tub.call(cuff, ray(2 ether)));
+        assert(tub.call(chop, ray(2 ether)));
+        assert(!tub.call(cuff, ray(1 ether)));
+    }
     function testJoinExit() {
         assertEq(skr.balanceOf(this), 0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
@@ -675,5 +688,60 @@ contract TubTest is DSTest, DSMath {
         // now skr will be minted
         tub.bust(2 ether);
         assertEq(skr.totalSupply(), 12 ether);
+    }
+
+    function testCascade() {
+        // demonstrate liquidation cascade
+        tub.cork(1000 ether);
+        tub.cuff(ray(2 ether));                 // 200% liq limit
+        tub.chop(ray(wdiv(5 ether, 4 ether)));  // 125% penalty
+        mark(10 ether);
+
+        tub.join(40 ether);
+        var cup = tub.open();
+        var mug = tub.open();
+        var jar = tub.open();
+
+        tub.lock(cup, 10 ether);
+        tub.lock(mug, 10 ether);
+        tub.lock(jar, 10 ether);
+
+        tub.draw(cup, 50 ether);  // 200% collat
+        tub.draw(mug, 40 ether);  // 250% collat
+        tub.draw(jar, 19 ether);  // 421% collat
+
+        mark(4 ether);  // cup 80%, mug 100%, jar 200%
+        tub.bite(cup);
+
+        // inflation happens when the confiscated skr can no longer
+        // cover the debt. With axe == 1, this happens as soon as the
+        // price falls. With axe == 1.25, the price has to fall by 20%.
+        // Beyond this price fall, there is inflation.
+        // This is an extra justification for axe (beyond penalising bad
+        // cup holders).
+        assertEqWad(tub.fog(), 10 ether);
+        assertEqWad(tub.woe(), 50 ether);
+        tub.bust(tub.fog());
+        assertEqWad(tub.fog(), 0 ether);
+        assertEqWad(tub.woe(), 10 ether);
+        // price still 1
+        assertEqWad(tub.per(), 1 ether);
+
+        // now force some minting, which flips the jar to unsafe
+        assert(tub.safe(jar));
+        tub.bust(wdiv(5 ether, 2 ether));
+        assert(!tub.safe(jar));
+
+        assertEqWad(tub.woe(), 0);
+        assertEqWad(tub.per(), wdiv(85 ether, 80 ether));  // 6.25% more skr/gem
+
+        // mug is now under parity as well
+        tub.bite(mug);
+        tub.bust(tub.fog());
+        tub.bust(wmul(tub.woe(), wdiv(tub.per(), tub.tag())));
+
+        tub.bite(jar);
+
+        // N.B from the initial price markdown the whole system was in deficit
     }
 }
