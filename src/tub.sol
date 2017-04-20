@@ -350,21 +350,16 @@ contract Tub is DSThing, TubEvents {
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
     }
-    // retrieve gems from a cup
+    // retrieve skr from a cup
     function bail(bytes32 cup) note {
         aver(off);
         aver(msg.sender == cups[cup].lad);
 
-        var pro = wmul(cups[cup].ink, par);
-        var con = wmul(cups[cup].art, fix);
+        var pro = cups[cup].ink;
+        // value of the debt in skr at settlement
+        var con = wmul(wmul(cups[cup].art, par), fix);
 
-        // at least 100% collat?
-        if (pro > con) {
-            gem.transfer(msg.sender, decr(pro, con));
-            var del = wdiv(decr(pro, con), fit);
-            pot.push(skr, this, del);
-            skr.burn(del);
-        }
+        if (pro > con) pot.push(skr, msg.sender, decr(pro, con));
 
         delete cups[cup];
     }

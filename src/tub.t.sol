@@ -383,6 +383,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
@@ -407,6 +408,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
@@ -439,6 +441,7 @@ contract TubTest is DSTest, DSMath {
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
@@ -469,6 +472,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
@@ -500,6 +504,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
@@ -530,6 +535,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
         tub.bail(cup);
+        tub.cash();
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
