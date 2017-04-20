@@ -312,9 +312,9 @@ contract Tub is DSThing, TubEvents {
         mend();               // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
 
-        // save current gem per skr for collateral calc.
-        // we need to know this to work out the gem value of a cups pro
-        par = wdiv(WAD, per());
+        // save current skr per gem for collateral calc.
+        // we need to know this to work out the skr value of a cups debt
+        par = per();
 
         // most gems we can get per sai is the full balance
         fix = min(wdiv(WAD, price), wdiv(pie(), woe()));
