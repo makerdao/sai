@@ -43,7 +43,7 @@ contract Tub is DSThing, TubEvents {
 
     uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  fit;  // skr kill price (gem per skr)
-    uint128  public  par;  // ratio of gem to skr on kill
+    uint128  public  par;  // ratio of skr to gem on kill
     // TODO holder fee param
     // TODO issuer fee param
     // TODO spread?? `gap`
@@ -123,7 +123,7 @@ contract Tub is DSThing, TubEvents {
     function tag() constant returns (uint128) {
         return uint128(_tag.read());
     }
-    // skr per gem
+    // gem per skr
     function per() constant returns (uint128) {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
@@ -132,12 +132,12 @@ contract Tub is DSThing, TubEvents {
         // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
         return skr.totalSupply() < WAD
             ? WAD
-            : wdiv(uint128(skr.totalSupply()), pie());
+            : wdiv(pie(), uint128(skr.totalSupply()));
     }
 
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var jam = wdiv(cups[cup].ink, per());
+        var jam = wmul(cups[cup].ink, per());
         var pro = wmul(jam, tag());
         var con = cups[cup].art;
         var min = rmul(con, mat);
@@ -145,7 +145,7 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system overcollateralized
     function safe() constant returns (bool) {
-        var jam = wdiv(air(), per());
+        var jam = wmul(air(), per());
         var pro = wmul(jam, tag());
         var con = cast(sin.totalSupply());
         var min = rmul(con, mat);
@@ -153,7 +153,7 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system in deficit
     function eek() constant returns (bool) {
-        var jam = wdiv(air(), per());
+        var jam = wmul(air(), per());
         var pro = wmul(jam, tag());
         var con = cast(sin.totalSupply());
         return (pro < con);
@@ -163,14 +163,14 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) note {
         aver(!off);
-        var ink = wmul(jam, per());
+        var ink = wdiv(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
         aver(!off);
-        var jam = wdiv(ink, per());
+        var jam = wmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
@@ -262,11 +262,11 @@ contract Tub is DSThing, TubEvents {
         cups[cup].art = 0;
 
         // axe the collateral
-        var tab = rmul(owe, axe);                 // amount owed inc. penalty
-        var cab = rdiv(rmul(tab, per()), tag());  // equivalent in skr
-        var ink = cups[cup].ink;                  // available skr
+        var tab = rmul(owe, axe);                               // amount owed inc. penalty
+        var cab = rdiv(rmul(tab, wdiv(WAD, per())), tag());     // equivalent in skr
+        var ink = cups[cup].ink;                                // available skr
 
-        if (ink < cab) cab = ink;                 // take at most all the skr
+        if (ink < cab) cab = ink;                               // take at most all the skr
 
         pot.push(skr, this, cab);
         cups[cup].ink = decr(cups[cup].ink, cab);
@@ -277,7 +277,7 @@ contract Tub is DSThing, TubEvents {
         mend();
 
         // price of wad in sai
-        var ret = wdiv(wmul(wad, tag()), per());
+        var ret = wmul(wmul(wad, tag()), per());
         aver(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -289,7 +289,7 @@ contract Tub is DSThing, TubEvents {
         aver(!off);
         mend();
 
-        var ret = wdiv(wmul(wad, tag()), per());
+        var ret = wmul(wmul(wad, tag()), per());
         aver(ret <= woe());
 
         if (wad > fog()) skr.mint(wad - fog());
@@ -312,7 +312,7 @@ contract Tub is DSThing, TubEvents {
         mend();               // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
 
-        // save current skr per gem for collateral calc.
+        // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
         par = per();
 
@@ -322,7 +322,7 @@ contract Tub is DSThing, TubEvents {
         var bye = wmul(fix, woe());
 
         // skr associated with gems, or at most all the backing skr
-        var xxx = min(air(), wmul(bye, per()));
+        var xxx = min(air(), wdiv(bye, per()));
         // There can be free skr as well, and gems associated with this
         // are used to make sai whole.
 
@@ -333,7 +333,7 @@ contract Tub is DSThing, TubEvents {
         gem.transfer(pot, bye);
 
         // the remaining pie gets shared out among remaining skr
-        fit = (pie() == 0) ? 0 : wdiv(WAD, per());
+        fit = (pie() == 0) ? 0 : per();
     }
     // exchange free sai / skr for gems after kill
     function cash() note {
@@ -357,7 +357,7 @@ contract Tub is DSThing, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = wmul(wmul(cups[cup].art, par), fix);
+        var con = wmul(wdiv(cups[cup].art, par), fix);
 
         if (pro > con) pot.push(skr, msg.sender, decr(pro, con));
 

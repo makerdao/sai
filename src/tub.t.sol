@@ -582,7 +582,7 @@ contract TubTest is DSTest, DSMath {
 
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
-        var jam = wdiv(tub.ink(cup), tub.per());
+        var jam = wmul(tub.ink(cup), tub.per());
         var min = rmul(tub.tab(cup), tub.mat());
         return wdiv(min, jam);
     }
@@ -615,7 +615,7 @@ contract TubTest is DSTest, DSMath {
     }
     function collat(bytes32 cup) returns (uint128) {
         // compute the collateralised fraction of a cup
-        var jam = wdiv(tub.ink(cup), tub.per());
+        var jam = wmul(tub.ink(cup), tub.per());
         var pro = wmul(jam, tub.tag());
         var con = tub.tab(cup);
         return wdiv(pro, con);
@@ -739,12 +739,12 @@ contract TubTest is DSTest, DSMath {
         assert(!tub.safe(jar));
 
         assertEqWad(tub.woe(), 0);
-        assertEqWad(tub.per(), wdiv(85 ether, 80 ether));  // 6.25% more skr/gem
+        assertEqWad(tub.per(), wdiv(80 ether, 85 ether));  // 5.88% less gem/skr
 
         // mug is now under parity as well
         tub.bite(mug);
         tub.bust(tub.fog());
-        tub.bust(wmul(tub.woe(), wdiv(tub.per(), tub.tag())));
+        tub.bust(wdiv(tub.woe(), wmul(tub.per(), tub.tag())));
 
         tub.bite(jar);
 
