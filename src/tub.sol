@@ -42,7 +42,6 @@ contract Tub is DSThing, TubEvents {
     bool     public  off;  // Killswitch
 
     uint128  public  fix;  // sai kill price (gem per sai)
-    uint128  public  fit;  // skr kill price (gem per skr)
     uint128  public  par;  // ratio of skr to gem on kill
     // TODO holder fee param
     // TODO issuer fee param
@@ -132,7 +131,7 @@ contract Tub is DSThing, TubEvents {
         // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
         return skr.totalSupply() < WAD
             ? WAD
-            : wdiv(pie(), uint128(skr.totalSupply()));
+            : rdiv(pie(), uint128(skr.totalSupply())) / WAD;
     }
 
     // returns true if cup overcollateralized
@@ -169,8 +168,9 @@ contract Tub is DSThing, TubEvents {
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
-        aver(!off);
-        var jam = wmul(ink, per());
+        // If last skr is being exit, we send all gem available, otherwise we calculate the equivalent gem (jam) for ink skr
+        var jam = ink == 0 ? 0 : (ink == skr.totalSupply() ? pie() : wdiv(wmul(ink, pie()), uint128(skr.totalSupply())));
+
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
@@ -321,19 +321,8 @@ contract Tub is DSThing, TubEvents {
         // gems needed to cover debt
         var bye = wmul(fix, woe());
 
-        // skr associated with gems, or at most all the backing skr
-        var xxx = min(air(), wdiv(bye, per()));
-        // There can be free skr as well, and gems associated with this
-        // are used to make sai whole.
-
-        // put the gems backing sai in a safe place and burn the
-        // associated skr.
-        pot.push(skr, this, xxx);
-        skr.burn(xxx);
+        // put the gems backing sai in a safe place
         gem.transfer(pot, bye);
-
-        // the remaining pie gets shared out among remaining skr
-        fit = (pie() == 0) ? 0 : per();
     }
     // exchange free sai / skr for gems after kill
     function cash() note {
@@ -342,24 +331,34 @@ contract Tub is DSThing, TubEvents {
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
         mend(hai);
-        pot.push(gem, msg.sender, wmul(hai, fix));
 
-        var ink = cast(skr.balanceOf(msg.sender));
-        var jam = wmul(ink, fit);
-        skr.pull(msg.sender, ink);
-        skr.burn(ink);
-        gem.transfer(msg.sender, jam);
+        // If last sai is being cashed, we send all gem available, otherwise we calculate the equivalent gem (jam) for hai sai
+        var jam = hai == 0 ? 0 : (hai == sai.totalSupply() ? gem.balanceOf(pot) : wmul(hai, fix));
+        pot.push(gem, msg.sender, uint128(jam));
     }
     // retrieve skr from a cup
     function bail(bytes32 cup) note {
         aver(off);
-        aver(msg.sender == cups[cup].lad);
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
         var con = wmul(wdiv(cups[cup].art, par), fix);
 
-        if (pro > con) pot.push(skr, msg.sender, decr(pro, con));
+        uint128 burn = 0;
+
+        if (pro > con) {
+            // If there is more than enough skr to cover the debt, we free the difference to lad and burn the rest
+            pot.push(skr, cups[cup].lad, decr(pro, con));
+            burn = con;
+        } else {
+            // If locked skr just covers the debt or not even that, we burn what is locked and nothing is sent to lad
+            burn = pro;
+        }
+
+        if (burn > 0) {
+            pot.push(skr, this, burn);
+            skr.burn(burn);
+        }
 
         delete cups[cup];
     }
