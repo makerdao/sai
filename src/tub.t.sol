@@ -795,108 +795,195 @@ contract TubTest is DSTest, DSMath {
         // N.B from the initial price markdown the whole system was in deficit
     }
 
-    // function testThreeCups() {
-    //     var cup = cageSetup();
-    //     tub.join(90 ether);   // give us some more skr
-    //     var cup2 = tub.open(); // open a new cup
-    //     tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
-    //     var cup3 = tub.open(); // open a new cup
-    //     tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-    //     var price = wdiv(1 ether, 12 ether);
+    function testThreeCupsOverCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+        var price = 1 ether;
 
-    //     // tub.sai().transfer(0, 5 ether); // get rid off my SAIs
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
-    //     var (lad, art, ink) = tub.cups(cup);
-    //     var (lad2, art2, ink2) = tub.cups(cup2);
-    //     var (lad3, art3, ink3) = tub.cups(cup3);
-    //     log_named_uint('CUP 1 DEBT----', art);
-    //     log_named_uint('CUP 1 INK-----', ink);
-    //     log_named_uint('CUP 2 DEBT----', art2);
-    //     log_named_uint('CUP 2 INK-----', ink2);
-    //     log_named_uint('CUP 3 DEBT----', art3);
-    //     log_named_uint('CUP 3 INK-----', ink3);
+        tub.cage(price);
 
-    //     log_named_uint('', 0);
-    //     log_named_uint('!!DOING CAGE!!', 0);
-    //     log_named_uint('', 0);
-    //     tub.cage(price);
+        assertEq(gem.balanceOf(pot), 5 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 95 ether);
 
-    //     log_named_uint('FIX-----------', tub.fix());
+        tub.bail(cup); // 5 skr recovered, and 5 skr burnt
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
+        assertEq(skr.balanceOf(this), 55 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
 
-    //     log_named_uint('', 0);
-    //     log_named_uint('!!BAIL CUP1!!!', 0);
-    //     log_named_uint('', 0);
-    //     tub.bail(cup);
+        tub.bail(cup2); // 20 skr recovered
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
+        assertEq(skr.balanceOf(this), 75 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
 
-    //     log_named_uint('', 0);
-    //     log_named_uint('!!BAIL CUP2!!!', 0);
-    //     log_named_uint('', 0);
-    //     tub.bail(cup2);
+        tub.bail(cup3); // 20 skr recovered
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
+        assertEq(skr.balanceOf(this), 95 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
 
-    //     log_named_uint('', 0);
-    //     log_named_uint('!!BAIL CUP3!!!', 0);
-    //     log_named_uint('', 0);
-    //     tub.bail(cup3);
+        tub.cash();
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 5 ether);
 
-    //     log_named_uint('', 0);
-    //     log_named_uint('!!CASH & EXIT!', 0);
-    //     log_named_uint('', 0);
-    //     tub.cash();
-    //     tub.exit(uint128(skr.balanceOf(this)));
+        tub.exit(uint128(skr.balanceOf(this))); // exit 95 skr at price 95/95
 
-    //     log_named_uint('GEM TUB BALANC', gem.balanceOf(tub));
-    //     log_named_uint('GEM POT BALANC', gem.balanceOf(pot));
-    //     log_named_uint('GEM MY BALANCE', gem.balanceOf(this));
-    //     log_named_uint('SKR TOT SUPPLY', skr.totalSupply());
-    //     log_named_uint('SKR POT BALANC', skr.balanceOf(pot));
-    //     log_named_uint('SKR MY BALANCE', skr.balanceOf(this));
-    //     log_named_uint('SAI TOT SUPPLY', sai.totalSupply());
-    //     log_named_uint('SAI MY BALANCE', sai.balanceOf(this));
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
 
-    //     assert(false);
-    // }
+    function testThreeCupsAtCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+        var price = wdiv(1 ether, 2 ether);
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 10 ether); // Needed to payout 10 sai
+        assertEq(gem.balanceOf(tub), 90 ether);
+
+        tub.bail(cup); // 10 skr burnt
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 10 ether);
+
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 90/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+
+    function testThreeCupsUnderCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+        var price = wdiv(1 ether, 4 ether);
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 20 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 80 ether);
+
+        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 20 ether);
+
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 80/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+
+    function testThreeCupsSKRZeroValue() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+        var price = wdiv(1 ether, 20 ether);
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 100 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 0 ether);
+
+        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 0/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
 }
