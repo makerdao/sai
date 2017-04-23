@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
-export SETH_GAS=4300000
 export SOLC_FLAGS=--optimize
 
 export ETH_FROM=$(seth coinbase)
-ME=$ETH_FROM
+export ETH_GAS=4400000
 
 dapp build
 
