@@ -42,7 +42,7 @@ contract Tub is DSThing, TubEvents {
     bool     public  off;  // Killswitch
 
     uint128  public  fix;  // sai kill price (gem per sai)
-    uint128  public  par;  // ratio of skr to gem on kill
+    uint128  public  par;  // gem per skr (just before settlement)
     // TODO holder fee param
     // TODO issuer fee param
     // TODO spread?? `gap`
@@ -344,21 +344,10 @@ contract Tub is DSThing, TubEvents {
         // value of the debt in skr at settlement
         var con = wmul(wdiv(cups[cup].art, par), fix);
 
-        uint128 burn = 0;
-
-        if (pro > con) {
-            // If there is more than enough skr to cover the debt, we free the difference to lad and burn the rest
-            pot.push(skr, cups[cup].lad, decr(pro, con));
-            burn = con;
-        } else {
-            // If locked skr just covers the debt or not even that, we burn what is locked and nothing is sent to lad
-            burn = pro;
-        }
-
-        if (burn > 0) {
-            pot.push(skr, this, burn);
-            skr.burn(burn);
-        }
+        var ash = min(pro, con);  // skr taken to cover the debt
+        pot.push(skr, cups[cup].lad, decr(pro, ash));
+        pot.push(skr, this, ash);
+        skr.burn(ash);
 
         delete cups[cup];
     }
