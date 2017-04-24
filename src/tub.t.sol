@@ -75,15 +75,15 @@ contract TubTest is DSTest, DSMath {
         assertEq( tub.gem().balanceOf(tub), 0 ether );
 
         // edge case
-        assertEq( uint256(tub.per()), 1 ether );
+        assertEq( uint256(tub.per()), ray(1 ether) );
         tub.join(10 ether);
-        assertEq( uint256(tub.per()), 1 ether );
+        assertEq( uint256(tub.per()), ray(1 ether) );
 
         assertEq( tub.skr().balanceOf(this), 10 ether );
         assertEq( tub.gem().balanceOf(tub), 10 ether );
         // price formula
         tub.join(10 ether);
-        assertEq( uint256(tub.per()), 1 ether );
+        assertEq( uint256(tub.per()), ray(1 ether) );
         assertEq( tub.skr().balanceOf(this), 20 ether );
         assertEq( tub.gem().balanceOf(tub), 20 ether );
 
@@ -278,7 +278,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEqWad(tub.woe(), 5 ether);       // all good debt now bad debt
         assertEqWad(tub.fix(), 1 ether);       // sai redeems 1:1 with gem
-        assertEqWad(tub.par(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.par(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
 
         assertEq(gem.balanceOf(pot),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(tub), 25 ether);  // saved for skr
@@ -288,14 +288,14 @@ contract TubTest is DSTest, DSMath {
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.par(), 0);
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
         tub.cage(price);        // 150% collat
 
         assertEqWad(tub.fix(), wdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEqWad(tub.par(), 1 ether);               // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.par(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
         var saved = wmul(5 ether, wdiv(4 ether, 3 ether));
@@ -307,7 +307,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.par(), 0);
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
@@ -320,21 +320,21 @@ contract TubTest is DSTest, DSMath {
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.par(), 0);
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEqWad(tub.fix(), 2 ether);  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.par(), 1 ether);  // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.par(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
     }
     function testCageUnderCollat() {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.par(), 0);
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         tub.cage(price);
@@ -348,7 +348,7 @@ contract TubTest is DSTest, DSMath {
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.par(), 0);
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
@@ -466,7 +466,7 @@ contract TubTest is DSTest, DSMath {
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
         var (lad, art, ink) = tub.cups(cup);
-        var skrToRecover = decr(ink, wmul(wdiv(art, tub.par()), tub.fix()));
+        var skrToRecover = decr(ink, rmul(rdiv(art * WAD, tub.par()), tub.fix()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), skrToRecover);
@@ -626,7 +626,7 @@ contract TubTest is DSTest, DSMath {
 
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
-        var jam = wmul(tub.ink(cup), tub.per());
+        var jam = rmul(tub.ink(cup) * WAD, tub.per()) / WAD;
         var min = rmul(tub.tab(cup), tub.mat());
         return wdiv(min, jam);
     }
@@ -659,8 +659,8 @@ contract TubTest is DSTest, DSMath {
     }
     function collat(bytes32 cup) returns (uint128) {
         // compute the collateralised fraction of a cup
-        var jam = wmul(tub.ink(cup), tub.per());
-        var pro = wmul(jam, tub.tag());
+        var jam = rmul(tub.ink(cup) * WAD, tub.per());
+        var pro = rmul(jam, tub.tag());
         var con = tub.tab(cup);
         return wdiv(pro, con);
     }
@@ -713,7 +713,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.fog(), 8 ether);
 
         // 8 skr for sale
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         // get 2 skr, pay 4 sai (25% of the debt)
         var sai_before = sai.balanceOf(this);
@@ -775,7 +775,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.fog(), 0 ether);
         assertEqWad(tub.woe(), 10 ether);
         // price still 1
-        assertEqWad(tub.per(), 1 ether);
+        assertEqWad(tub.per(), ray(1 ether));
 
         // now force some minting, which flips the jar to unsafe
         assert(tub.safe(jar));
@@ -783,7 +783,7 @@ contract TubTest is DSTest, DSMath {
         assert(!tub.safe(jar));
 
         assertEqWad(tub.woe(), 0);
-        assertEqWad(tub.per(), wdiv(80 ether, 85 ether));  // 5.88% less gem/skr
+        assertEqWad(tub.per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
 
         // mug is now under parity as well
         tub.bite(mug);

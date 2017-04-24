@@ -130,13 +130,13 @@ contract Tub is DSThing, TubEvents {
 
         // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
         return skr.totalSupply() < WAD
-            ? WAD
-            : rdiv(pie(), uint128(skr.totalSupply())) / WAD;
+            ? RAY
+            : rdiv(pie(), uint128(skr.totalSupply()));
     }
 
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var jam = wmul(cups[cup].ink, per());
+        var jam = rmul(cups[cup].ink, per());
         var pro = wmul(jam, tag());
         var con = cups[cup].art;
         var min = rmul(con, mat);
@@ -144,16 +144,16 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system overcollateralized
     function safe() constant returns (bool) {
-        var jam = wmul(air(), per());
-        var pro = wmul(jam, tag());
+        var jam = rmul(air() * WAD, per());
+        var pro = rmul(jam, tag());
         var con = cast(sin.totalSupply());
         var min = rmul(con, mat);
         return (pro >= min);
     }
     // returns true if system in deficit
     function eek() constant returns (bool) {
-        var jam = wmul(air(), per());
-        var pro = wmul(jam, tag());
+        var jam = rmul(air() * WAD, per());
+        var pro = rmul(jam, tag());
         var con = cast(sin.totalSupply());
         return (pro < con);
     }
@@ -162,15 +162,14 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) note {
         aver(!off);
-        var ink = wdiv(jam, per());
+        var ink = rdiv(jam * WAD, per()) / WAD;
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
         // If last skr is being exit, we send all gem available, otherwise we calculate the equivalent gem (jam) for ink skr
-        var jam = ink == 0 ? 0 : (ink == skr.totalSupply() ? pie() : wdiv(wmul(ink, pie()), uint128(skr.totalSupply())));
-
+        var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
@@ -262,11 +261,11 @@ contract Tub is DSThing, TubEvents {
         cups[cup].art = 0;
 
         // axe the collateral
-        var tab = rmul(owe, axe);                               // amount owed inc. penalty
-        var cab = rdiv(rmul(tab, wdiv(WAD, per())), tag());     // equivalent in skr
-        var ink = cups[cup].ink;                                // available skr
+        var tab = rmul(owe, axe);                    // amount owed inc. penalty
+        var cab = wdiv(tab, rmul(tag(), per()));     // equivalent in skr
+        var ink = cups[cup].ink;                     // available skr
 
-        if (ink < cab) cab = ink;                               // take at most all the skr
+        if (ink < cab) cab = ink;                    // take at most all the skr
 
         pot.push(skr, this, cab);
         cups[cup].ink = decr(cups[cup].ink, cab);
@@ -277,7 +276,7 @@ contract Tub is DSThing, TubEvents {
         mend();
 
         // price of wad in sai
-        var ret = wmul(wmul(wad, tag()), per());
+        var ret = rmul(wmul(wad, tag()), per());
         aver(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -289,7 +288,7 @@ contract Tub is DSThing, TubEvents {
         aver(!off);
         mend();
 
-        var ret = wmul(wmul(wad, tag()), per());
+        var ret = rmul(wmul(wad, tag()), per());
         aver(ret <= woe());
 
         if (wad > fog()) skr.mint(wad - fog());
@@ -342,7 +341,7 @@ contract Tub is DSThing, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = wmul(wdiv(cups[cup].art, par), fix);
+        var con = rmul(rdiv(cups[cup].art * WAD, par), fix);
 
         var ash = min(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, decr(pro, ash));
