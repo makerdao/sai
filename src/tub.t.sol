@@ -466,7 +466,7 @@ contract TubTest is DSTest, DSMath {
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
         var (lad, art, ink) = tub.cups(cup);
-        var skrToRecover = decr(ink, rmul(rdiv(art * WAD, tub.par()), tub.fix()) / WAD);
+        var skrToRecover = decr(ink, rdiv(rmul(art, tub.fix()), tub.par()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), skrToRecover);

@@ -152,8 +152,8 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system in deficit
     function eek() constant returns (bool) {
-        var jam = rmul(wmul(air(), RAY), per());
-        var pro = rmul(jam, tag());
+        var jam = rmul(air(), per());
+        var pro = wmul(jam, tag());
         var con = cast(sin.totalSupply());
         return (pro < con);
     }
@@ -339,7 +339,7 @@ contract Tub is DSThing, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = rmul(rdiv(wmul(cups[cup].art, RAY), par), fix) / WAD;
+        var con = rdiv(rmul(cups[cup].art, fix), par);
 
         var ash = min(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, decr(pro, ash));
