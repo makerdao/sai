@@ -144,7 +144,7 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system overcollateralized
     function safe() constant returns (bool) {
-        var jam = rmul(air() * WAD, per());
+        var jam = rmul(wmul(air(), RAY), per());
         var pro = rmul(jam, tag());
         var con = cast(sin.totalSupply());
         var min = rmul(con, mat);
@@ -152,7 +152,7 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system in deficit
     function eek() constant returns (bool) {
-        var jam = rmul(air() * WAD, per());
+        var jam = rmul(wmul(air(), RAY), per());
         var pro = rmul(jam, tag());
         var con = cast(sin.totalSupply());
         return (pro < con);
@@ -162,7 +162,7 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) note {
         aver(!off);
-        var ink = rdiv(jam * WAD, per()) / WAD;
+        var ink = rdiv(wmul(jam, RAY), per()) / WAD;
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
@@ -316,9 +316,9 @@ contract Tub is DSThing, TubEvents {
         par = per();
 
         // most gems we can get per sai is the full balance
-        fix = min(wdiv(WAD, price), wdiv(pie(), woe()));
+        fix = min(rdiv(RAY, price), rdiv(wmul(pie(), RAY), wmul(woe(), RAY)));
         // gems needed to cover debt
-        var bye = wmul(fix, woe());
+        var bye = rmul(fix, woe());
 
         // put the gems backing sai in a safe place
         gem.transfer(pot, bye);
@@ -331,9 +331,7 @@ contract Tub is DSThing, TubEvents {
         sai.pull(msg.sender, hai);
         mend(hai);
 
-        // If last sai is being cashed, we send all gem available, otherwise we calculate the equivalent gem (jam) for hai sai
-        var jam = hai == 0 ? 0 : (hai == sai.totalSupply() ? gem.balanceOf(pot) : wmul(hai, fix));
-        pot.push(gem, msg.sender, uint128(jam));
+        pot.push(gem, msg.sender, rmul(hai, fix));
     }
     // retrieve skr from a cup
     function bail(bytes32 cup) note {
@@ -341,7 +339,7 @@ contract Tub is DSThing, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = rmul(rdiv(cups[cup].art * WAD, par), fix);
+        var con = rmul(rdiv(wmul(cups[cup].art, RAY), par), fix) / WAD;
 
         var ash = min(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, decr(pro, ash));
