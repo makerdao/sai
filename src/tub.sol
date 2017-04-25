@@ -144,7 +144,7 @@ contract Tub is DSThing, TubEvents {
     }
     // returns true if system overcollateralized
     function safe() constant returns (bool) {
-        var jam = rmul(wmul(air(), RAY), per());
+        var jam = rmul(air(), per());
         var pro = rmul(jam, tag());
         var con = cast(sin.totalSupply());
         var min = rmul(con, mat);
@@ -162,7 +162,7 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) note {
         aver(!off);
-        var ink = rdiv(wmul(jam, RAY), per()) / WAD;
+        var ink = rmul(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
@@ -316,7 +316,7 @@ contract Tub is DSThing, TubEvents {
         par = per();
 
         // most gems we can get per sai is the full balance
-        fix = min(rdiv(RAY, price), rdiv(wmul(pie(), RAY), wmul(woe(), RAY)));
+        fix = min(rdiv(RAY, price), rdiv(pie(), woe()));
         // gems needed to cover debt
         var bye = rmul(fix, woe());
 
