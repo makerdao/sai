@@ -4,7 +4,7 @@
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.10;
 
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
@@ -83,14 +83,14 @@ contract Tub is DSThing, TubEvents {
 
     function chop(uint128 ray) note auth {
         axe = ray;
-        aver((RAY <= axe) && (axe <= mat));
+        assert((RAY <= axe) && (axe <= mat));
     }
     function cork(uint128 wad) note auth {
         hat = wad;
     }
     function cuff(uint128 ray) note auth {
         mat = ray;
-        aver((RAY <= axe) && (axe <= mat));
+        assert((RAY <= axe) && (axe <= mat));
     }
 
     // Good debt
@@ -161,7 +161,7 @@ contract Tub is DSThing, TubEvents {
     //------------------------------------------------------------------
 
     function join(uint128 jam) note {
-        aver(!off);
+        assert(!off);
         var ink = rmul(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
@@ -176,52 +176,52 @@ contract Tub is DSThing, TubEvents {
     }
 
     function open() note returns (bytes32 cup) {
-        aver(!off);
+        assert(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
     function shut(bytes32 cup) note {
-        aver(!off);
+        assert(!off);
         wipe(cup, cups[cup].art);
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
     function lock(bytes32 cup, uint128 wad) note {
-        aver(!off);
-        aver(msg.sender == cups[cup].lad);
-        cups[cup].ink = incr(cups[cup].ink, wad);
+        assert(!off);
+        assert(msg.sender == cups[cup].lad);
+        cups[cup].ink = hadd(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
         skr.push(pot, wad);
     }
     function free(bytes32 cup, uint128 wad) note {
-        aver(!off);
-        aver(msg.sender == cups[cup].lad);
-        cups[cup].ink = decr(cups[cup].ink, wad);
-        aver(safe(cup));
+        assert(!off);
+        assert(msg.sender == cups[cup].lad);
+        cups[cup].ink = hsub(cups[cup].ink, wad);
+        assert(safe(cup));
         pot.push(skr, msg.sender, wad);
     }
 
     function draw(bytes32 cup, uint128 wad) note {
-        aver(!off);
+        assert(!off);
         // TODO poke
-        aver(msg.sender == cups[cup].lad);
-        cups[cup].art = incr(cups[cup].art, wad);
-        aver(safe(cup));
+        assert(msg.sender == cups[cup].lad);
+        cups[cup].art = hadd(cups[cup].art, wad);
+        assert(safe(cup));
 
         lend(wad);
         sin.push(pot, wad);
         sai.push(msg.sender, wad);
 
-        aver(cast(sin.totalSupply()) <= hat);
+        assert(cast(sin.totalSupply()) <= hat);
     }
     function wipe(bytes32 cup, uint128 wad) note {
         // TODO poke
-        aver(!off);
-        aver(msg.sender == cups[cup].lad);
-        cups[cup].art = decr(cups[cup].art, wad);
+        assert(!off);
+        assert(msg.sender == cups[cup].lad);
+        cups[cup].art = hsub(cups[cup].art, wad);
 
         sai.pull(msg.sender, wad);
         pot.push(sin, this, wad);
@@ -229,8 +229,8 @@ contract Tub is DSThing, TubEvents {
     }
 
     function give(bytes32 cup, address lad) note {
-        aver(msg.sender == cups[cup].lad);
-        aver(lad != 0);
+        assert(msg.sender == cups[cup].lad);
+        assert(lad != 0);
         cups[cup].lad = lad;
     }
 
@@ -245,15 +245,15 @@ contract Tub is DSThing, TubEvents {
         sin.burn(wad);
     }
     function mend() internal {
-        var omm = min(joy(), woe());
+        var omm = hmin(joy(), woe());
         mend(omm);
     }
 
     //------------------------------------------------------------------
 
     function bite(bytes32 cup) note {
-        aver(!off);
-        aver(!safe(cup));
+        assert(!off);
+        assert(!safe(cup));
 
         // take on all of the debt
         var owe = cups[cup].art;
@@ -268,16 +268,16 @@ contract Tub is DSThing, TubEvents {
         if (ink < cab) cab = ink;                    // take at most all the skr
 
         pot.push(skr, this, cab);
-        cups[cup].ink = decr(cups[cup].ink, cab);
+        cups[cup].ink = hsub(cups[cup].ink, cab);
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) note {
-        aver(!off);
+        assert(!off);
         mend();
 
         // price of wad in sai
         var ret = rmul(wmul(wad, tag()), per());
-        aver(ret <= joy());
+        assert(ret <= joy());
 
         skr.pull(msg.sender, wad);
         skr.burn(wad);
@@ -285,11 +285,11 @@ contract Tub is DSThing, TubEvents {
         sai.push(msg.sender, ret);
     }
     function bust(uint128 wad) note {
-        aver(!off);
+        assert(!off);
         mend();
 
         var ret = rmul(wmul(wad, tag()), per());
-        aver(ret <= woe());
+        assert(ret <= woe());
 
         if (wad > fog()) skr.mint(wad - fog());
         skr.push(msg.sender, wad);
@@ -304,7 +304,7 @@ contract Tub is DSThing, TubEvents {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint128 price) note auth {
-        aver(!off);
+        assert(!off);
         off = true;
 
         pot.push(sin, this);  // take on all the debt
@@ -316,7 +316,7 @@ contract Tub is DSThing, TubEvents {
         par = per();
 
         // most gems we can get per sai is the full balance
-        fix = min(rdiv(RAY, price), rdiv(pie(), woe()));
+        fix = hmin(rdiv(RAY, price), rdiv(pie(), woe()));
         // gems needed to cover debt
         var bye = rmul(fix, woe());
 
@@ -325,7 +325,7 @@ contract Tub is DSThing, TubEvents {
     }
     // exchange free sai / skr for gems after kill
     function cash() note {
-        aver(off);
+        assert(off);
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
@@ -335,14 +335,14 @@ contract Tub is DSThing, TubEvents {
     }
     // retrieve skr from a cup
     function bail(bytes32 cup) note {
-        aver(off);
+        assert(off);
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
         var con = rdiv(rmul(cups[cup].art, fix), par);
 
-        var ash = min(pro, con);  // skr taken to cover the debt
-        pot.push(skr, cups[cup].lad, decr(pro, ash));
+        var ash = hmin(pro, con);  // skr taken to cover the debt
+        pot.push(skr, cups[cup].lad, hsub(pro, ash));
         pot.push(skr, this, ash);
         skr.burn(ash);
 

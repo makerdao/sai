@@ -4,16 +4,15 @@
 // Copyright (C) 2016, 2017  Mikael Brockman <mikael@dapphub.com>
 // Copyright (C) 2016, 2017  Nikolai Mushegian <nikolai@dapphub.com>
 
-pragma solidity ^0.4.8;
+pragma solidity ^0.4.10;
 
 import "ds-auth/auth.sol";
 import "ds-note/note.sol";
-import "ds-aver/aver.sol";
 import "ds-math/math.sol";
 
 import "ds-token/token.sol";
 
-contract MakerWarp is DSNote, DSAver {
+contract MakerWarp is DSNote {
     uint64  _era;
 
     function MakerWarp() {
@@ -25,7 +24,7 @@ contract MakerWarp is DSNote, DSAver {
     }
 
     function warp(uint64 age) note {
-        aver(_era != 0);
+        assert(_era != 0);
         _era = age == 0 ? 0 : _era + age;
     }
 }
@@ -53,6 +52,6 @@ contract SaiSin is DSToken('sin', 'SIN', 18), DSMath {
     function heal() {
         var joy = cast(sai.balanceOf(msg.sender));
         var woe = cast(this.balanceOf(msg.sender));
-        mend(min(joy, woe));
+        mend(hmin(joy, woe));
     }
 }

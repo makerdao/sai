@@ -23,7 +23,7 @@ contract TubTest is DSTest, DSMath {
     DSVault tmp;
 
     function ray(uint128 wad) returns (uint128) {
-        return wad * 1 ether;
+        return wad * 10 ** 9;
     }
 
     function assertEqWad(uint128 x, uint128 y) {
@@ -466,7 +466,7 @@ contract TubTest is DSTest, DSMath {
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
         var (lad, art, ink) = tub.cups(cup);
-        var skrToRecover = decr(ink, rdiv(rmul(art, tub.fix()), tub.par()));
+        var skrToRecover = hsub(ink, rdiv(rmul(art, tub.fix()), tub.par()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), skrToRecover);
@@ -490,7 +490,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
-        var saved = rdiv(wmul(5 ether, RAY), price) / WAD;
+        var saved = rdiv(5 ether, price);
 
         assertEq(gem.balanceOf(this),  90 ether + saved);
         assertEq(gem.balanceOf(tub),   10 ether - saved);
@@ -659,8 +659,8 @@ contract TubTest is DSTest, DSMath {
     }
     function collat(bytes32 cup) returns (uint128) {
         // compute the collateralised fraction of a cup
-        var jam = rmul(tub.ink(cup) * WAD, tub.per());
-        var pro = rmul(jam, tub.tag());
+        var jam = rmul(tub.ink(cup), tub.per());
+        var pro = wmul(jam, tub.tag());
         var con = tub.tab(cup);
         return wdiv(pro, con);
     }
@@ -1003,13 +1003,13 @@ contract TubTest is DSTest, DSMath {
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), rmul(5 ether, tub.fix())); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(tub), decr(10 ether, rmul(5 ether, tub.fix())));
+        assertEq(gem.balanceOf(tub), hsub(10 ether, rmul(5 ether, tub.fix())));
 
         tub.cash();
 
         assertEq(sai.totalSupply(), 2.5 ether);
         assertEq(sai.balanceOf(person), 2.5 ether);
-        assertEq(gem.balanceOf(this), incr(90 ether, rmul(2.5 ether, tub.fix())));
+        assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
 
         person.cash();
     }
