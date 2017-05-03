@@ -162,7 +162,7 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) note {
         assert(!off);
-        var ink = rmul(jam, per());
+        var ink = rdiv(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
