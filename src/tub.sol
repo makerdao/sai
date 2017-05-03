@@ -323,7 +323,7 @@ contract Tub is DSThing, TubEvents {
         // put the gems backing sai in a safe place
         gem.transfer(pot, bye);
     }
-    // exchange free sai / skr for gems after kill
+    // exchange free sai for gems after kill
     function cash() note {
         assert(off);
 
