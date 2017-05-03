@@ -8,7 +8,7 @@ seth --jsonrpc eth_getLogs -n {} -s ${SAI_TUB?} -i address \
                                          -s "0x$(seth --to-uint256 $ETH_FROM)" -i append \
                                    -i topics \
                            -i append \
-  | paste -sd ,  `# --jsonrpc output is dejsoned :/ ` \
+  | paste -sd , - `# --jsonrpc output is dejsoned :/ ` \
   | { read j;  echo "[$j]"; } \
   | jshon -a -e data \
   | seth --to-dec
