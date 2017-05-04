@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/// sai-ray -- parse and display a 36-decimal fixed-point number
+/// sai-ray -- parse and display a 27-decimal fixed-point number
 var BigNumber = require("bignumber.js")
 var ray = process.argv[2], match
 var rpad = (x, y, n) => x + repeat(y, n - x.length)
@@ -7,11 +7,11 @@ var lpad = (x, y, n) => repeat(y, n - x.length) + x
 var repeat = (x, n) => n > 0 ? new Array(n + 1).join(x) : ""
 var toHex = ray => new BigNumber(ray.replace(".", "")).toString(16)
    
-if (match = ray.match(/^(\d+\.)(\d{1,36})$/)) {
-  ray = match[1] + rpad(match[2], "0", 36)
+if (match = ray.match(/^(\d+\.)(\d{1,27})$/)) {
+  ray = match[1] + rpad(match[2], "0", 27)
 } else if (/^0x[0-9a-f]+/.test(ray)) {
-  ray = lpad(new BigNumber(ray).toString(), "0", 36)
-  ray = ray.replace(/.{36}$/, ".$&").replace(/^\./, "0.")
+  ray = lpad(new BigNumber(ray).toString(), "0", 27)
+  ray = ray.replace(/.{27}$/, ".$&").replace(/^\./, "0.")
 } else {
   console.error("sai---ray: error: number must have decimal point")
   process.exit(1)
