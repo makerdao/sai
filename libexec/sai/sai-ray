@@ -10,7 +10,7 @@ var toHex = ray => new BigNumber(ray.replace(".", "")).toString(16)
 if (match = ray.match(/^(\d+\.)(\d{1,27})$/)) {
   ray = match[1] + rpad(match[2], "0", 27)
 } else if (/^0x[0-9a-f]+/.test(ray)) {
-  ray = lpad(new BigNumber(ray).toString(), "0", 27)
+  ray = lpad(new BigNumber(ray).toString(10), "0", 27)
   ray = ray.replace(/.{27}$/, ".$&").replace(/^\./, "0.")
 } else {
   console.error("sai---ray: error: number must have decimal point")
