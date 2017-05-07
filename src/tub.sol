@@ -168,7 +168,6 @@ contract Tub is DSThing, TubEvents {
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) note {
-        // If last skr is being exit, we send all gem available, otherwise we calculate the equivalent gem (jam) for ink skr
         var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
