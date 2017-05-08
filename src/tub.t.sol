@@ -62,8 +62,6 @@ contract TubTest is DSTest, DSMath {
         tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
-        var dad = new DSRoles(); // TODO
-
         var mom = DSAuthority(tub);
 
         sai.setOwner(mom);
@@ -479,8 +477,9 @@ contract TubTest is DSTest, DSMath {
         // at the cage price, 5 * 4 / 3 are 100% collat,
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
-        var (lad, art, ink) = tub.cups(cup);
-        var skrToRecover = hsub(ink, rdiv(rmul(art, tub.fix()), tub.par()));
+        var ink = tub.ink(cup);
+        var tab = tub.tab(cup);
+        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.par()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), skrToRecover);
@@ -1002,7 +1001,7 @@ contract TubTest is DSTest, DSMath {
     }
 
     function testPeriodicFixValue() {
-        var cup = cageSetup();
+        cageSetup();
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 10 ether);
