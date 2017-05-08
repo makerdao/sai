@@ -1062,7 +1062,7 @@ contract InvoiceScenarioTest is DSTest, DSMath {
         tub._tag().poke(bytes32(eth_price));
 
         // config
-        var payout = 10158083 ether / 100;
+        var payout = 101580.83 ether;
 
         tub.chop(ray(1 ether));      // no liquidation penalty
         tub.cork(payout);            // debt ceiling equal to total payout
@@ -1086,12 +1086,12 @@ contract InvoiceScenarioTest is DSTest, DSMath {
 
         // distribute
         var sai = tub.sai();
-        sai.push(dub, 66550 ether);
-        sai.push(fer,  118083 ether / 100);
-        sai.push(mat, 10000 ether);
-        sai.push(nik, 11000 ether);
-        sai.push(och, 10000 ether);
-        sai.push(rev,  2850 ether);
+        sai.push(dub, 66550.00 ether);
+        sai.push(fer,  1180.83 ether);
+        sai.push(mat, 10000.00 ether);
+        sai.push(nik, 11000.00 ether);
+        sai.push(och, 10000.00 ether);
+        sai.push(rev,  2850.00 ether);
 
         assertEq(sai.totalSupply(), payout);
 
