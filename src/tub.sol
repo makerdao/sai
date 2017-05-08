@@ -306,6 +306,8 @@ contract Tub is DSThing, TubEvents {
         assert(!off);
         off = true;
 
+        price = price * (RAY / WAD);  // cast up to ray for precision
+
         pot.push(sin, this);  // take on all the debt
         mend();               // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
