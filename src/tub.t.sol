@@ -11,6 +11,20 @@ import 'ds-value/value.sol';
 
 import './tub.sol';
 
+contract FakePerson {
+    Tub     tub;
+    DSToken sai;
+
+    function FakePerson(Tub _tub) {
+        tub = _tub;
+        sai = tub.sai();
+    }
+
+    function cash() {
+        sai.approve(tub, sai.balanceOf(this));
+        tub.cash();
+    }
+}
 
 contract TubTest is DSTest, DSMath {
     Tub tub;
@@ -997,7 +1011,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 0 ether); // free skr
         assertEq(skr.balanceOf(pot), 10 ether); // locked skr
 
-        FakePerson person = new FakePerson(tub, sai);
+        FakePerson person = new FakePerson(tub);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         tub.cage(price);
