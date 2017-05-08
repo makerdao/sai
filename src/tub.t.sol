@@ -1029,17 +1029,95 @@ contract TubTest is DSTest, DSMath {
     }
 }
 
-contract FakePerson {
-    Tub     tub;
-    DSToken sai;
-
-    function FakePerson(Tub _tub, DSToken _sai) {
-        tub = _tub;
-        sai = _sai;
+contract InvoiceScenarioTest is DSTest, DSMath {
+    function ray(uint128 wad) returns (uint128) {
+        return wad * 10 ** 9;
     }
 
-    function cash() {
-        sai.approve(tub, 100000 ether);
-        tub.cash();
+    function createTub(DSToken gem) returns (Tub) {
+        var sai = new DSToken("SAI", "SAI", 18);
+        var sin = new DSToken("SIN", "SIN", 18);
+        var skr = new DSToken("SKR", "SKR", 18);
+        var pot = new DSVault();
+        var tag = new DSValue();
+
+        var tub = new Tub(gem, sai, sin, skr, pot, tag);
+
+        sai.setOwner(tub);
+        sin.setOwner(tub);
+        skr.setOwner(tub);
+        pot.setOwner(tub);
+
+        return tub;
+    }
+
+    // full run through of the first live payout
+    function testPayInvoice() {
+        var eth = new DSToken("ether", "ETH", 18);
+        eth.mint(100000 ether);
+        var eth_price = 90 ether;
+
+        var tub = createTub(eth);
+
+        tub._tag().poke(bytes32(eth_price));
+
+        // config
+        var payout = 10158083 ether / 100;
+
+        tub.chop(ray(1 ether));      // no liquidation penalty
+        tub.cork(payout);            // debt ceiling equal to total payout
+        tub.cuff(ray(3 ether / 2));  // 150% floor
+
+        // initiate
+        eth.approve(tub, 5000 ether);
+        tub.join(5000 ether);
+
+        var cup = tub.open();
+        tub.skr().approve(tub, 5000 ether);
+        tub.lock(cup, 5000 ether);
+        tub.draw(cup, payout);
+
+        FakePerson dub = new FakePerson(tub);  // dapphub    - 66550
+        FakePerson fer = new FakePerson(tub);  // ferni      - 1180.83
+        FakePerson mat = new FakePerson(tub);  // matt       - 10000
+        FakePerson nik = new FakePerson(tub);  // nik        - 11000
+        FakePerson och = new FakePerson(tub);  // onchain    - 10000
+        FakePerson rev = new FakePerson(tub);  // reverendus - 2850
+
+        // distribute
+        var sai = tub.sai();
+        sai.push(dub, 66550 ether);
+        sai.push(fer,  118083 ether / 100);
+        sai.push(mat, 10000 ether);
+        sai.push(nik, 11000 ether);
+        sai.push(och, 10000 ether);
+        sai.push(rev,  2850 ether);
+
+        assertEq(sai.totalSupply(), payout);
+
+        // kill
+        var cage_price = 81 ether;
+        tub.cage(ray(cage_price));
+
+        // retrieve remaining skr from cup
+        tub.bail(cup);
+        // return collateral
+        tub.skr().approve(tub, tub.skr().balanceOf(this));
+        tub.exit(uint128(tub.skr().balanceOf(this)));
+
+        var rem = wdiv(payout, cage_price);
+        assertEq(eth.balanceOf(this), 100000 ether - rem);
+
+        // cashout -- each recipient claims eth at the cage price
+        dub.cash();
+        fer.cash();
+        mat.cash();
+        nik.cash();
+        och.cash();
+        rev.cash();
+
+        assertEq(tub.skr().balanceOf(this), 0);
+        assertEq(sai.totalSupply(), 0);
+        assertEq(tub.skr().totalSupply(), 0);
     }
 }
