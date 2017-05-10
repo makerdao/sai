@@ -10,7 +10,7 @@ import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './tub.sol';
-import './fab.sol';
+import './pay.sol';
 
 contract FakePerson {
     Tub     public tub;
