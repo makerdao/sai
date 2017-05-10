@@ -287,10 +287,11 @@ contract Tub is DSThing, TubEvents {
         assert(!off);
         mend();
 
+        if (wad > fog()) skr.mint(wad - fog());
+
         var ret = rmul(wmul(wad, tag()), per());
         assert(ret <= woe());
 
-        if (wad > fog()) skr.mint(wad - fog());
         skr.push(msg.sender, wad);
         sai.pull(msg.sender, ret);
         mend();
