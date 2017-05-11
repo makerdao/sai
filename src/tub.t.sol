@@ -10,7 +10,6 @@ import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './tub.sol';
-import './pay.sol';
 
 contract FakePerson {
     Tub     public tub;
@@ -1026,95 +1025,5 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
 
         person.cash();
-    }
-}
-
-contract TestableMayPayout is MayPayout {
-    function TestableMayPayout(address tub_) MayPayout(tub_) {
-        dap = new FakePerson(tub);
-        fer = new FakePerson(tub);
-        nik = new FakePerson(tub);
-        mar = new FakePerson(tub);
-        mat = new FakePerson(tub);
-        onc = new FakePerson(tub);
-        rev = new FakePerson(tub);
-
-        assert(address(FakePerson(dap).tub()) == tub_);
-    }
-}
-
-contract InvoiceScenarioTest is DSTest, DSMath {
-    ERC20 eth;
-    Tub   tub;
-
-    function setUp() {
-        eth = new DSToken("ether", "ETH", 18);
-        DSToken(eth).mint(100000 ether);
-
-        tub = createTub(eth);
-
-        var eth_price = 90 ether;
-        tub._tag().poke(bytes32(eth_price));
-    }
-
-    function createTub(ERC20 gem) returns (Tub) {
-        var sai = new DSToken("SAI", "SAI", 18);
-        var sin = new DSToken("SIN", "SIN", 18);
-        var skr = new DSToken("SKR", "SKR", 18);
-        var pot = new DSVault();
-        var tag = new DSValue();
-
-        var tub = new Tub(gem, sai, sin, skr, pot, tag);
-
-        sai.setOwner(tub);
-        sin.setOwner(tub);
-        skr.setOwner(tub);
-        pot.setOwner(tub);
-
-        return tub;
-    }
-
-    // full run through of the first live payout
-    function testPayInvoice() {
-        MayPayout maypay = new MayPayout(tub);
-        tub.setOwner(maypay);
-
-        assertEq(tub.owner(), maypay);
-
-        eth.approve(maypay, 2000 ether);
-        maypay.exec(81 ether);
-
-        assertEq(tub.sai().balanceOf(maypay.dap()), 66550.00 ether);
-        assertEq(tub.sai().balanceOf(maypay.fer()),  1180.83 ether);
-        assertEq(tub.sai().balanceOf(maypay.mat()), 10000.00 ether);
-        assertEq(tub.sai().balanceOf(maypay.mar()), 10000.00 ether);
-        assertEq(tub.sai().balanceOf(maypay.nik()), 11000.00 ether);
-        assertEq(tub.sai().balanceOf(maypay.onc()), 10000.00 ether);
-        assertEq(tub.sai().balanceOf(maypay.rev()),  2850.00 ether);
-    }
-    function testFakePayInvoice() {
-        MayPayout maypay = new TestableMayPayout(tub);
-        tub.setOwner(maypay);
-
-        assertEq(tub.owner(), maypay);
-
-        eth.approve(maypay, 2000 ether);
-        maypay.exec(100 ether);
-
-        FakePerson(maypay.dap()).cash();
-        FakePerson(maypay.fer()).cash();
-        FakePerson(maypay.mar()).cash();
-        FakePerson(maypay.mat()).cash();
-        FakePerson(maypay.nik()).cash();
-        FakePerson(maypay.onc()).cash();
-        FakePerson(maypay.rev()).cash();
-
-        assertEq(eth.balanceOf(maypay.dap()), 665.5000 ether);
-        assertEq(eth.balanceOf(maypay.fer()),  11.8083 ether);
-        assertEq(eth.balanceOf(maypay.mat()), 100.0000 ether);
-        assertEq(eth.balanceOf(maypay.mar()), 100.0000 ether);
-        assertEq(eth.balanceOf(maypay.nik()), 110.0000 ether);
-        assertEq(eth.balanceOf(maypay.onc()), 100.0000 ether);
-        assertEq(eth.balanceOf(maypay.rev()),  28.5000 ether);
     }
 }
