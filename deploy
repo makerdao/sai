@@ -8,19 +8,26 @@ export ETH_GAS=4400000
 
 dapp build
 
-tmp=$(mktemp)
-echo export "GEM=$(dapp create DSToken 'ETH' 'ETH' 18)" >> $tmp &
-echo export "SAI=$(dapp create DSToken 'SAI' 'SAI' 18)" >> $tmp &
-echo export "SIN=$(dapp create DSToken 'SIN' 'SIN' 18)" >> $tmp &
-echo export "SKR=$(dapp create DSToken 'SKR' 'SKR' 18)" >> $tmp &
-echo export "POT=$(dapp create DSVault)" >> $tmp &
-echo export "TAG=$(dapp create DSValue)" >> $tmp &
-wait
-source $tmp
-rm -f $tmp
+export SETH_ASYNC=yes
+GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
+SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
+SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
+SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
+POTtx=$(dapp create DSVault)
+TAGtx=$(dapp create DSValue)
+
+export SETH_ASYNC=no
+GEM=$(seth receipt $GEMtx contractAddress)
+SAI=$(seth receipt $SAItx contractAddress)
+SIN=$(seth receipt $SINtx contractAddress)
+SKR=$(seth receipt $SKRtx contractAddress)
+POT=$(seth receipt $POTtx contractAddress)
+TAG=$(seth receipt $TAGtx contractAddress)
+
 TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
 export SAI_TUB=$TUB
 
+export SETH_ASYNC=yes
 seth send $SAI "setOwner(address)" $TUB
 seth send $SIN "setOwner(address)" $TUB
 seth send $SKR "setOwner(address)" $TUB
