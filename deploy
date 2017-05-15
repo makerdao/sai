@@ -8,13 +8,16 @@ export ETH_GAS=4400000
 
 dapp build
 
-GEM=$(dapp create DSToken 'ETH' 'ETH' 18)
-SAI=$(dapp create DSToken 'SAI' 'SAI' 18)
-SIN=$(dapp create DSToken 'SIN' 'SIN' 18)
-SKR=$(dapp create DSToken 'SKR' 'SKR' 18)
-POT=$(dapp create DSVault)
-TAG=$(dapp create DSValue)
-
+tmp=$(mktemp)
+echo export "GEM=$(dapp create DSToken 'ETH' 'ETH' 18)" >> $tmp &
+echo export "SAI=$(dapp create DSToken 'SAI' 'SAI' 18)" >> $tmp &
+echo export "SIN=$(dapp create DSToken 'SIN' 'SIN' 18)" >> $tmp &
+echo export "SKR=$(dapp create DSToken 'SKR' 'SKR' 18)" >> $tmp &
+echo export "POT=$(dapp create DSVault)" >> $tmp &
+echo export "TAG=$(dapp create DSValue)" >> $tmp &
+wait
+source $tmp
+rm -f $tmp
 TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
 export SAI_TUB=$TUB
 
