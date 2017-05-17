@@ -53,7 +53,7 @@ contract SaiLPC is DSThing {
     }
 
     // lps per ref
-    function per() returns (uint128) {
+    function per() constant returns (uint128) {
         return lps.totalSupply() == 0
              ? RAY
              : rdiv(uint128(lps.totalSupply()), pie());
