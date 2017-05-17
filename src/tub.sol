@@ -128,7 +128,7 @@ contract Tub is DSThing, TubEvents {
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
 
         // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
-        return skr.totalSupply() < WAD
+        return skr.totalSupply() == 0
             ? RAY
             : rdiv(pie(), uint128(skr.totalSupply()));
     }
