@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -ex
+set -x
 
 export SOLC_FLAGS=--optimize
 
@@ -24,24 +24,29 @@ SKR=$(seth receipt $SKRtx contractAddress)
 POT=$(seth receipt $POTtx contractAddress)
 TAG=$(seth receipt $TAGtx contractAddress)
 
-TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
-export SAI_TUB=$TUB
+SAI_TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
+export SAI_TUB=$SAI_TUB
 
 export SETH_ASYNC=yes
-seth send $SAI "setOwner(address)" $TUB
-seth send $SIN "setOwner(address)" $TUB
-seth send $SKR "setOwner(address)" $TUB
-seth send $POT "setOwner(address)" $TUB
+seth send $SAI "setOwner(address)" $SAI_TUB
+seth send $SIN "setOwner(address)" $SAI_TUB
+seth send $SKR "setOwner(address)" $SAI_TUB
+seth send $POT "setOwner(address)" $SAI_TUB
 
 seth send $GEM "mint(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
 
-token approve $GEM $TUB $(seth --to-wei 100000 ETH)
-token approve $SAI $TUB $(seth --to-wei 100000 ETH)
-token approve $SKR $TUB $(seth --to-wei 100000 ETH)
+token approve $GEM $SAI_TUB $(seth --to-wei 100000 ETH)
+token approve $SAI $SAI_TUB $(seth --to-wei 100000 ETH)
+token approve $SKR $SAI_TUB $(seth --to-wei 100000 ETH)
 token approve $SKR $POT $(seth --to-wei 100000 ETH)
 
 seth send $TAG "poke(bytes32)" $(seth --to-uint256 $(seth --to-wei 1 ETH))
-seth send $TUB "cork(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
+seth send $SAI_TUB "cork(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
+
+export SETH_ASYNC=no
+LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
+LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $(seth --to-uint256 $(seth --to-wei 1.1 ETH)))
+seth send $LPS "setOwner(address)" $LPC
 
 cat > load-env << EOF
 #!/bin/bash
@@ -54,7 +59,9 @@ export SIN=$SIN
 export SKR=$SKR
 export POT=$POT
 export TAG=$TAG
-export SAI_TUB=$TUB
+export LPS=$LPS
+export LPC=$LPC
+export SAI_TUB=$SAI_TUB
 EOF
 
 echo SAI TUB DEPLOYED AT: $SAI_TUB
