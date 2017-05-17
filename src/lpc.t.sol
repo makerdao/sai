@@ -85,5 +85,13 @@ contract LPCTest is DSTest, DSMath {
         assertEqWad(lpc.pie(), 204 ether);
 
         tip.poke(bytes32(1 ether));  // 1 ref per gem
+
+        m3.pool(ref, 100 ether);
+        assertEqWad(lpc.pie(), 252 ether);
+
+        // m3 has claim to $100
+        assertEqWad(rdiv(uint128(lps.balanceOf(m3)), lpc.per()), 100 ether);
+        // but m1, m2 have less claim each
+        assertEqWad(rdiv(uint128(lps.balanceOf(m1) + lps.balanceOf(m2)), lpc.per()), 152 ether);
     }
 }
