@@ -32,8 +32,7 @@ contract Tub is DSThing, TubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    // TODO name
-    DSValue  public  _tag;  // Gem price feed (in external reference unit)
+    DSValue  public  tip;  // Gem price feed (in external reference unit)
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
@@ -69,7 +68,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tag_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tip_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
@@ -78,7 +77,7 @@ contract Tub is DSThing, TubEvents {
 
         axe = RAY;
         mat = RAY;
-        _tag = tag_;
+        tip = tip_;
     }
 
     function chop(uint128 ray) note auth {
@@ -120,7 +119,7 @@ contract Tub is DSThing, TubEvents {
 
     // Price of gem in ref
     function tag() constant returns (uint128) {
-        return uint128(_tag.read());
+        return uint128(tip.read());
     }
     // gem per skr
     function per() constant returns (uint128) {
