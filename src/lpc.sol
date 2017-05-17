@@ -77,9 +77,8 @@ contract SaiLPC is DSThing {
 
         var jam = (gem == ref) ? wad : wmul(wad, tag());
         var ink = rmul(jam, per());
-        // pay fee to exit
-        ink = wmul(gap, ink);
-        // alternative: ink = (jam == pie())? ink : wmul(gap, ink);
+        // pay fee to exit, unless you're the last out
+        ink = (jam == pie())? ink : wmul(gap, ink);
         lps.pull(msg.sender, ink);
         lps.burn(ink);
 
