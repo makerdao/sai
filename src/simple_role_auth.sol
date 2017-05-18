@@ -1,8 +1,8 @@
 pragma solidity ^0.4.8;
 
-import "ds-roles/role-auth.sol";
+import "ds-roles/roles.sol";
 
-contract SimpleRoleAuth is DSRoleAuth {
+contract SimpleRoleAuth is DSRoles {
     // role identifiers
     uint8 public admin  = 0;
     uint8 public issuer = 1;
