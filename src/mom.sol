@@ -2,13 +2,13 @@ pragma solidity ^0.4.8;
 
 import "ds-roles/roles.sol";
 
-contract SimpleRoleAuth is DSRoles {
+contract SaiMom is DSRoles {
     // role identifiers
     uint8 public admin  = 0;
     uint8 public issuer = 1;
     uint8 public holder = 2;
 
-    function SimpleRoleAuth(address target) {
+    function SaiMom(address target) {
         // == admin
         setRoleCapability(admin, target, sig("register(address)"), true);
         setRoleCapability(admin, target, sig("setVault(uint48,address)"), true);
