@@ -159,42 +159,42 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function join(uint128 jam) note {
+    function join(uint128 jam) auth note {
         assert(!off);
         var ink = rdiv(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
-    function exit(uint128 ink) note {
+    function exit(uint128 ink) auth note {
         var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
     }
 
-    function open() note returns (bytes32 cup) {
+    function open() auth note returns (bytes32 cup) {
         assert(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
-    function shut(bytes32 cup) note {
+    function shut(bytes32 cup) auth note {
         assert(!off);
         wipe(cup, cups[cup].art);
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
-    function lock(bytes32 cup, uint128 wad) note {
+    function lock(bytes32 cup, uint128 wad) auth note {
         assert(!off);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hadd(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
         skr.push(pot, wad);
     }
-    function free(bytes32 cup, uint128 wad) note {
+    function free(bytes32 cup, uint128 wad) auth note {
         assert(!off);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hsub(cups[cup].ink, wad);
@@ -202,7 +202,7 @@ contract Tub is DSThing, TubEvents {
         pot.push(skr, msg.sender, wad);
     }
 
-    function draw(bytes32 cup, uint128 wad) note {
+    function draw(bytes32 cup, uint128 wad) auth note {
         assert(!off);
         // TODO poke
         assert(msg.sender == cups[cup].lad);
@@ -215,7 +215,7 @@ contract Tub is DSThing, TubEvents {
 
         assert(cast(sin.totalSupply()) <= hat);
     }
-    function wipe(bytes32 cup, uint128 wad) note {
+    function wipe(bytes32 cup, uint128 wad) auth note {
         // TODO poke
         assert(!off);
         assert(msg.sender == cups[cup].lad);
@@ -226,7 +226,7 @@ contract Tub is DSThing, TubEvents {
         mend(wad);
     }
 
-    function give(bytes32 cup, address lad) note {
+    function give(bytes32 cup, address lad) auth note {
         assert(msg.sender == cups[cup].lad);
         assert(lad != 0);
         cups[cup].lad = lad;
@@ -249,7 +249,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function bite(bytes32 cup) note {
+    function bite(bytes32 cup) auth note {
         assert(!off);
         assert(!safe(cup));
 
@@ -269,7 +269,7 @@ contract Tub is DSThing, TubEvents {
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint128 wad) note {
+    function boom(uint128 wad) auth note {
         assert(!off);
         mend();
 
@@ -282,7 +282,7 @@ contract Tub is DSThing, TubEvents {
 
         sai.push(msg.sender, ret);
     }
-    function bust(uint128 wad) note {
+    function bust(uint128 wad) auth note {
         assert(!off);
         mend();
 
@@ -302,7 +302,7 @@ contract Tub is DSThing, TubEvents {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint128 price) note auth {
+    function cage(uint128 price) auth note {
         assert(!off);
         off = true;
 
@@ -325,7 +325,7 @@ contract Tub is DSThing, TubEvents {
         gem.transfer(pot, bye);
     }
     // exchange free sai for gems after kill
-    function cash() note {
+    function cash() auth note {
         assert(off);
 
         var hai = cast(sai.balanceOf(msg.sender));
@@ -335,7 +335,7 @@ contract Tub is DSThing, TubEvents {
         pot.push(gem, msg.sender, rmul(hai, fix));
     }
     // retrieve skr from a cup
-    function bail(bytes32 cup) note {
+    function bail(bytes32 cup) auth note {
         assert(off);
 
         var pro = cups[cup].ink;
