@@ -66,7 +66,7 @@ contract TubTest is DSTest, DSMath {
 
         mom = new SaiMom(address(tub));
         tub.setAuthority(mom);
-        mom.addAdmin(this);
+        mom.setRootUser(this, true);
 
         sai.setOwner(tub);
         sin.setOwner(tub);
@@ -1014,7 +1014,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(pot), 10 ether); // locked skr
 
         FakePerson person = new FakePerson(tub);
-        mom.addUser(person);
+        mom.setUser(person, true);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         var price = rdiv(9 ether, 8 ether);

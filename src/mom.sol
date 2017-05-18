@@ -4,17 +4,9 @@ import "ds-roles/roles.sol";
 
 contract SaiMom is DSRoles {
     // role identifiers
-    uint8 public admin  = 0;
     uint8 public user = 1;
 
     function SaiMom(address target) {
-        // == admin
-        setRoleCapability(admin, target, sig("chop(uint128)"), true);
-        setRoleCapability(admin, target, sig("cork(uint128)"), true);
-        setRoleCapability(admin, target, sig("cuff(uint128)"), true);
-        setRoleCapability(admin, target, sig("cage(uint128)"), true);
-
-        // == user
         setRoleCapability(user, target, sig("join(uint128)"), true);
         setRoleCapability(user, target, sig("exit(uint128)"), true);
         setRoleCapability(user, target, sig("open()"), true);
@@ -35,24 +27,10 @@ contract SaiMom is DSRoles {
         return bytes4(sha3(name));
     }
 
-    function addAdmin(address who) auth {
-        setUserRole(who, admin, true);
-        setUserRole(who, user, true);
-    }
-    function addUser(address who) auth {
-        setUserRole(who, user, true);
+    function setUser(address who, bool enabled) auth {
+        setUserRole(who, user, enabled);
     }
 
-    function delAdmin(address who) auth {
-        setUserRole(who, admin, false);
-    }
-    function delUser(address who) auth {
-        setUserRole(who, user, false);
-    }
-
-    function isAdmin(address who) constant returns (bool) {
-        return hasUserRole(who, admin);
-    }
     function isUser(address who) constant returns (bool) {
         return hasUserRole(who, user);
     }
