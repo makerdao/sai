@@ -10,6 +10,7 @@ import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './tub.sol';
+import './mom.sol';
 
 contract FakePerson {
     Tub     public tub;
@@ -35,6 +36,7 @@ contract TubTest is DSTest, DSMath {
     DSVault pot;
     DSValue tag;
     DSVault tmp;
+    SaiMom mom;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 10 ** 9;
@@ -62,12 +64,14 @@ contract TubTest is DSTest, DSMath {
         tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
-        var mom = DSAuthority(tub);
+        mom = new SaiMom(address(tub));
+        tub.setAuthority(mom);
+        mom.addAdmin(this);
 
-        sai.setOwner(mom);
-        sin.setOwner(mom);
-        skr.setOwner(mom);
-        pot.setOwner(mom);
+        sai.setOwner(tub);
+        sin.setOwner(tub);
+        skr.setOwner(tub);
+        pot.setOwner(tub);
 
         gem.approve(tub, 100000 ether);
         skr.approve(tub, 100000 ether);
@@ -1010,6 +1014,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(pot), 10 ether); // locked skr
 
         FakePerson person = new FakePerson(tub);
+        mom.addUser(person);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         var price = rdiv(9 ether, 8 ether);
