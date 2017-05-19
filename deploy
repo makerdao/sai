@@ -4,7 +4,7 @@ set -x
 export SOLC_FLAGS=--optimize
 
 export ETH_FROM=$(seth coinbase)
-export ETH_GAS=4400000
+export ETH_GAS=4200000
 
 dapp build
 
@@ -26,8 +26,11 @@ TAG=$(seth receipt $TAGtx contractAddress)
 
 SAI_TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
 export SAI_TUB=$SAI_TUB
+MOM=$(dapp create SaiMom $SAI_TUB)
 
 export SETH_ASYNC=yes
+seth send $SAI_TUB "setAuthority(address)" $MOM
+seth send $MOM "setRootUser(address,bool)" $ETH_FROM true
 seth send $SAI "setOwner(address)" $SAI_TUB
 seth send $SIN "setOwner(address)" $SAI_TUB
 seth send $SKR "setOwner(address)" $SAI_TUB
@@ -59,6 +62,7 @@ export SIN=$SIN
 export SKR=$SKR
 export POT=$POT
 export TAG=$TAG
+export MOM=$MOM
 export LPS=$LPS
 export LPC=$LPC
 export SAI_TUB=$SAI_TUB
