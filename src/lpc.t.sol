@@ -2,7 +2,7 @@ pragma solidity ^0.4.8;
 
 import "ds-test/test.sol";
 import './lpc.sol';
-
+import './mom.sol';
 
 contract Tester {
     SaiLPC lpc;
@@ -30,6 +30,7 @@ contract LPCTest is DSTest, DSMath {
     DSToken lps;
     DSValue tip;
     SaiLPC  lpc;
+    SaiMom  mom;
 
     Tester   t1;
     Tester   m1;
@@ -53,10 +54,19 @@ contract LPCTest is DSTest, DSMath {
         lpc = new SaiLPC(ref, alt, tip, lps, gap);
         lps.setOwner(lpc);
 
+        mom = new SaiMom(address(lpc));
+        lpc.setAuthority(mom);
+        mom.setRootUser(this, true);
+
         t1 = new Tester(lpc);
         m1 = new Tester(lpc);
         m2 = new Tester(lpc);
         m3 = new Tester(lpc);
+
+        mom.setUser(t1, true);
+        mom.setUser(m1, true);
+        mom.setUser(m2, true);
+        mom.setUser(m3, true);
 
         alt.transfer(t1, 100 ether);
         ref.transfer(m1, 100 ether);

@@ -20,7 +20,10 @@ contract SaiMom is DSRoles {
         sig("boom(uint128)"),
         sig("bust(uint128)"),
         sig("cash()"),
-        sig("bail(bytes32)")
+        sig("bail(bytes32)"),
+        sig("pool(address,uint128)"),
+        sig("exit(address,uint128)"),
+        sig("take(address,uint128)")
     ];
 
     function SaiMom(address target) {
