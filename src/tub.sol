@@ -168,7 +168,7 @@ contract Tub is DSThing, TubEvents {
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) auth note {
-        assert(reg == Stage.Usual || reg == Stage.Empty || reg == Stage.Caged );
+        assert(reg == Stage.Usual || reg == Stage.Empty );
         var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
@@ -328,7 +328,7 @@ contract Tub is DSThing, TubEvents {
     }
     // exchange free sai for gems after kill
     function cash() auth note {
-        assert(reg == Stage.Caged);
+        assert(reg == Stage.Caged || reg == Stage.Empty);
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
@@ -338,7 +338,7 @@ contract Tub is DSThing, TubEvents {
     }
     // retrieve skr from a cup
     function bail(bytes32 cup) auth note {
-        assert(reg == Stage.Caged);
+        assert(reg == Stage.Caged || reg == Stage.Empty);
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
@@ -350,5 +350,9 @@ contract Tub is DSThing, TubEvents {
         skr.burn(ash);
 
         delete cups[cup];
+    }
+    function vent() auth note {
+        assert(reg == Stage.Caged);
+        reg = Stage.Empty;
     }
 }

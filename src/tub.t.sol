@@ -395,6 +395,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
@@ -413,6 +414,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(pot),   5 ether);
 
         tub.bail(cup);
+        tub.vent();
         assertEq(skr.balanceOf(this), 25 ether);
         tub.cash();
         tub.exit(uint128(skr.balanceOf(this)));
@@ -424,7 +426,8 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testCashSafeOverCollatWithFreeSkrExitBeforeBail() {
+    function testFailCashSafeOverCollatWithFreeSkrExitBeforeBail() {
+        // fails because exit is before bail
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         tub.cage(1 ether);
@@ -441,6 +444,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         assertEq(skr.balanceOf(this), 5 ether); // skr retrieved by bail(cup)
 
         tub.exit(uint128(skr.balanceOf(this)));
@@ -463,12 +467,11 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 70 ether);
 
         tub.cash();
-        tub.exit(uint128(skr.balanceOf(this)));
         assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(skr.balanceOf(this),  20 ether);
 
         var gemBySAI = wdiv(wmul(5 ether, 4 ether), 3 ether);
-        var gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
+        var gemBySKR = 0;
 
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
         assertEq(gem.balanceOf(tub),  30 ether - gemBySAI - gemBySKR);
@@ -486,9 +489,10 @@ contract TubTest is DSTest, DSMath {
         var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.par()));
         tub.bail(cup);
 
-        assertEq(skr.balanceOf(this), skrToRecover);
+        assertEq(skr.balanceOf(this), 20 ether + skrToRecover);
         assertEq(skr.balanceOf(tub),  0 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
@@ -539,13 +543,14 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.balanceOf(this),   0 ether);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testCashAtCollatFreeSkrExitBeforeBail() {
+    function testFailCashAtCollatFreeSkrExitBeforeBail() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
@@ -571,6 +576,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
 
         // Cup did not have skr to free, then the ramaining gem in tub can not be shared as there is not more skr to exit
@@ -629,6 +635,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this),  20 ether);
         tub.bail(cup);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this),   0 ether);
         // the skr has taken a 50% loss - 10 gems returned from 20 put in
@@ -852,6 +859,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 5 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 95 skr at price 95/95
 
         assertEq(gem.balanceOf(tub), 0);
@@ -900,6 +908,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 10 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 90/90
 
         assertEq(gem.balanceOf(tub), 0);
@@ -948,6 +957,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 20 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 80/90
 
         assertEq(gem.balanceOf(tub), 0);
@@ -996,6 +1006,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 100 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 0/90
 
         assertEq(gem.balanceOf(tub), 0);
