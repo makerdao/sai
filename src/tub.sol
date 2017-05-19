@@ -38,7 +38,8 @@ contract Tub is DSThing, TubEvents {
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
 
-    bool     public  off;  // Killswitch
+    enum Stage { Usual, Caged, Empty }
+    Stage    public  reg;  // 'register'
 
     uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  par;  // gem per skr (just before settlement)
@@ -160,13 +161,14 @@ contract Tub is DSThing, TubEvents {
     //------------------------------------------------------------------
 
     function join(uint128 jam) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         var ink = rdiv(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) auth note {
+        assert(reg == Stage.Usual || reg == Stage.Empty || reg == Stage.Caged );
         var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
@@ -174,28 +176,28 @@ contract Tub is DSThing, TubEvents {
     }
 
     function open() auth note returns (bytes32 cup) {
-        assert(!off);
+        assert(reg == Stage.Usual);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
     function shut(bytes32 cup) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         wipe(cup, cups[cup].art);
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
     function lock(bytes32 cup, uint128 wad) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hadd(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
         skr.push(pot, wad);
     }
     function free(bytes32 cup, uint128 wad) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hsub(cups[cup].ink, wad);
         assert(safe(cup));
@@ -203,7 +205,7 @@ contract Tub is DSThing, TubEvents {
     }
 
     function draw(bytes32 cup, uint128 wad) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         // TODO poke
         assert(msg.sender == cups[cup].lad);
         cups[cup].art = hadd(cups[cup].art, wad);
@@ -217,7 +219,7 @@ contract Tub is DSThing, TubEvents {
     }
     function wipe(bytes32 cup, uint128 wad) auth note {
         // TODO poke
-        assert(!off);
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].art = hsub(cups[cup].art, wad);
 
@@ -250,7 +252,7 @@ contract Tub is DSThing, TubEvents {
     //------------------------------------------------------------------
 
     function bite(bytes32 cup) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         assert(!safe(cup));
 
         // take on all of the debt
@@ -270,7 +272,7 @@ contract Tub is DSThing, TubEvents {
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         mend();
 
         // price of wad in sai
@@ -283,7 +285,7 @@ contract Tub is DSThing, TubEvents {
         sai.push(msg.sender, ret);
     }
     function bust(uint128 wad) auth note {
-        assert(!off);
+        assert(reg == Stage.Usual);
         mend();
 
         if (wad > fog()) skr.mint(wad - fog());
@@ -303,8 +305,8 @@ contract Tub is DSThing, TubEvents {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint128 price) auth note {
-        assert(!off);
-        off = true;
+        assert(reg == Stage.Usual);
+        reg = Stage.Caged;
 
         price = price * (RAY / WAD);  // cast up to ray for precision
 
@@ -326,7 +328,7 @@ contract Tub is DSThing, TubEvents {
     }
     // exchange free sai for gems after kill
     function cash() auth note {
-        assert(off);
+        assert(reg == Stage.Caged);
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
@@ -336,7 +338,7 @@ contract Tub is DSThing, TubEvents {
     }
     // retrieve skr from a cup
     function bail(bytes32 cup) auth note {
-        assert(off);
+        assert(reg == Stage.Caged);
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
