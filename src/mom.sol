@@ -6,7 +6,7 @@ contract SaiMom is DSRoles {
     // role identifiers
     uint8 public user = 1;
 
-    bytes4[] public user_capabilities = [
+    bytes4[] public user_capabilities_tub = [
         sig("join(uint128)"),
         sig("exit(uint128)"),
         sig("open()"),
@@ -20,15 +20,21 @@ contract SaiMom is DSRoles {
         sig("boom(uint128)"),
         sig("bust(uint128)"),
         sig("cash()"),
-        sig("bail(bytes32)"),
+        sig("bail(bytes32)")
+    ];
+
+    bytes4[] public user_capabilities_lpc = [
         sig("pool(address,uint128)"),
         sig("exit(address,uint128)"),
         sig("take(address,uint128)")
     ];
 
-    function SaiMom(address target) {
-        for (uint i=0; i<user_capabilities.length; i++) {
-            setRoleCapability(user, target, user_capabilities[i], true);
+    function SaiMom(address tub, address lpc) {
+        for (uint i=0; i<user_capabilities_tub.length; i++) {
+            setRoleCapability(user, tub, user_capabilities_tub[i], true);
+        }
+        for (i=0; i<user_capabilities_lpc.length; i++) {
+            setRoleCapability(user, lpc, user_capabilities_lpc[i], true);
         }
     }
 

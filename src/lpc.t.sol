@@ -54,7 +54,7 @@ contract LPCTest is DSTest, DSMath {
         lpc = new SaiLPC(ref, alt, tip, lps, gap);
         lps.setOwner(lpc);
 
-        mom = new SaiMom(address(lpc));
+        mom = new SaiMom(0, address(lpc));
         lpc.setAuthority(mom);
         mom.setRootUser(this, true);
 

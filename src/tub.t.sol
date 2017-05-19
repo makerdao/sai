@@ -64,7 +64,7 @@ contract TubTest is DSTest, DSMath {
         tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
-        mom = new SaiMom(address(tub));
+        mom = new SaiMom(address(tub), 0);
         tub.setAuthority(mom);
         mom.setRootUser(this, true);
 
