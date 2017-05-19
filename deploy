@@ -4,7 +4,7 @@ set -x
 export SOLC_FLAGS=--optimize
 
 export ETH_FROM=$(seth coinbase)
-export ETH_GAS=4200000
+export ETH_GAS=4400000
 
 dapp build
 
@@ -50,6 +50,7 @@ export SETH_ASYNC=no
 LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
 LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $(seth --to-uint256 $(seth --to-wei 1.1 ETH)))
 seth send $LPS "setOwner(address)" $LPC
+seth send $LPC "setAuthority(address)" $MOM
 
 cat > load-env << EOF
 #!/bin/bash

@@ -60,7 +60,7 @@ contract SaiLPC is DSThing {
     }
 
     // {ref,alt} -> lps
-    function pool(ERC20 gem, uint128 wad) note {
+    function pool(ERC20 gem, uint128 wad) auth note {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wad : wmul(wad, tag());
@@ -72,7 +72,7 @@ contract SaiLPC is DSThing {
     }
 
     // lps -> {ref,alt}
-    function exit(ERC20 gem, uint128 wad) note {
+    function exit(ERC20 gem, uint128 wad) auth note {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wad : wmul(wad, tag());
@@ -88,7 +88,7 @@ contract SaiLPC is DSThing {
     // ref <-> alt
     // TODO: meme 'swap'?
     // TODO: mem 'yen' means to desire. pair with 'pay'? or 'ney'
-    function take(ERC20 gem, uint128 wad) note {
+    function take(ERC20 gem, uint128 wad) auth note {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wdiv(wad, tag()) : wmul(wad, tag());
