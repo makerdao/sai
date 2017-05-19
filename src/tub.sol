@@ -142,21 +142,6 @@ contract Tub is DSThing, TubEvents {
         var min = rmul(con, mat);
         return (pro >= min);
     }
-    // returns true if system overcollateralized
-    function safe() constant returns (bool) {
-        var jam = rmul(air(), per());
-        var pro = wmul(jam, tag());
-        var con = cast(sin.totalSupply());
-        var min = rmul(con, mat);
-        return (pro >= min);
-    }
-    // returns true if system in deficit
-    function eek() constant returns (bool) {
-        var jam = rmul(air(), per());
-        var pro = wmul(jam, tag());
-        var con = cast(sin.totalSupply());
-        return (pro < con);
-    }
 
     //------------------------------------------------------------------
 
