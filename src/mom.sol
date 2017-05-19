@@ -6,21 +6,27 @@ contract SaiMom is DSRoles {
     // role identifiers
     uint8 public user = 1;
 
+    bytes4[] public user_capabilities = [
+        sig("join(uint128)"),
+        sig("exit(uint128)"),
+        sig("open()"),
+        sig("shut(bytes32)"),
+        sig("lock(bytes32,uint128)"),
+        sig("free(bytes32,uint128)"),
+        sig("draw(bytes32,uint128)"),
+        sig("wipe(bytes32,uint128)"),
+        sig("give(bytes32,address)"),
+        sig("bite(bytes32)"),
+        sig("boom(uint128)"),
+        sig("bust(uint128)"),
+        sig("cash()"),
+        sig("bail(bytes32)")
+    ];
+
     function SaiMom(address target) {
-        setRoleCapability(user, target, sig("join(uint128)"), true);
-        setRoleCapability(user, target, sig("exit(uint128)"), true);
-        setRoleCapability(user, target, sig("open()"), true);
-        setRoleCapability(user, target, sig("shut(bytes32)"), true);
-        setRoleCapability(user, target, sig("lock(bytes32,uint128)"), true);
-        setRoleCapability(user, target, sig("free(bytes32,uint128)"), true);
-        setRoleCapability(user, target, sig("draw(bytes32,uint128)"), true);
-        setRoleCapability(user, target, sig("wipe(bytes32,uint128)"), true);
-        setRoleCapability(user, target, sig("give(bytes32,address)"), true);
-        setRoleCapability(user, target, sig("bite(bytes32)"), true);
-        setRoleCapability(user, target, sig("boom(uint128)"), true);
-        setRoleCapability(user, target, sig("bust(uint128)"), true);
-        setRoleCapability(user, target, sig("cash()"), true);
-        setRoleCapability(user, target, sig("bail(bytes32)"), true);
+        for (uint i=0; i<user_capabilities.length; i++) {
+            setRoleCapability(user, target, user_capabilities[i], true);
+        }
     }
 
     function sig(string name) constant returns (bytes4) {
