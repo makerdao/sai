@@ -1,28 +1,29 @@
 #!/usr/bin/env bash
-set -x
+set -ex
 
 export SOLC_FLAGS=--optimize
-
 export ETH_FROM=$(seth coinbase)
 export ETH_GAS=4200000
 
 dapp build
 
 export SETH_ASYNC=yes
-GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
+test -z $GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
+test -z $TAG && TAGtx=$(dapp create DSValue)
 SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
 SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
 SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
 POTtx=$(dapp create DSVault)
-TAGtx=$(dapp create DSValue)
-
+MOMtx=$(dapp create DSRoles)
 export SETH_ASYNC=no
-GEM=$(seth receipt $GEMtx contractAddress)
+
+test -z $GEM && GEM=$(seth receipt $GEMtx contractAddress)
+test -z $TAG && TAG=$(seth receipt $TAGtx contractAddress)
 SAI=$(seth receipt $SAItx contractAddress)
 SIN=$(seth receipt $SINtx contractAddress)
 SKR=$(seth receipt $SKRtx contractAddress)
 POT=$(seth receipt $POTtx contractAddress)
-TAG=$(seth receipt $TAGtx contractAddress)
+MOM=$(seth receipt $MOMtx contractAddress)
 
 SAI_TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
 export SAI_TUB=$SAI_TUB
@@ -32,27 +33,51 @@ seth send $SAI "setOwner(address)" $SAI_TUB
 seth send $SIN "setOwner(address)" $SAI_TUB
 seth send $SKR "setOwner(address)" $SAI_TUB
 seth send $POT "setOwner(address)" $SAI_TUB
-
-seth send $GEM "mint(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
-
-token approve $GEM $SAI_TUB $(seth --to-wei 100000 ETH)
-token approve $SAI $SAI_TUB $(seth --to-wei 100000 ETH)
-token approve $SKR $SAI_TUB $(seth --to-wei 100000 ETH)
-token approve $SKR $POT $(seth --to-wei 100000 ETH)
-
-seth send $TAG "poke(bytes32)" $(seth --to-uint256 $(seth --to-wei 1 ETH))
-seth send $SAI_TUB "cork(uint128)" $(seth --to-uint256 $(seth --to-wei 100 ETH))
-
 export SETH_ASYNC=no
+
 LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
-LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $(seth --to-uint256 $(seth --to-wei 1.1 ETH)))
-seth send $LPS "setOwner(address)" $LPC
+LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $(seth --to-uint256 $(seth --to-wei 0 ETH)))
 
-MOM=$(dapp create SaiMom $SAI_TUB $LPC)
-
+export SETH_ASYNC=yes
 seth send $SAI_TUB "setAuthority(address)" $MOM
+seth send $LPS "setOwner(address)" $LPC
 seth send $LPC "setAuthority(address)" $MOM
 seth send $MOM "setRootUser(address,bool)" $ETH_FROM true
+export SETH_ASYNC=no
+
+tub_capabilities="
+join(uint128)
+exit(uint128)
+open()
+shut(bytes32)
+lock(bytes32,uint128)
+free(bytes32,uint128)
+draw(bytes32,uint128)
+wipe(bytes32,uint128)
+give(bytes32,address)
+bite(bytes32)
+boom(uint128)
+bust(uint128)
+cash()
+bail(bytes32)
+"
+
+lpc_capabilities="
+pool(address,uint128)
+exit(address,uint128)
+take(address,uint128)
+"
+
+export SETH_ASYNC=yes
+for capability in $tub_capabilities; do
+    sig=$(seth calldata $capability)
+    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $SAI_TUB $sig true
+done
+for capability in $lpc_capabilities; do
+    sig=$(seth calldata $capability)
+    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $LPC $sig true
+done
+export SETH_ASYNC=no
 
 cat > load-env << EOF
 #!/bin/bash
