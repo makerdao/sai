@@ -1,8 +1,8 @@
 pragma solidity ^0.4.8;
 
 import "ds-test/test.sol";
+import 'ds-roles/roles.sol';
 import './lpc.sol';
-import './mom.sol';
 
 contract Tester {
     SaiLPC lpc;
@@ -30,7 +30,7 @@ contract LPCTest is DSTest, DSMath {
     DSToken lps;
     DSValue tip;
     SaiLPC  lpc;
-    SaiMom  mom;
+    DSRoles mom;
 
     Tester   t1;
     Tester   m1;
@@ -39,6 +39,12 @@ contract LPCTest is DSTest, DSMath {
 
     function assertEqWad(uint128 x, uint128 y) {
         assertEq(uint256(x), uint256(y));
+    }
+
+    function setRoles(DSRoles mom, address lpc) {
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("pool(address,uint128)")), true);
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("exit(address,uint128)")), true);
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("take(address,uint128)")), true);
     }
 
     function setUp() {
@@ -54,19 +60,20 @@ contract LPCTest is DSTest, DSMath {
         lpc = new SaiLPC(ref, alt, tip, lps, gap);
         lps.setOwner(lpc);
 
-        mom = new SaiMom(0, address(lpc));
+        mom = new DSRoles();
         lpc.setAuthority(mom);
         mom.setRootUser(this, true);
+        setRoles(mom, address(lpc));
 
         t1 = new Tester(lpc);
         m1 = new Tester(lpc);
         m2 = new Tester(lpc);
         m3 = new Tester(lpc);
 
-        mom.setUser(t1, true);
-        mom.setUser(m1, true);
-        mom.setUser(m2, true);
-        mom.setUser(m3, true);
+        mom.setUserRole(t1, 1, true);
+        mom.setUserRole(m1, 1, true);
+        mom.setUserRole(m2, 1, true);
+        mom.setUserRole(m3, 1, true);
 
         alt.transfer(t1, 100 ether);
         ref.transfer(m1, 100 ether);

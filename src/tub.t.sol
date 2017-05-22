@@ -10,7 +10,6 @@ import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './tub.sol';
-import './mom.sol';
 
 contract FakePerson {
     Tub     public tub;
@@ -28,7 +27,7 @@ contract FakePerson {
 }
 
 contract TubTest is DSTest, DSMath {
-    Tub tub;
+    Tub     tub;
     DSToken gem;
     DSToken sai;
     DSToken sin;
@@ -36,7 +35,7 @@ contract TubTest is DSTest, DSMath {
     DSVault pot;
     DSValue tag;
     DSVault tmp;
-    SaiMom mom;
+    DSRoles mom;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 10 ** 9;
@@ -48,6 +47,23 @@ contract TubTest is DSTest, DSMath {
 
     function mark(uint128 price) {
         tag.poke(bytes32(price));
+    }
+
+    function setRoles(DSRoles, address tub) {
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("join(uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("exit(uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("open()")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("shut(bytes32)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("lock(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("free(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("draw(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("wipe(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("give(bytes32,address)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("bite(bytes32)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("boom(uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("bust(uint128)")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("cash()")), true);
+        mom.setRoleCapability(1, address(tub), bytes4(sha3("bail(bytes32)")), true);
     }
 
     function setUp() {
@@ -64,9 +80,10 @@ contract TubTest is DSTest, DSMath {
         tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
-        mom = new SaiMom(address(tub), 0);
+        mom = new DSRoles();
         tub.setAuthority(mom);
         mom.setRootUser(this, true);
+        setRoles(mom, address(tub));
 
         sai.setOwner(tub);
         sin.setOwner(tub);
@@ -1025,7 +1042,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(pot), 10 ether); // locked skr
 
         FakePerson person = new FakePerson(tub);
-        mom.setUser(person, true);
+        mom.setUserRole(person, 1, true);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         var price = rdiv(9 ether, 8 ether);
