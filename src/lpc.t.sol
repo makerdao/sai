@@ -57,7 +57,8 @@ contract LPCTest is DSTest, DSMath {
 
         var gap = 1.04 ether;
 
-        lpc = new SaiLPC(ref, alt, tip, lps, gap);
+        lpc = new SaiLPC(ref, alt, tip, lps);
+        lpc.jump(gap);
         lps.setOwner(lpc);
 
         mom = new DSRoles();

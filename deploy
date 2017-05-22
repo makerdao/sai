@@ -36,7 +36,7 @@ seth send $POT "setOwner(address)" $SAI_TUB
 export SETH_ASYNC=no
 
 LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
-LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $(seth --to-uint256 $(seth --to-wei 1 ETH)))
+LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS)
 
 export SETH_ASYNC=yes
 seth send $SAI_TUB "setAuthority(address)" $MOM

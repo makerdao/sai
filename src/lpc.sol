@@ -32,13 +32,18 @@ contract SaiLPC is DSThing {
     uint128  public  gap;  // spread, charged on `take`
     DSToken  public  lps;  // 'liquidity provider shares', earns spread
 
-    function SaiLPC(ERC20 ref_, ERC20 alt_, DSValue tip_, DSToken lps_, uint128 gap_) {
+    function SaiLPC(ERC20 ref_, ERC20 alt_, DSValue tip_, DSToken lps_) {
         ref = ref_;
         alt = alt_;
         tip = tip_;
 
         lps = lps_;
-        gap = gap_;
+        gap = WAD;
+    }
+
+    function jump(uint128 wad) auth note {
+        assert(wad != 0);
+        gap = wad;
     }
 
     // ref per alt
