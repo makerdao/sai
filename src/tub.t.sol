@@ -49,21 +49,21 @@ contract TubTest is DSTest, DSMath {
         tag.poke(bytes32(price));
     }
 
-    function setRoles(DSRoles, address tub) {
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("join(uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("exit(uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("open()")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("shut(bytes32)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("lock(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("free(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("draw(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("wipe(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("give(bytes32,address)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("bite(bytes32)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("boom(uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("bust(uint128)")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("cash()")), true);
-        mom.setRoleCapability(1, address(tub), bytes4(sha3("bail(bytes32)")), true);
+    function setRoles() {
+        mom.setRoleCapability(1, tub, bytes4(sha3("join(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("shut(bytes32)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("lock(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("free(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("draw(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("wipe(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("give(bytes32,address)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bite(bytes32)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("boom(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bust(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("cash()")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bail(bytes32)")), true);
     }
 
     function setUp() {
@@ -83,7 +83,7 @@ contract TubTest is DSTest, DSMath {
         mom = new DSRoles();
         tub.setAuthority(mom);
         mom.setRootUser(this, true);
-        setRoles(mom, address(tub));
+        setRoles();
 
         sai.setOwner(tub);
         sin.setOwner(tub);

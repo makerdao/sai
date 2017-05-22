@@ -41,7 +41,7 @@ contract LPCTest is DSTest, DSMath {
         assertEq(uint256(x), uint256(y));
     }
 
-    function setRoles(DSRoles mom, address lpc) {
+    function setRoles() {
         mom.setRoleCapability(1, address(lpc), bytes4(sha3("pool(address,uint128)")), true);
         mom.setRoleCapability(1, address(lpc), bytes4(sha3("exit(address,uint128)")), true);
         mom.setRoleCapability(1, address(lpc), bytes4(sha3("take(address,uint128)")), true);
@@ -63,7 +63,7 @@ contract LPCTest is DSTest, DSMath {
         mom = new DSRoles();
         lpc.setAuthority(mom);
         mom.setRootUser(this, true);
-        setRoles(mom, address(lpc));
+        setRoles();
 
         t1 = new Tester(lpc);
         m1 = new Tester(lpc);
