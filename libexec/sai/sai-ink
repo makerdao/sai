@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-ink -- get how much skr collateral in a cup
+### sai-ink -- get the amount of skr collateral locked in a cup
 set -e
 wad=$(seth call "${SAI_TUB?}" "ink(bytes32)" "${SAI_CUP?}")
 sai wad -h "$wad"
