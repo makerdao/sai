@@ -4,4 +4,4 @@ set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Caging the tub, final price $wad"
 wad=$(sai wad "$1")
-(set -x; seth send "${SAI_TUB?}" "kill(uint128)" "$wad")
+(set -x; seth send "${SAI_TUB?}" "cage(uint128)" "$wad")

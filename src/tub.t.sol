@@ -11,9 +11,23 @@ import 'ds-value/value.sol';
 
 import './tub.sol';
 
+contract FakePerson {
+    Tub     public tub;
+    DSToken public sai;
+
+    function FakePerson(Tub _tub) {
+        tub = _tub;
+        sai = tub.sai();
+    }
+
+    function cash() {
+        sai.approve(tub, sai.balanceOf(this));
+        tub.cash();
+    }
+}
 
 contract TubTest is DSTest, DSMath {
-    Tub tub;
+    Tub     tub;
     DSToken gem;
     DSToken sai;
     DSToken sin;
@@ -21,6 +35,7 @@ contract TubTest is DSTest, DSMath {
     DSVault pot;
     DSValue tag;
     DSVault tmp;
+    DSRoles mom;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 10 ** 9;
@@ -32,6 +47,23 @@ contract TubTest is DSTest, DSMath {
 
     function mark(uint128 price) {
         tag.poke(bytes32(price));
+    }
+
+    function setRoles() {
+        mom.setRoleCapability(1, tub, bytes4(sha3("join(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("shut(bytes32)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("lock(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("free(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("draw(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("wipe(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("give(bytes32,address)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bite(bytes32)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("boom(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bust(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("cash()")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bail(bytes32)")), true);
     }
 
     function setUp() {
@@ -48,14 +80,15 @@ contract TubTest is DSTest, DSMath {
         tag = new DSValue();
         tub = new Tub(gem, sai, sin, skr, pot, tag);
 
-        var dad = new DSRoles(); // TODO
+        mom = new DSRoles();
+        tub.setAuthority(mom);
+        mom.setRootUser(this, true);
+        setRoles();
 
-        var mom = DSAuthority(tub);
-
-        sai.setOwner(mom);
-        sin.setOwner(mom);
-        skr.setOwner(mom);
-        pot.setOwner(mom);
+        sai.setOwner(tub);
+        sin.setOwner(tub);
+        skr.setOwner(tub);
+        pot.setOwner(tub);
 
         gem.approve(tub, 100000 ether);
         skr.approve(tub, 100000 ether);
@@ -274,7 +307,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.pie(), 10 ether);
 
         tub.join(20 ether);   // give us some more skr
-        tub.cage(ray(1 ether));
+        tub.cage(1 ether);
 
         assertEqWad(tub.woe(), 5 ether);       // all good debt now bad debt
         assertEqWad(tub.fix(), ray(1 ether));       // sai redeems 1:1 with gem
@@ -291,14 +324,14 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(3 ether), ray(4 ether));
+        var price = wdiv(3 ether, 4 ether);
         tub.cage(price);        // 150% collat
 
-        assertEqWad(tub.fix(), rdiv(ray(1 ether), price));  // sai redeems 4:3 with gem
+        assertEqWad(tub.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
         assertEqWad(tub.par(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
-        var saved = rmul(5 ether, rdiv(ray(4 ether), ray(3 ether)));
+        var saved = rmul(5 ether, rdiv(WAD, price));
         assertEq(gem.balanceOf(pot),  saved);             // saved for sai
         assertEq(gem.balanceOf(tub),  30 ether - saved);  // saved for skr
     }
@@ -309,7 +342,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.par(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
-        var price = rdiv(ray(1 ether), ray(2 ether));  // 100% collat
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
@@ -323,7 +356,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(1 ether), ray(2 ether));  // 100% collat
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
@@ -336,7 +369,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.par(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
-        var price = rdiv(ray(1 ether), ray(4 ether));   // 50% collat
+        var price = wdiv(1 ether, 4 ether);   // 50% collat
         tub.cage(price);
 
         assertEq(2 * sai.totalSupply(), gem.balanceOf(pot));
@@ -351,7 +384,7 @@ contract TubTest is DSTest, DSMath {
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(1 ether), ray(4 ether));   // 50% collat
+        var price = wdiv(1 ether, 4 ether);   // 50% collat
         tub.cage(price);
 
         assertEq(4 * sai.totalSupply(), gem.balanceOf(pot));
@@ -361,7 +394,7 @@ contract TubTest is DSTest, DSMath {
     // ensure cash returns the expected amount
     function testCashSafeOverCollat() {
         var cup = cageSetup();
-        tub.cage(ray(1 ether));
+        tub.cage(1 ether);
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
@@ -379,6 +412,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
@@ -388,7 +422,7 @@ contract TubTest is DSTest, DSMath {
     function testCashSafeOverCollatWithFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        tub.cage(ray(1 ether));
+        tub.cage(1 ether);
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
@@ -397,6 +431,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(pot),   5 ether);
 
         tub.bail(cup);
+        tub.vent();
         assertEq(skr.balanceOf(this), 25 ether);
         tub.cash();
         tub.exit(uint128(skr.balanceOf(this)));
@@ -408,10 +443,11 @@ contract TubTest is DSTest, DSMath {
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testCashSafeOverCollatWithFreeSkrExitBeforeBail() {
+    function testFailCashSafeOverCollatWithFreeSkrExitBeforeBail() {
+        // fails because exit is before bail
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        tub.cage(ray(1 ether));
+        tub.cage(1 ether);
 
         tub.cash();
         tub.exit(uint128(skr.balanceOf(this)));
@@ -425,6 +461,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         assertEq(skr.balanceOf(this), 5 ether); // skr retrieved by bail(cup)
 
         tub.exit(uint128(skr.balanceOf(this)));
@@ -439,7 +476,7 @@ contract TubTest is DSTest, DSMath {
     function testCashUnsafeOverCollat() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(3 ether), ray(4 ether));
+        var price = wdiv(3 ether, 4 ether);
         tub.cage(price);        // 150% collat
 
         assertEq(sai.balanceOf(this),  5 ether);
@@ -447,12 +484,11 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), 70 ether);
 
         tub.cash();
-        tub.exit(uint128(skr.balanceOf(this)));
         assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(skr.balanceOf(this),  20 ether);
 
         var gemBySAI = wdiv(wmul(5 ether, 4 ether), 3 ether);
-        var gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
+        var gemBySKR = 0;
 
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
         assertEq(gem.balanceOf(tub),  30 ether - gemBySAI - gemBySKR);
@@ -465,13 +501,15 @@ contract TubTest is DSTest, DSMath {
         // at the cage price, 5 * 4 / 3 are 100% collat,
         // leaving 10 - 5 * 4 / 3 as excess = 3.333
         // this should all be returned
-        var (lad, art, ink) = tub.cups(cup);
-        var skrToRecover = hsub(ink, rdiv(rmul(art, tub.fix()), tub.par()));
+        var ink = tub.ink(cup);
+        var tab = tub.tab(cup);
+        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.par()));
         tub.bail(cup);
 
-        assertEq(skr.balanceOf(this), skrToRecover);
+        assertEq(skr.balanceOf(this), 20 ether + skrToRecover);
         assertEq(skr.balanceOf(tub),  0 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
@@ -480,7 +518,7 @@ contract TubTest is DSTest, DSMath {
     }
     function testCashAtCollat() {
         var cup = cageSetup();
-        var price = rdiv(ray(1 ether), ray(2 ether));  // 100% collat
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEq(sai.balanceOf(this),  5 ether);
@@ -490,7 +528,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
-        var saved = rdiv(5 ether, price);
+        var saved = rmul(5 ether, rdiv(WAD, price));
 
         assertEq(gem.balanceOf(this),  90 ether + saved);
         assertEq(gem.balanceOf(tub),   10 ether - saved);
@@ -511,7 +549,7 @@ contract TubTest is DSTest, DSMath {
     function testCashAtCollatFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(1 ether), ray(2 ether));  // 100% collat
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEq(sai.balanceOf(this),   5 ether);
@@ -522,16 +560,17 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.balanceOf(this),   0 ether);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(skr.totalSupply(), 0);
     }
-    function testCashAtCollatFreeSkrExitBeforeBail() {
+    function testFailCashAtCollatFreeSkrExitBeforeBail() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(1 ether), ray(2 ether));  // 100% collat
+        var price = wdiv(1 ether, 2 ether);  // 100% collat
         tub.cage(price);
 
         assertEq(sai.balanceOf(this),  5 ether);
@@ -554,6 +593,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sin.totalSupply(), 0);
 
         tub.bail(cup);
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
 
         // Cup did not have skr to free, then the ramaining gem in tub can not be shared as there is not more skr to exit
@@ -564,7 +604,7 @@ contract TubTest is DSTest, DSMath {
     }
     function testCashUnderCollat() {
         var cup = cageSetup();
-        var price = rdiv(ray(1 ether), ray(4 ether));  // 50% collat
+        var price = wdiv(1 ether, 4 ether);  // 50% collat
         tub.cage(price);
 
         assertEq(sai.balanceOf(this),  5 ether);
@@ -595,7 +635,7 @@ contract TubTest is DSTest, DSMath {
     function testCashUnderCollatFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        var price = rdiv(ray(1 ether), ray(4 ether));   // 50% collat
+        var price = wdiv(1 ether, 4 ether);   // 50% collat
         tub.cage(price);
 
         tmp.pull(skr, this);  // stash skr
@@ -612,6 +652,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this),  20 ether);
         tub.bail(cup);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this),   0 ether);
         // the skr has taken a 50% loss - 10 gems returned from 20 put in
@@ -802,7 +843,6 @@ contract TubTest is DSTest, DSMath {
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-        var price = ray(1 ether);
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 100 ether);
@@ -810,6 +850,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(pot), 50 ether); // locked skr
 
+        var price = 1 ether;
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), 5 ether); // Needed to payout 5 sai
@@ -835,6 +876,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 5 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 95 skr at price 95/95
 
         assertEq(gem.balanceOf(tub), 0);
@@ -850,7 +892,6 @@ contract TubTest is DSTest, DSMath {
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-        var price = rdiv(ray(1 ether), ray(2 ether));
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 100 ether);
@@ -858,6 +899,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(pot), 50 ether); // locked skr
 
+        var price = wdiv(1 ether, 2 ether);
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), 10 ether); // Needed to payout 10 sai
@@ -883,6 +925,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 10 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 90/90
 
         assertEq(gem.balanceOf(tub), 0);
@@ -898,7 +941,6 @@ contract TubTest is DSTest, DSMath {
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-        var price = rdiv(ray(1 ether), ray(4 ether));
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 100 ether);
@@ -906,6 +948,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(pot), 50 ether); // locked skr
 
+        var price = wdiv(1 ether, 4 ether);
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), 20 ether); // Needed to payout 5 sai
@@ -931,6 +974,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 20 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 80/90
 
         assertEq(gem.balanceOf(tub), 0);
@@ -946,7 +990,6 @@ contract TubTest is DSTest, DSMath {
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-        var price = rdiv(ray(1 ether), ray(20 ether));
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 100 ether);
@@ -954,6 +997,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(pot), 50 ether); // locked skr
 
+        var price = wdiv(1 ether, 20 ether);
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), 100 ether); // Needed to payout 5 sai
@@ -979,6 +1023,7 @@ contract TubTest is DSTest, DSMath {
         assertEq(sai.totalSupply(), 0);
         assertEq(gem.balanceOf(this), 100 ether);
 
+        tub.vent();
         tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 0/90
 
         assertEq(gem.balanceOf(tub), 0);
@@ -988,8 +1033,7 @@ contract TubTest is DSTest, DSMath {
     }
 
     function testPeriodicFixValue() {
-        var cup = cageSetup();
-        var price = rdiv(ray(9 ether), ray(8 ether));
+        cageSetup();
 
         assertEq(gem.balanceOf(pot), 0);
         assertEq(gem.balanceOf(tub), 10 ether);
@@ -997,9 +1041,11 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.balanceOf(this), 0 ether); // free skr
         assertEq(skr.balanceOf(pot), 10 ether); // locked skr
 
-        FakePerson person = new FakePerson(tub, sai);
+        FakePerson person = new FakePerson(tub);
+        mom.setUserRole(person, 1, true);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
+        var price = rdiv(9 ether, 8 ether);
         tub.cage(price);
 
         assertEq(gem.balanceOf(pot), rmul(5 ether, tub.fix())); // Needed to payout 5 sai
@@ -1012,20 +1058,5 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
 
         person.cash();
-    }
-}
-
-contract FakePerson {
-    Tub     tub;
-    DSToken sai;
-
-    function FakePerson(Tub _tub, DSToken _sai) {
-        tub = _tub;
-        sai = _sai;
-    }
-
-    function cash() {
-        sai.approve(tub, 100000 ether);
-        tub.cash();
     }
 }

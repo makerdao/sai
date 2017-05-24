@@ -32,14 +32,14 @@ contract Tub is DSThing, TubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    // TODO name
-    DSValue  public  _tag;  // Gem price feed (in external reference unit)
+    DSValue  public  tip;  // Gem price feed (in external reference unit)
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
 
-    bool     public  off;  // Killswitch
+    enum Stage { Usual, Caged, Empty }
+    Stage    public  reg;  // 'register'
 
     uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  par;  // gem per skr (just before settlement)
@@ -69,7 +69,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tag_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tip_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
@@ -78,7 +78,7 @@ contract Tub is DSThing, TubEvents {
 
         axe = RAY;
         mat = RAY;
-        _tag = tag_;
+        tip = tip_;
     }
 
     function chop(uint128 ray) note auth {
@@ -120,7 +120,7 @@ contract Tub is DSThing, TubEvents {
 
     // Price of gem in ref
     function tag() constant returns (uint128) {
-        return uint128(_tag.read());
+        return uint128(tip.read());
     }
     // gem per skr
     function per() constant returns (uint128) {
@@ -129,7 +129,7 @@ contract Tub is DSThing, TubEvents {
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
 
         // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
-        return skr.totalSupply() < WAD
+        return skr.totalSupply() == 0
             ? RAY
             : rdiv(pie(), uint128(skr.totalSupply()));
     }
@@ -142,70 +142,55 @@ contract Tub is DSThing, TubEvents {
         var min = rmul(con, mat);
         return (pro >= min);
     }
-    // returns true if system overcollateralized
-    function safe() constant returns (bool) {
-        var jam = rmul(air(), per());
-        var pro = wmul(jam, tag());
-        var con = cast(sin.totalSupply());
-        var min = rmul(con, mat);
-        return (pro >= min);
-    }
-    // returns true if system in deficit
-    function eek() constant returns (bool) {
-        var jam = rmul(air(), per());
-        var pro = wmul(jam, tag());
-        var con = cast(sin.totalSupply());
-        return (pro < con);
-    }
 
     //------------------------------------------------------------------
 
-    function join(uint128 jam) note {
-        assert(!off);
-        var ink = rmul(jam, per());
+    function join(uint128 jam) auth note {
+        assert(reg == Stage.Usual);
+        var ink = rdiv(jam, per());
         gem.transferFrom(msg.sender, this, jam);
         skr.mint(ink);
         skr.push(msg.sender, ink);
     }
-    function exit(uint128 ink) note {
-        // If last skr is being exit, we send all gem available, otherwise we calculate the equivalent gem (jam) for ink skr
+    function exit(uint128 ink) auth note {
+        assert(reg == Stage.Usual || reg == Stage.Empty );
         var jam = rmul(ink, per());
         skr.pull(msg.sender, ink);
         skr.burn(ink);
         gem.transfer(msg.sender, jam);
     }
 
-    function open() note returns (bytes32 cup) {
-        assert(!off);
+    function open() auth note returns (bytes32 cup) {
+        assert(reg == Stage.Usual);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
-    function shut(bytes32 cup) note {
-        assert(!off);
+    function shut(bytes32 cup) auth note {
+        assert(reg == Stage.Usual);
         wipe(cup, cups[cup].art);
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
-    function lock(bytes32 cup, uint128 wad) note {
-        assert(!off);
+    function lock(bytes32 cup, uint128 wad) auth note {
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hadd(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
         skr.push(pot, wad);
     }
-    function free(bytes32 cup, uint128 wad) note {
-        assert(!off);
+    function free(bytes32 cup, uint128 wad) auth note {
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hsub(cups[cup].ink, wad);
         assert(safe(cup));
         pot.push(skr, msg.sender, wad);
     }
 
-    function draw(bytes32 cup, uint128 wad) note {
-        assert(!off);
+    function draw(bytes32 cup, uint128 wad) auth note {
+        assert(reg == Stage.Usual);
         // TODO poke
         assert(msg.sender == cups[cup].lad);
         cups[cup].art = hadd(cups[cup].art, wad);
@@ -217,9 +202,9 @@ contract Tub is DSThing, TubEvents {
 
         assert(cast(sin.totalSupply()) <= hat);
     }
-    function wipe(bytes32 cup, uint128 wad) note {
+    function wipe(bytes32 cup, uint128 wad) auth note {
         // TODO poke
-        assert(!off);
+        assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].art = hsub(cups[cup].art, wad);
 
@@ -228,7 +213,7 @@ contract Tub is DSThing, TubEvents {
         mend(wad);
     }
 
-    function give(bytes32 cup, address lad) note {
+    function give(bytes32 cup, address lad) auth note {
         assert(msg.sender == cups[cup].lad);
         assert(lad != 0);
         cups[cup].lad = lad;
@@ -251,8 +236,8 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function bite(bytes32 cup) note {
-        assert(!off);
+    function bite(bytes32 cup) auth note {
+        assert(reg == Stage.Usual);
         assert(!safe(cup));
 
         // take on all of the debt
@@ -271,8 +256,8 @@ contract Tub is DSThing, TubEvents {
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint128 wad) note {
-        assert(!off);
+    function boom(uint128 wad) auth note {
+        assert(reg == Stage.Usual);
         mend();
 
         // price of wad in sai
@@ -284,14 +269,15 @@ contract Tub is DSThing, TubEvents {
 
         sai.push(msg.sender, ret);
     }
-    function bust(uint128 wad) note {
-        assert(!off);
+    function bust(uint128 wad) auth note {
+        assert(reg == Stage.Usual);
         mend();
+
+        if (wad > fog()) skr.mint(wad - fog());
 
         var ret = rmul(wmul(wad, tag()), per());
         assert(ret <= woe());
 
-        if (wad > fog()) skr.mint(wad - fog());
         skr.push(msg.sender, wad);
         sai.pull(msg.sender, ret);
         mend();
@@ -303,9 +289,11 @@ contract Tub is DSThing, TubEvents {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint128 price) note auth {
-        assert(!off);
-        off = true;
+    function cage(uint128 price) auth note {
+        assert(reg == Stage.Usual);
+        reg = Stage.Caged;
+
+        price = price * (RAY / WAD);  // cast up to ray for precision
 
         pot.push(sin, this);  // take on all the debt
         mend();               // absorb any pending fees
@@ -323,9 +311,9 @@ contract Tub is DSThing, TubEvents {
         // put the gems backing sai in a safe place
         gem.transfer(pot, bye);
     }
-    // exchange free sai / skr for gems after kill
-    function cash() note {
-        assert(off);
+    // exchange free sai for gems after kill
+    function cash() auth note {
+        assert(reg == Stage.Caged || reg == Stage.Empty);
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
@@ -334,8 +322,8 @@ contract Tub is DSThing, TubEvents {
         pot.push(gem, msg.sender, rmul(hai, fix));
     }
     // retrieve skr from a cup
-    function bail(bytes32 cup) note {
-        assert(off);
+    function bail(bytes32 cup) auth note {
+        assert(reg == Stage.Caged || reg == Stage.Empty);
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
@@ -347,5 +335,9 @@ contract Tub is DSThing, TubEvents {
         skr.burn(ash);
 
         delete cups[cup];
+    }
+    function vent() auth note {
+        assert(reg == Stage.Caged);
+        reg = Stage.Empty;
     }
 }
