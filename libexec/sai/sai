@@ -50,7 +50,7 @@ while [[ $1 ]]; do
   case $1 in
     --)              shift; break;;
 
-    -C|--cup)        shift; export SAI_CUP=$1;;
+    -C|--cup)        shift; export SAI_CUP="0x$(seth --to-uint256 $1)";;
        --tub)        shift; export SAI_TUB=$1;;
     
     -F|--from)       shift; export ETH_FROM=$1;;
