@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ### sai-cup -- show the cup info
 set -e
-echo >&2 "cup id $((10#${SAI_CUP?}))..."
+echo >&2 "cup id $((${SAI_CUP?}))..."
 echo "lad: $(sai lad)"
 echo "tab: $(sai tab)"
 echo "ink: $(sai ink)"
