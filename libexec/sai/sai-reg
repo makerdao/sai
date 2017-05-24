@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+### sai-reg -- get the tub stage ('register')
+set -e
+off=$(seth call "${SAI_TUB?}" 'reg()')
+reg=$(seth --to-dec $(seth --to-hexdata $(seth --abi-decode 'f()(uint256)' "$off")))
+
+case "$reg" in
+  "0") echo "Usual" ;;
+  "1") echo "Caged" ;;
+  "2") echo "Empty" ;;
+  *) echo "unknown"; exit -1
+esac
