@@ -18,7 +18,7 @@
 ### Sai options:
 ###
 ###    -C, --cup=<id>             ID of cup to perform operation on
-###        --tub=<address>        address of cup to perform operation on
+###        --tub=<address>        address of tub to perform operation on
 ###
 ### Transaction options:
 ###
@@ -30,7 +30,7 @@ sai <command> --help
 --
   Options
 C,cup=id             ID of cup to perform operation on
-tub=address          address of tub (default: \`@sai_tub')
+tub=address          address of tub to perform operation on
 F,from=address       account from which to send transaction
 G,gas=number         amount of gas to provide with transaction
 h                    display output in human-readable form
