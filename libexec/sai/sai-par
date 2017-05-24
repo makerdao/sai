@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-par -- get the gem per skr price just before settlement
+set -e
+wad=$(seth call "${SAI_TUB?}" "par()")
+sai wad -h "$wad"
