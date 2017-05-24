@@ -2,6 +2,6 @@
 ### sai-lock -- post additional SKR collateral to a cup
 set -e
 wad=$(sai wad -h "$1")
-echo >&2 "Locking $wad SKR in cup ${SAI_CUP?}..."
+echo >&2 "Locking $wad SKR in cup $((${SAI_CUP?}))..."
 wad=$(sai wad "$1")
 (set -x; seth send "${SAI_TUB?}" "lock(bytes32,uint128)" "$SAI_CUP" "$wad")

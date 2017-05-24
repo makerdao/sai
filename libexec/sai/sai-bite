@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 ### sai-bite -- initiate liquidation of an undercollateral cup
 set -e
-echo >&2 "Attempting to bite cup id $((10#${SAI_CUP?}))..."
+echo >&2 "Attempting to bite cup id $((${SAI_CUP?}))..."
 safe=$(sai safe)
 [[ $safe = true ]] && { echo >&2 "${0##*/}: error: cup not unsafe"; exit 1; }
 (set -x; seth send "${SAI_TUB?}" "bite(bytes32)" "$SAI_CUP")
