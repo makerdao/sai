@@ -123,8 +123,6 @@ export SAI_TUB=0x9fcb310dbbe5667f0fe7b0ea0947f365a335be6a
 ```
 
 ```
-
-```
 # sai deployment on kovan from 9e1424c486742032f8fa7a049393a45638250cc5
 
 export GEM=0x53eccc9246c1e537d79199d0c7231e425a40f896
