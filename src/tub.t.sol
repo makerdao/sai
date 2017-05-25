@@ -26,7 +26,7 @@ contract FakePerson {
     }
 }
 
-contract TubTest is DSTest, DSMath {
+contract TubTestBase is DSTest, DSMath {
     Tub     tub;
     DSToken gem;
     DSToken sai;
@@ -102,6 +102,9 @@ contract TubTest is DSTest, DSMath {
 
         tub.cork(20 ether);
     }
+}
+
+contract TubTest is TubTestBase {
     function testBasic() {
         assertEq( tub.skr().balanceOf(pot), 0 ether );
         assertEq( tub.skr().balanceOf(this), 0 ether );
@@ -1058,5 +1061,123 @@ contract TubTest is DSTest, DSMath {
         assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
 
         person.cash();
+    }
+}
+
+contract TaxTest is TubTestBase {
+    function testEraInit() {
+        assertEq(uint(tub.era()), now);
+    }
+    function testEraWarp() {
+        tub.warp(20);
+        assertEq(uint(tub.era()), now + 20);
+    }
+    function taxSetup() returns (bytes32 cup) {
+        mark(10 ether);
+        gem.mint(1000 ether);
+
+        tub.cork(1000 ether);
+        tub.crop(ray(1.05 ether));
+
+        cup = tub.open();
+        tub.join(100 ether);
+        tub.lock(cup, 100 ether);
+        tub.draw(cup, 100 ether);
+    }
+    function testTaxEra() {
+        var cup = taxSetup();
+        assertEqWad(tub.tab(cup), 100 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 105 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 110.25 ether);
+    }
+    // Tax accumulates as sai surplus
+    function testTaxJoy() {
+        var cup = taxSetup();
+        assertEqWad(tub.joy(),      0 ether);
+        assertEqWad(tub.tab(cup), 100 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 105 ether);
+        assertEqWad(tub.joy(),      5 ether);
+    }
+    function testTaxDraw() {
+        var cup = taxSetup();
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 105 ether);
+        tub.draw(cup, 100 ether);
+        assertEqWad(tub.tab(cup), 205 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 215.25 ether);
+    }
+    function testTaxWipe() {
+        var cup = taxSetup();
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 105 ether);
+        tub.wipe(cup, 50 ether);
+        assertEqWad(tub.tab(cup), 55 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 57.75 ether);
+    }
+    // collected fees are available through boom
+    function testTaxBoom() {
+        taxSetup();
+        tub.warp(1);
+        // should have 5 sai available == 0.5 skr
+        tub.join(0.5 ether);  // get some unlocked skr
+
+        assertEq(skr.totalSupply(),   100.5 ether);
+        assertEq(sai.balanceOf(tub),    0 ether);
+        assertEq(sin.balanceOf(tub),    0 ether);
+        assertEq(sai.balanceOf(this), 100 ether);
+        tub.drip();
+        assertEq(sai.balanceOf(tub),    5 ether);
+        tub.boom(0.5 ether);
+        assertEq(skr.totalSupply(),   100 ether);
+        assertEq(sai.balanceOf(tub),    0 ether);
+        assertEq(sin.balanceOf(tub),    0 ether);
+        assertEq(sai.balanceOf(this), 105 ether);
+    }
+    // Tax can flip a cup to unsafe
+    function testTaxSafe() {
+        var cup = taxSetup();
+        mark(1 ether);
+        assert(tub.safe(cup));
+        tub.warp(1);
+        assert(!tub.safe(cup));
+    }
+    function testTaxBite() {
+        var cup = taxSetup();
+        mark(1 ether);
+        tub.warp(1);
+        assertEqWad(tub.tab(cup), 105 ether);
+        tub.bite(cup);
+        assertEqWad(tub.tab(cup),   0 ether);
+        assertEqWad(tub.woe(),    105 ether);
+    }
+    function testTaxBail() {
+        var cup = taxSetup();
+        tub.warp(1);
+        tub.drip();
+        tub.cage(10 ether);
+
+        tub.warp(1);  // should have no effect
+        tub.drip();
+
+        assertEq(skr.balanceOf(this),  0 ether);
+        assertEq(skr.balanceOf(pot), 100 ether);
+        tub.bail(cup);
+        assertEq(skr.balanceOf(this), 89.5 ether);
+        assertEq(skr.balanceOf(pot),     0 ether);
+
+        assertEq(sai.balanceOf(this),  100 ether);
+        assertEq(gem.balanceOf(this), 1000 ether);
+        tub.cash();
+        assertEq(sai.balanceOf(this),    0 ether);
+        assertEq(gem.balanceOf(this), 1010 ether);
+
+        // also question of the joy in cage
+        // this is absorbed via mend, meaning skr holders have it
+        // distributed if system in surplus
     }
 }

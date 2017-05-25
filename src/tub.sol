@@ -11,6 +11,8 @@ import "ds-token/token.sol";
 import "ds-vault/vault.sol";
 import "ds-value/value.sol";
 
+import "./lib.sol";
+
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
 // skr/gem is ratio of supply (outstanding skr to total locked gem)
@@ -25,7 +27,7 @@ contract TubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, TubEvents {
+contract Tub is DSThing, TubEvents, MakerWarp {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
@@ -37,6 +39,7 @@ contract Tub is DSThing, TubEvents {
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
+    uint128  public  tax;  // Stability fee
 
     enum Stage { Usual, Caged, Empty }
     Stage    public  reg;  // 'register'
@@ -44,8 +47,9 @@ contract Tub is DSThing, TubEvents {
     uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  par;  // gem per skr (just before settlement)
     // TODO holder fee param
-    // TODO issuer fee param
     // TODO spread?? `gap`
+    uint64   public  rho;  // time of last drip
+    uint128         _chi;  // internal debt price
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -58,7 +62,7 @@ contract Tub is DSThing, TubEvents {
     }
 
     function tab(bytes32 cup) constant returns (uint128) {
-        return cups[cup].art;
+        return rmul(cups[cup].art, chi());
     }
     function ink(bytes32 cup) constant returns (uint128) {
         return cups[cup].ink;
@@ -78,6 +82,10 @@ contract Tub is DSThing, TubEvents {
 
         axe = RAY;
         mat = RAY;
+        tax = RAY;
+
+        _chi = RAY;
+
         tip = tip_;
     }
 
@@ -91,6 +99,30 @@ contract Tub is DSThing, TubEvents {
     function cuff(uint128 ray) note auth {
         mat = ray;
         assert((RAY <= axe) && (axe <= mat));
+    }
+    function crop(uint128 ray) note auth {
+        drip();
+        tax = ray;
+        assert(RAY <= tax);
+    }
+
+    function chi() internal returns (uint128) {
+        drip();
+        return _chi;
+    }
+    function drip() {
+        if (reg != Stage.Usual) return;  // noop if system caged
+
+        var age = era() - rho;
+        var chi = rmul(_chi, rpow(tax, age));
+        var rum = rdiv(ice(), _chi);
+        var dew = rmul(rum, rsub(chi, _chi));
+
+        lend(dew);
+        sin.push(pot, dew);
+
+        _chi = chi;
+        rho = era();
     }
 
     // Good debt
@@ -138,7 +170,7 @@ contract Tub is DSThing, TubEvents {
     function safe(bytes32 cup) constant returns (bool) {
         var jam = rmul(cups[cup].ink, per());
         var pro = wmul(jam, tag());
-        var con = cups[cup].art;
+        var con = tab(cup);
         var min = rmul(con, mat);
         return (pro >= min);
     }
@@ -169,7 +201,7 @@ contract Tub is DSThing, TubEvents {
     }
     function shut(bytes32 cup) auth note {
         assert(reg == Stage.Usual);
-        wipe(cup, cups[cup].art);
+        wipe(cup, tab(cup));
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
@@ -191,26 +223,31 @@ contract Tub is DSThing, TubEvents {
 
     function draw(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
-        // TODO poke
         assert(msg.sender == cups[cup].lad);
-        cups[cup].art = hadd(cups[cup].art, wad);
-        assert(safe(cup));
+
+        var pen = rdiv(wad, chi());
+        cups[cup].art = wadd(cups[cup].art, pen);
 
         lend(wad);
         sin.push(pot, wad);
         sai.push(msg.sender, wad);
 
+        assert(safe(cup));
         assert(cast(sin.totalSupply()) <= hat);
     }
     function wipe(bytes32 cup, uint128 wad) auth note {
-        // TODO poke
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
-        cups[cup].art = hsub(cups[cup].art, wad);
+
+        var pen = rdiv(wad, chi());
+        cups[cup].art = wsub(cups[cup].art, pen);
 
         sai.pull(msg.sender, wad);
         pot.push(sin, this, wad);
         mend(wad);
+
+        assert(safe(cup));
+        assert(cast(sin.totalSupply()) <= hat);
     }
 
     function give(bytes32 cup, address lad) auth note {
@@ -241,13 +278,13 @@ contract Tub is DSThing, TubEvents {
         assert(!safe(cup));
 
         // take on all of the debt
-        var owe = cups[cup].art;
-        pot.push(sin, this, owe);
+        var rue = tab(cup);
+        pot.push(sin, this, rue);
         cups[cup].art = 0;
 
         // axe the collateral
-        var tab = rmul(owe, axe);                    // amount owed inc. penalty
-        var cab = wdiv(tab, rmul(tag(), per()));     // equivalent in skr
+        var owe = rmul(rue, axe);                    // amount owed inc. penalty
+        var cab = wdiv(owe, rmul(tag(), per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -258,6 +295,7 @@ contract Tub is DSThing, TubEvents {
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) auth note {
         assert(reg == Stage.Usual);
+        drip();
         mend();
 
         // price of wad in sai
@@ -271,6 +309,7 @@ contract Tub is DSThing, TubEvents {
     }
     function bust(uint128 wad) auth note {
         assert(reg == Stage.Usual);
+        drip();
         mend();
 
         if (wad > fog()) skr.mint(wad - fog());
@@ -295,6 +334,7 @@ contract Tub is DSThing, TubEvents {
 
         price = price * (RAY / WAD);  // cast up to ray for precision
 
+        drip();
         pot.push(sin, this);  // take on all the debt
         mend();               // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
@@ -327,7 +367,7 @@ contract Tub is DSThing, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = rdiv(rmul(cups[cup].art, fix), par);
+        var con = rdiv(rmul(tab(cup), fix), par);
 
         var ash = hmin(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, hsub(pro, ash));
