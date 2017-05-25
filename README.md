@@ -104,3 +104,37 @@ Commands:
    safe            determine if a cup is safe
    wipe            repay some portion of your existing sai debt
 ```
+
+### Current deployments
+
+```
+# sai deployment on ethlive from 527dc9b3d84fa460e95a16c2d640e1a9e98511be
+
+export GEM=0xECF8F87f810EcF450940c9f60066b4a7a501d6A7
+export SAI=0x2c6f750aac54239af9af6b85a3049f6ca535b507
+export SIN=0x3ad977780f0ecd41bd564898ffd46418d198f8a1
+export SKR=0x84f162e108238b3b3029ab106e4bab0635cbf197
+export POT=0x411ea383b0e5936ce667f51772c82ee37e9e93b9
+export TAG=0x729D19f657BD0614b4985Cf1D82531c67569197B
+export MOM=0x15f73a951d029a29fb6729bbf5600ac1646f5605
+export LPS=0x0d126cd55c7a0e7c1340c5d185a8f0d254c00c60
+export LPC=0x20bdda5f938b3b7661776e158e5b91457d9a55b7
+export SAI_TUB=0x9fcb310dbbe5667f0fe7b0ea0947f365a335be6a
+```
+
+```
+
+```
+# sai deployment on kovan from 9e1424c486742032f8fa7a049393a45638250cc5
+
+export GEM=0x53eccc9246c1e537d79199d0c7231e425a40f896
+export SAI=0x532f529aaa86058eb378aa837dcf479d38e84969
+export SIN=0x1cf3633c3d21c203631695874fead514faee9579
+export SKR=0x447719c661c078791b972929a2529ba2575983b5
+export POT=0x59adcf176ed2f6788a41b8ea4c4904518e62b6a4
+export TAG=0xd5fb49fde313db2deeddc90374772468eb44b973
+export MOM=0x2c67395bbbd658c239f54fb99487aefbbcf95636
+export LPS=0x1ff103858f7954a95df7d43a7d04ff23a926f4da
+export LPC=0x3bd1eeeffcbd8c922cadd5d76b2182debb3ca5af
+export SAI_TUB=0x97bf1ff371ceabbb9e821480d31dd743c4b71e0e
+```
