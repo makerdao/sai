@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-lpc-lps -- get the lps token (liquidity provider shares)
+set -e
+lps=$(seth call "${SAI_LPC?}" 'lps()')
+echo "0x$(seth --abi-decode 'f()(address)' "$lps")"
