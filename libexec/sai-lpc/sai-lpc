@@ -3,14 +3,16 @@
 ### Usage: sai-lpc [<options>] <command> [<args>]
 ###    or: sai-lpc <command> --help
 ###
-### Sai-lpc is a simple dumb liquidity pool created for Sai.
+### Sai-lpc is a simple two token liquidity pool created for Sai.
+### It relies on an external price feed (the `tip`).
 ###
-### TODO In this model there is one type of underlying collateral (called gems).
-### TODO The SKR token represents claims on the system's excess gems, and is the
-### TODO only admissible type of collateral.  Gems can be converted to/from SKR.
+### Makers
+### - `pool` their gems and receive LPS tokens, which are a claim on the pool.
+### - `exit` and trade their LPS tokens for a share of the gems in the pool.
 ###
-### TODO Any transfers of sai or SKR are done using the normal ERC20 interface;
-### TODO until settlement mode is triggered, sai users should only need ERC20.
+### Takers
+### - `take` and exchange one gem for another, whilst paying a fee
+###   (the `gap`). The collected fee goes into the pool.
 ###
 ### To conveniently perform ERC20 transfers, see the token(1) program
 ### available at <https://github.com/dapphub/token>.
@@ -49,10 +51,10 @@ while [[ $1 ]]; do
     --)              shift; break;;
 
        --lpc)        shift; export SAI_LPC=$1;;
-    
+
     -F|--from)       shift; export ETH_FROM=$1;;
     -G|--gas)        shift; export ETH_GAS=$1;;
-    
+
     -h)                     export SAI_HUMAN=1;;
 
     *) printf "${0##*/}: internal error: %q\n" "$1"; exit 1
