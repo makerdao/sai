@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-### lpc -- command-line Ethereum RPC client
-### Usage: lpc [<options>] <command> [<args>]
-###    or: lpc <command> --help
+### sai-lpc -- command-line Sai liquidity pool client
+### Usage: sai-lpc [<options>] <command> [<args>]
+###    or: sai-lpc <command> --help
 ###
-### Lpc is a simple dumb liquidity pool created for Sai.
+### Sai-lpc is a simple dumb liquidity pool created for Sai.
 ###
 ### TODO In this model there is one type of underlying collateral (called gems).
 ### TODO The SKR token represents claims on the system's excess gems, and is the
@@ -15,7 +15,7 @@
 ### To conveniently perform ERC20 transfers, see the token(1) program
 ### available at <https://github.com/dapphub/token>.
 ###
-### Lpc options:
+### Sai-lpc options:
 ###
 ###        --lpc=<address>        address of lpc to perform operation on
 ###
@@ -24,8 +24,8 @@
 ###    -F, --from=<account>       account from which to send transaction
 ###    -G, --gas=<number>         amount of gas to provide with transaction
 
-OPTS="lpc [<options>] <command> [<args>]
-lpc <command> --help
+OPTS="sai-lpc [<options>] <command> [<args>]
+sai-lpc <command> --help
 --
   Options
 lpc=address          address of lpc to perform operation on

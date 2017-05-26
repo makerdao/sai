@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-### lpc-help -- print help about lpc(1) or one of its subcommands
-### Usage: lpc help [<command>]
-###    or: lpc <command> --help
+### sai-lpc-help -- print help about sai-lpc(1) or one of its subcommands
+### Usage: sai-lpc help [<command>]
+###    or: sai-lpc <command> --help
 
 BUGS=https://github.com/makerdao/sai/issues/new
 
-name=lpc
+name=sai-lpc
 file=${0%-*}${1+-$1}
 header=$(perl -ne 'print "$2\n" if /^(\S)\1\1(?: (.*))?/' "$file")
 
@@ -23,7 +23,7 @@ for file in ${0%/*}/$name-*; do
   basename=${file##*/}
   if [[ -L $file ]]; then
     continue
-  elif [[ ${#basename} = 7 ]]; then
+  elif [[ ${#basename} = 11 ]]; then
     special_commands+=("$file")
   else
     normal_commands+=("$file")
