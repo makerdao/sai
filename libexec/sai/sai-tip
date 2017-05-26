@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-tip -- get the gem price feed
+set -e
+tip=$(seth call "${SAI_TUB?}" 'tip()')
+echo "0x$(seth --abi-decode 'f()(address)' "$tip")"
