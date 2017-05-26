@@ -58,20 +58,20 @@ Read commands:
    air             get the amount of backing collateral
    axe             get the liquidation penalty
    cup             show the cup info
-   fit             get the SKR settlement price
    fix             get the SAI settlement price
    fog             get the amount of skr pending liquidation
    gem             get the collateral token
    hat             get the debt ceiling
    ice             get the good debt
-   ink             get how much skr collateral in a cup
+   ink             get the amount of skr collateral locked in a cup
    joy             get the amount of surplus sai
    lad             get the owner of a cup
    mat             get the liquidation ratio
-   off             is the tub caged?
-   per             get the current entry price (skr per gem)
+   par             get the gem per skr price just before settlement
+   per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
-   ray             parse and display a 36-decimal fixed-point number
+   ray             parse and display a 27-decimal fixed-point number
+   reg             get the tub stage ('register')
    sai             get the sai token
    sin             get the sin token
    skr             get the skr token
