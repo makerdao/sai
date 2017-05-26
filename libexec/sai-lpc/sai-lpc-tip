@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-lpc-tip -- get the price feed (giving refs per alt)
+set -e
+tip=$(seth call "${SAI_LPC?}" 'tip()')
+echo "0x$(seth --abi-decode 'f()(address)' "$tip")"

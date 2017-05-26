@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-lpc-pie -- get the total pool value (in ref)
+set -e
+wad=$(seth call "${SAI_LPC?}" "pie()")
+sai wad -h "$wad"

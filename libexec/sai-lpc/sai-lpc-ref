@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-lpc-ref -- get the ref token
+set -e
+ref=$(seth call "${SAI_LPC?}" 'ref()')
+echo "0x$(seth --abi-decode 'f()(address)' "$ref")"

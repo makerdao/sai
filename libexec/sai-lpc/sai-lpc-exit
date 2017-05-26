@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-lpc-exit -- exit lpc pool, exchange lps for ref or alt
+### Usage: sai-lpc exit <token> <amount>
+set -e
+address="${1?'Token address is required'}"
+wad=$(sai wad -h "${2?'Amount is required'}")
+echo >&2 "Exiting pool with $wad of "$address"..."
+wad=$(sai wad "$2")
+(set -x; seth send "${SAI_LPC?}" "exit(address,uint128)" "$address" "$wad")
