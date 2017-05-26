@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-lpc-take -- perform an exchange
+### Usage: sai-lpc take <token> <amount>
+set -e
+address="${1?'Token address is required'}"
+wad=$(sai wad -h "${2?'Amount is required'}")
+echo >&2 "Taking $wad of "$address" from the pool..."
+wad=$(sai wad "$2")
+(set -x; seth send "${SAI_LPC?}" "take(address,uint128)" "$address" "$wad")
