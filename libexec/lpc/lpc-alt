@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### lpc-alt -- get the alt token
+set -e
+alt=$(seth call "${SAI_LPC?}" 'alt()')
+echo "0x$(seth --abi-decode 'f()(address)' "$alt")"
