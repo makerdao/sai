@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+### sai-lpc-pool -- enter lpc pool, get lps for ref or alt
+set -e
+address="${1?'Token address is required'}"
+wad=$(sai wad -h "${2?'Value is required'}")
+echo >&2 "Entering pool with $wad of "$address"..."
+wad=$(sai wad "$2")
+(set -x; seth send "${SAI_LPC?}" "pool(address,uint128)" "$address" "$wad")
