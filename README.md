@@ -51,7 +51,7 @@ Excess collateral contained within a single `cup` can be reclaimed with
 `bail(cup)`.
 
 
-### glossary (`sai help`)
+### `sai` glossary (`sai help`)
 ```
 Read commands:
 
@@ -103,6 +103,28 @@ Commands:
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
    wipe            repay some portion of your existing sai debt
+```
+
+### `sai-lpc` glossary (`sai-lpc help`)
+```
+Read commands:
+
+   alt             get the alt token
+   gap             get the spread, charged on `take`
+   lps             get the lps token (liquidity provider shares)
+   per             get the lps per ref ratio
+   pie             get the total pool value (in ref)
+   ref             get the ref token
+   tag             get the current price (refs per alt)
+   tip             get the price feed (giving refs per alt)
+
+Commands:
+
+   exit            exit lpc pool, exchange lps for ref or alt
+   help            print help about sai-lpc(1) or one of its subcommands
+   jump            update the spread
+   pool            enter lpc pool, get lps for ref or alt
+   take            perform an exchange
 ```
 
 ### Current deployments
