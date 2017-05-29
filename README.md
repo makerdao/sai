@@ -1,6 +1,6 @@
 
 `sai` is a simple single-collateral stablecoin that is dependent on a
-trusted oracle and has a kill-switch.
+trusted oracle address and has a kill-switch.
 
 There are three tokens in the system:
 
@@ -45,7 +45,8 @@ holders.
 
 Practically this means that if the system is undercollateralized on
 `cage`, holders of free `skr` will have their `gem` share diluted as
-much as necessary to make `sai` whole. *`skr` is a risk bearing token*.
+much as necessary to make `sai` whole. *In other words, `skr` is a
+risk bearing token*.
 
 Excess collateral contained within a single `cup` can be reclaimed with
 `bail(cup)`.
