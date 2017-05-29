@@ -259,20 +259,20 @@ contract Tub is DSThing, TubEvents {
     function boom(uint128 wad) auth note {
         assert(reg == Stage.Usual);
         mend();
+        assert(wad <= joy());
 
-        // price of wad in sai
-        var ret = rmul(wmul(wad, tag()), per());
-        assert(ret <= joy());
+        // price of wad in skr after burning `jam` `skr`
+        var jam = wdiv(uint128(skr.totalSupply()), hadd(wdiv(wmul(tag(), pie()), wad), 1 ether));
 
-        skr.pull(msg.sender, wad);
-        skr.burn(wad);
+        skr.pull(msg.sender, jam);
+        skr.burn(jam);
 
-        sai.push(msg.sender, ret);
+        sai.push(msg.sender, wad);
     }
     function bust(uint128 wad) auth note {
         assert(reg == Stage.Usual);
-        assert(wad <= woe());
         mend();
+        assert(wad <= woe());
 
         var jam = rdiv(wdiv(wad, tag()), per()); // Calculates 'jam' using actual 'per' (assuming there is not need to 'mint' 'skr')
         if (jam > fog()) {

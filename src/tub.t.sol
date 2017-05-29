@@ -783,6 +783,33 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.totalSupply(), skrEquivalentAfterMint);
     }
 
+    function testBoom() {
+        tub.cork(100 ether);
+        tub.cuff(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
+        mark(2 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        mark(3 ether);
+        tub.draw(cup, 16 ether);
+
+        assertEq(sai.balanceOf(this), 16 ether);
+        sai.transfer(tub, 16 ether); // Temporary workaround to be able to call boom without fees implementation
+        assertEq(sai.balanceOf(this), 0);
+
+        assertEqWad(tub.joy(), 16 ether);
+
+        tub.join(10 ether);
+        tub.boom(16 ether);
+
+        assertEqWad(tub.joy(), 0 ether);
+        assertEq(sai.balanceOf(this), 16 ether);
+
+        assertEqWad(uint128(skr.balanceOf(this)), hsub(10 ether, rdiv(wdiv(16 ether, tub.tag()), tub.per())));
+    }
+
     function testCascade() {
         // demonstrate liquidation cascade
         tub.cork(1000 ether);
