@@ -760,7 +760,7 @@ contract TubTest is DSTest, DSMath {
         var sai_before = sai.balanceOf(this);
         var skr_before = skr.balanceOf(this);
         assertEq(sai_before, 16 ether);
-        tub.bust(2 ether);
+        tub.bust(4 ether);
         var sai_after = sai.balanceOf(this);
         var skr_after = skr.balanceOf(this);
         assertEq(sai_before - sai_after, 4 ether);
@@ -777,8 +777,10 @@ contract TubTest is DSTest, DSMath {
         assertEq(skr.totalSupply(), 10 ether);
 
         // now skr will be minted
-        tub.bust(2 ether);
-        assertEq(skr.totalSupply(), 12 ether);
+        uint128 saiAmount = 2 ether;
+        tub.bust(saiAmount);
+        uint128 skrEquivalentAfterMint = hadd(10 ether, rdiv(wdiv(saiAmount, tub.tag()), tub.per()));
+        assertEq(skr.totalSupply(), skrEquivalentAfterMint);
     }
 
     function testCascade() {
@@ -812,7 +814,7 @@ contract TubTest is DSTest, DSMath {
         // cup holders).
         assertEqWad(tub.fog(), 10 ether);
         assertEqWad(tub.woe(), 50 ether);
-        tub.bust(tub.fog());
+        tub.bust(40 ether);
         assertEqWad(tub.fog(), 0 ether);
         assertEqWad(tub.woe(), 10 ether);
         // price still 1
@@ -820,16 +822,20 @@ contract TubTest is DSTest, DSMath {
 
         // now force some minting, which flips the jar to unsafe
         assert(tub.safe(jar));
-        tub.bust(wdiv(5 ether, 2 ether));
+        var skrTSBeforeMint = uint128(skr.totalSupply());
+        var woe = tub.woe();
+        tub.bust(woe);
+        uint128 skrMinted = rdiv(wdiv(woe, tub.tag()), tub.per());
         assert(!tub.safe(jar));
 
         assertEqWad(tub.woe(), 0);
-        assertEqWad(tub.per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
+        assertEqWad(uint128(skr.totalSupply()), hadd(skrTSBeforeMint, skrMinted));
+        assertEqWad(tub.per(), rdiv(tub.pie() * WAD, uint128(skr.totalSupply()) * WAD));
 
         // mug is now under parity as well
         tub.bite(mug);
-        tub.bust(tub.fog());
-        tub.bust(wdiv(tub.woe(), wmul(tub.per(), tub.tag())));
+        tub.bust(tub.woe());
+        assertEqWad(tub.woe(), 0);
 
         tub.bite(jar);
 

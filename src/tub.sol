@@ -271,15 +271,18 @@ contract Tub is DSThing, TubEvents {
     }
     function bust(uint128 wad) auth note {
         assert(reg == Stage.Usual);
+        assert(wad <= woe());
         mend();
 
-        if (wad > fog()) skr.mint(wad - fog());
+        var jam = rdiv(wdiv(wad, tag()), per()); // Calculates 'jam' using actual 'per' (assuming there is not need to 'mint' 'skr')
+        if (jam > fog()) {
+            // If using actual 'per' there is not enough 'fog' to cover the operation, we need to calculate a new 'jam' taking into account the change on 'per'
+            jam = wdiv(hsub(uint128(skr.totalSupply()), fog()), hsub(wdiv(wmul(tag(), pie()), wad), 1 ether));
+            skr.mint(jam - fog());
+        }
 
-        var ret = rmul(wmul(wad, tag()), per());
-        assert(ret <= woe());
-
-        skr.push(msg.sender, wad);
-        sai.pull(msg.sender, ret);
+        skr.push(msg.sender, jam);
+        sai.pull(msg.sender, wad);
         mend();
     }
 
