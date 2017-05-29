@@ -103,6 +103,7 @@ Commands:
    mark            update the tag
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
+   vent            mark caged tub as empty
    wipe            repay some portion of your existing sai debt
 ```
 

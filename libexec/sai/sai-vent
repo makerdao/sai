@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### sai-vent -- mark caged tub as empty
+set -e
+(set -x; seth send "${SAI_TUB?}" "vent()")
