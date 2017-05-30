@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-shut -- close a cup
+set -e
+echo >&2 "Closing cup $((${SAI_CUP?}))..."
+(set -x; seth send "${SAI_TUB?}" "shut(bytes32)" "$SAI_CUP")
