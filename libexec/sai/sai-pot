@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-pot -- get the good debt vault
+set -e
+pot=$(seth call "${SAI_TUB?}" 'pot()')
+echo "0x$(seth --abi-decode 'f()(address)' "$pot")"

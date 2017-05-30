@@ -71,6 +71,7 @@ Read commands:
    par             get the gem per skr price just before settlement
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
+   pot             get the good debt vault
    ray             parse and display a 27-decimal fixed-point number
    reg             get the tub stage ('register')
    sai             get the sai token
