@@ -99,7 +99,6 @@ Commands:
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
    join            buy SKR for gems
-   jump            redeem sai and SKR for gems (settlement mode only)
    lock            post additional SKR collateral to a cup
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
