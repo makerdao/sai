@@ -14,8 +14,8 @@ collateral with `exit`. You will get more or less `gem` tokens for each
 `skr` depending whether the system made a profit or loss while you
 were exposed.
 
-The oracle updates the GEM:REF price feed using `mark`. This is the only
-external real-time input to the system.
+The oracle updates the GEM:REF price feed. This is the only external
+real-time input to the system.
 
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
@@ -71,6 +71,7 @@ Read commands:
    par             get the gem per skr price just before settlement
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
+   pot             get the good debt vault
    ray             parse and display a 27-decimal fixed-point number
    reg             get the tub stage ('register')
    sai             get the sai token
@@ -83,25 +84,26 @@ Read commands:
 
 Commands:
 
-   bail            bail the gems out of a cup after kill
+   bail            bail the gems out of a cup after cage
    bite            initiate liquidation of an undercollateral cup
    cage            lock the system and initiate settlement
-   cash            cash in sai / skr balance for gems after kill
+   cash            cash in sai balance for gems after cage
    chop            update the liquidation penalty
    cork            update the debt ceiling
    cuff            update the liquidation ratio
    cupi            get the last cup id
    cups            list your cups
    draw            issue the specified amount of sai stablecoins
-   exit            sell SKR
+   exit            sell SKR for gems
    free            remove excess SKR collateral from a cup
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
-   join            buy SKR
+   join            buy SKR for gems
+   jump            redeem sai and SKR for gems (settlement mode only)
    lock            post additional SKR collateral to a cup
-   mark            update the tag
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
+   shut            close a cup
    vent            mark caged tub as empty
    wipe            repay some portion of your existing sai debt
 ```

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-join -- buy SKR
+### sai-join -- buy SKR for gems
 set -e
 jam=$(sai wad -h "$1")
 echo >&2 "Sending $jam GEM to TUB..."

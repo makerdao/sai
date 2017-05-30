@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-per -- get the current entry price (gem per skr)
 set -e
-wad=$(seth call "${SAI_TUB?}" "per()")
-sai wad -h "$wad"
+ray=$(seth call "${SAI_TUB?}" "per()")
+sai ray -h "$ray"
