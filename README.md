@@ -93,11 +93,11 @@ Commands:
    cupi            get the last cup id
    cups            list your cups
    draw            issue the specified amount of sai stablecoins
-   exit            sell SKR
+   exit            sell SKR for gems
    free            remove excess SKR collateral from a cup
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
-   join            buy SKR
+   join            buy SKR for gems
    jump            redeem sai and SKR for gems (settlement mode only)
    lock            post additional SKR collateral to a cup
    mark            update the tag

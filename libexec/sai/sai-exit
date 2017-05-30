@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-exit -- sell SKR
+### sai-exit -- sell SKR for gems
 set -e
 ink=$(sai wad -h "$1")
 echo >&2 "Sending $ink SKR to TUB..."
