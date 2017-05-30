@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-### sai-cash -- cash in sai / skr balance for gems after kill
+### sai-cash -- cash in sai balance for gems after cage
 set -e
 sai=$(token balance "$(sai sai)" "${ETH_FROM?}")
-skr=$(token balance "$(sai skr)" "${ETH_FROM?}")
-echo >&2 "Cashing in $sai SAI and $skr SKR..."
+echo >&2 "Cashing in $sai SAI..."
 (set -x; seth send "${SAI_TUB?}" "cash()")

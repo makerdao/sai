@@ -83,10 +83,10 @@ Read commands:
 
 Commands:
 
-   bail            bail the gems out of a cup after kill
+   bail            bail the gems out of a cup after cage
    bite            initiate liquidation of an undercollateral cup
    cage            lock the system and initiate settlement
-   cash            cash in sai / skr balance for gems after kill
+   cash            cash in sai balance for gems after cage
    chop            update the liquidation penalty
    cork            update the debt ceiling
    cuff            update the liquidation ratio
