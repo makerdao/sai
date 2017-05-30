@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-### sai-mark -- update the tag
-set -e
-wad=$(sai wad -h "$1")
-echo >&2 "Setting tag to $wad..."
-wad=$(sai wad "$1")
-tip=$(seth call "${SAI_TUB}" "tip()")
-tip=$(seth --abi-decode 'f()(address)' "$tag")
-(set -x; seth send "$tip" 'poke(bytes32)' "$wad")

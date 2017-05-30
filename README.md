@@ -14,8 +14,8 @@ collateral with `exit`. You will get more or less `gem` tokens for each
 `skr` depending whether the system made a profit or loss while you
 were exposed.
 
-The oracle updates the GEM:REF price feed using `mark`. This is the only
-external real-time input to the system.
+The oracle updates the GEM:REF price feed. This is the only external
+real-time input to the system.
 
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
@@ -101,7 +101,6 @@ Commands:
    join            buy SKR for gems
    jump            redeem sai and SKR for gems (settlement mode only)
    lock            post additional SKR collateral to a cup
-   mark            update the tag
    open            create a new cup (collateralized debt position)
    safe            determine if a cup is safe
    shut            close a cup
