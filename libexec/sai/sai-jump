@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-jump -- redeem sai and SKR for gems (settlement mode only)
-set -e
-echo >&2 "Redeeming sai and SKR for gems..."
-(set -x; seth send "${SAI_TUB?}" "jump()")
