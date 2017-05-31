@@ -307,7 +307,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.woe(), 0);         // no bad debt
         assertEqWad(tub.pie(), 10 ether);
 
@@ -316,7 +316,7 @@ contract CageTest is TubTestBase {
 
         assertEqWad(tub.woe(), 5 ether);       // all good debt now bad debt
         assertEqWad(tub.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEqWad(tub.par(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
 
         assertEq(gem.balanceOf(pot),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(tub), 25 ether);  // saved for skr
@@ -325,7 +325,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -333,7 +333,7 @@ contract CageTest is TubTestBase {
         tub.cage(price);        // 150% collat
 
         assertEqWad(tub.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEqWad(tub.par(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -344,7 +344,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
@@ -357,7 +357,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -365,13 +365,13 @@ contract CageTest is TubTestBase {
         tub.cage(price);
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.par(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
     }
     function testCageUnderCollat() {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
@@ -385,7 +385,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -508,7 +508,7 @@ contract CageTest is TubTestBase {
         // this should all be returned
         var ink = tub.ink(cup);
         var tab = tub.tab(cup);
-        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.par()));
+        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.fit()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), 20 ether + skrToRecover);
