@@ -44,9 +44,10 @@ contract Tub is DSThing, DSWarp, TubEvents {
     Stage    public  reg;  // 'register'
 
     uint128  public  fix;  // sai kill price (gem per sai)
-    uint128  public  par;  // gem per skr (just before settlement)
+    uint128  public  fit;  // gem per skr (just before settlement)
     // TODO holder fee param
     // TODO spread?? `gap`
+
     uint64   public  rho;  // time of last drip
     uint128         _chi;  // internal debt price
 
@@ -340,7 +341,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
-        par = per();
+        fit = per();
 
         // most gems we can get per sai is the full balance
         fix = hmin(rdiv(RAY, price), rdiv(pie(), woe()));
@@ -366,7 +367,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
         var pro = cups[cup].ink;
         // value of the debt in skr at settlement
-        var con = rdiv(rmul(tab(cup), fix), par);
+        var con = rdiv(rmul(tab(cup), fix), fit);
 
         var ash = hmin(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, hsub(pro, ash));
