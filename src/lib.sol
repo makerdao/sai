@@ -6,28 +6,8 @@
 
 pragma solidity ^0.4.10;
 
-import "ds-auth/auth.sol";
-import "ds-note/note.sol";
 import "ds-math/math.sol";
-
 import "ds-token/token.sol";
-
-contract MakerWarp is DSNote {
-    uint64  _era;
-
-    function MakerWarp() {
-        _era = uint64(now);
-    }
-
-    function era() constant returns (uint64) {
-        return _era == 0 ? uint64(now) : _era;
-    }
-
-    function warp(uint64 age) note {
-        assert(_era != 0);
-        _era = age == 0 ? 0 : _era + age;
-    }
-}
 
 contract SaiSin is DSToken('sin', 'SIN', 18), DSMath {
     DSToken public sai;

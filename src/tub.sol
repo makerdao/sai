@@ -10,8 +10,7 @@ import "ds-thing/thing.sol";
 import "ds-token/token.sol";
 import "ds-vault/vault.sol";
 import "ds-value/value.sol";
-
-import "./lib.sol";
+import "ds-warp/warp.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -27,7 +26,7 @@ contract TubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, TubEvents, MakerWarp {
+contract Tub is DSThing, DSWarp, TubEvents {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
