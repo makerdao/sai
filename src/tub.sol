@@ -109,7 +109,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
         drip();
         return _chi;
     }
-    function drip() {
+    function drip() note {
         if (reg != Stage.Usual) return;  // noop if system caged
 
         var age = era() - rho;
