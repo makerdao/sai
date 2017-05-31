@@ -39,17 +39,19 @@ contract Tub is DSThing, DSWarp, TubEvents {
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
     uint128  public  tax;  // Stability fee
+    uint128  public  way;  // holder fee / interest rate
+    // TODO spread?? `gap`
 
     enum Stage { Usual, Caged, Empty }
     Stage    public  reg;  // 'register'
 
     uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  fit;  // gem per skr (just before settlement)
-    // TODO holder fee param
-    // TODO spread?? `gap`
 
     uint64   public  rho;  // time of last drip
+    uint64   public  tau;  // time of last prod
     uint128         _chi;  // internal debt price
+    uint128         _par;  // ref per sai
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -83,8 +85,12 @@ contract Tub is DSThing, DSWarp, TubEvents {
         axe = RAY;
         mat = RAY;
         tax = RAY;
+        way = RAY;
+
+        rho = tau = _era;
 
         _chi = RAY;
+        _par = WAD;
 
         tip = tip_;
     }
@@ -104,6 +110,20 @@ contract Tub is DSThing, DSWarp, TubEvents {
         drip();
         tax = ray;
         assert(RAY <= tax);
+    }
+    function coax(uint128 ray) note auth {
+        way = ray;
+    }
+
+    // ref per sai
+    function par() returns (uint128) {
+        prod();
+        return _par;
+    }
+    function prod() note {
+        var age = era() - tau;
+        _par = rmul(_par, rpow(way, age));
+        tau = era();
     }
 
     function chi() internal returns (uint128) {
@@ -150,7 +170,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
         return uint128(sai.balanceOf(this));
     }
 
-    // Price of gem in ref
+    // ref per gem
     function tag() constant returns (uint128) {
         return uint128(tip.read());
     }
@@ -168,9 +188,9 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var jam = rmul(cups[cup].ink, per());
-        var pro = wmul(jam, tag());
-        var con = tab(cup);
+        var jam = rmul(per(), cups[cup].ink);
+        var pro = wmul(tag(), jam);
+        var con = wmul(par(), tab(cup));
         var min = rmul(con, mat);
         return (pro >= min);
     }
@@ -284,7 +304,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(owe, rmul(tag(), per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, par()), rmul(tag(), per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -299,7 +319,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
         mend();
 
         // price of wad in sai
-        var ret = rmul(wmul(wad, tag()), per());
+        var ret = wdiv(rmul(wmul(wad, tag()), per()), par());
         assert(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -314,7 +334,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
         if (wad > fog()) skr.mint(wad - fog());
 
-        var ret = rmul(wmul(wad, tag()), per());
+        var ret = wdiv(rmul(wmul(wad, tag()), per()), par());
         assert(ret <= woe());
 
         skr.push(msg.sender, wad);
@@ -324,7 +344,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
     //------------------------------------------------------------------
 
-    // force settlement of the system at a given price (ref per gem).
+    // force settlement of the system at a given price (sai per gem).
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
