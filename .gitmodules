@@ -16,3 +16,6 @@
 [submodule "lib/ds-roles"]
 	path = lib/ds-roles
 	url = https://github.com/dapphub/ds-roles
+[submodule "lib/ds-warp"]
+	path = lib/ds-warp
+	url = https://github.com/dapphub/ds-warp
