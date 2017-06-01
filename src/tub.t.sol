@@ -288,7 +288,9 @@ contract TubTest is TubTestBase {
         // skr hasn't been diluted yet so still 1:1 skr:gem
         assertEq(skr.balanceOf(this), 10 ether);
     }
+}
 
+contract CageTest is TubTestBase {
     // ensure cage sets the settle prices right
     function cageSetup() returns (bytes32) {
         tub.cork(5 ether);            // 5 sai debt ceiling
@@ -668,6 +670,229 @@ contract TubTest is TubTestBase {
         assertEq(skr.totalSupply(), 0);
     }
 
+    function testThreeCupsOverCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        var price = 1 ether;
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 5 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 95 ether);
+
+        tub.bail(cup); // 5 skr recovered, and 5 skr burnt
+
+        assertEq(skr.balanceOf(this), 55 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 75 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 95 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 5 ether);
+
+        tub.vent();
+        tub.exit(uint128(skr.balanceOf(this))); // exit 95 skr at price 95/95
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+    function testThreeCupsAtCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        var price = wdiv(1 ether, 2 ether);
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 10 ether); // Needed to payout 10 sai
+        assertEq(gem.balanceOf(tub), 90 ether);
+
+        tub.bail(cup); // 10 skr burnt
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 10 ether);
+
+        tub.vent();
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 90/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+    function testThreeCupsUnderCollat() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        var price = wdiv(1 ether, 4 ether);
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 20 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 80 ether);
+
+        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 20 ether);
+
+        tub.vent();
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 80/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+    function testThreeCupsSKRZeroValue() {
+        var cup = cageSetup();
+        tub.join(90 ether);   // give us some more skr
+        var cup2 = tub.open(); // open a new cup
+        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
+        var cup3 = tub.open(); // open a new cup
+        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 100 ether);
+        assertEq(gem.balanceOf(this), 0);
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+
+        var price = wdiv(1 ether, 20 ether);
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), 100 ether); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), 0 ether);
+
+        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+
+        assertEq(skr.balanceOf(this), 50 ether); // free skr
+        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+
+        tub.bail(cup2); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 70 ether); // free skr
+        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+
+        tub.bail(cup3); // 20 skr recovered
+
+        assertEq(skr.balanceOf(this), 90 ether); // free skr
+        assertEq(skr.balanceOf(pot), 0); // locked skr
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+
+        tub.vent();
+        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 0/90
+
+        assertEq(gem.balanceOf(tub), 0);
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(), 0);
+    }
+
+    function testPeriodicFixValue() {
+        cageSetup();
+
+        assertEq(gem.balanceOf(pot), 0);
+        assertEq(gem.balanceOf(tub), 10 ether);
+        assertEq(gem.balanceOf(this), 90 ether);
+        assertEq(skr.balanceOf(this), 0 ether); // free skr
+        assertEq(skr.balanceOf(pot), 10 ether); // locked skr
+
+        FakePerson person = new FakePerson(tub);
+        mom.setUserRole(person, 1, true);
+        sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
+
+        var price = rdiv(9 ether, 8 ether);
+        tub.cage(price);
+
+        assertEq(gem.balanceOf(pot), rmul(5 ether, tub.fix())); // Needed to payout 5 sai
+        assertEq(gem.balanceOf(tub), hsub(10 ether, rmul(5 ether, tub.fix())));
+
+        tub.cash();
+
+        assertEq(sai.totalSupply(), 2.5 ether);
+        assertEq(sai.balanceOf(person), 2.5 ether);
+        assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
+
+        person.cash();
+    }
+}
+
+contract LiquidationTest is TubTestBase {
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
         var jam = rmul(tub.ink(cup) * WAD, tub.per()) / WAD;
@@ -837,230 +1062,6 @@ contract TubTest is TubTestBase {
         tub.bite(jar);
 
         // N.B from the initial price markdown the whole system was in deficit
-    }
-
-    function testThreeCupsOverCollat() {
-        var cup = cageSetup();
-        tub.join(90 ether);   // give us some more skr
-        var cup2 = tub.open(); // open a new cup
-        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
-        var cup3 = tub.open(); // open a new cup
-        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(tub), 100 ether);
-        assertEq(gem.balanceOf(this), 0);
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
-
-        var price = 1 ether;
-        tub.cage(price);
-
-        assertEq(gem.balanceOf(pot), 5 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(tub), 95 ether);
-
-        tub.bail(cup); // 5 skr recovered, and 5 skr burnt
-
-        assertEq(skr.balanceOf(this), 55 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
-
-        tub.bail(cup2); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 75 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
-
-        tub.bail(cup3); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 95 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
-
-        tub.cash();
-
-        assertEq(sai.totalSupply(), 0);
-        assertEq(gem.balanceOf(this), 5 ether);
-
-        tub.vent();
-        tub.exit(uint128(skr.balanceOf(this))); // exit 95 skr at price 95/95
-
-        assertEq(gem.balanceOf(tub), 0);
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(skr.totalSupply(), 0);
-    }
-
-    function testThreeCupsAtCollat() {
-        var cup = cageSetup();
-        tub.join(90 ether);   // give us some more skr
-        var cup2 = tub.open(); // open a new cup
-        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
-        var cup3 = tub.open(); // open a new cup
-        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(tub), 100 ether);
-        assertEq(gem.balanceOf(this), 0);
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
-
-        var price = wdiv(1 ether, 2 ether);
-        tub.cage(price);
-
-        assertEq(gem.balanceOf(pot), 10 ether); // Needed to payout 10 sai
-        assertEq(gem.balanceOf(tub), 90 ether);
-
-        tub.bail(cup); // 10 skr burnt
-
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
-
-        tub.bail(cup2); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
-
-        tub.bail(cup3); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
-
-        tub.cash();
-
-        assertEq(sai.totalSupply(), 0);
-        assertEq(gem.balanceOf(this), 10 ether);
-
-        tub.vent();
-        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 90/90
-
-        assertEq(gem.balanceOf(tub), 0);
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(skr.totalSupply(), 0);
-    }
-
-    function testThreeCupsUnderCollat() {
-        var cup = cageSetup();
-        tub.join(90 ether);   // give us some more skr
-        var cup2 = tub.open(); // open a new cup
-        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
-        var cup3 = tub.open(); // open a new cup
-        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(tub), 100 ether);
-        assertEq(gem.balanceOf(this), 0);
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
-
-        var price = wdiv(1 ether, 4 ether);
-        tub.cage(price);
-
-        assertEq(gem.balanceOf(pot), 20 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(tub), 80 ether);
-
-        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
-
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
-
-        tub.bail(cup2); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
-
-        tub.bail(cup3); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
-
-        tub.cash();
-
-        assertEq(sai.totalSupply(), 0);
-        assertEq(gem.balanceOf(this), 20 ether);
-
-        tub.vent();
-        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 80/90
-
-        assertEq(gem.balanceOf(tub), 0);
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(skr.totalSupply(), 0);
-    }
-
-    function testThreeCupsSKRZeroValue() {
-        var cup = cageSetup();
-        tub.join(90 ether);   // give us some more skr
-        var cup2 = tub.open(); // open a new cup
-        tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
-        var cup3 = tub.open(); // open a new cup
-        tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
-
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(tub), 100 ether);
-        assertEq(gem.balanceOf(this), 0);
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
-
-        var price = wdiv(1 ether, 20 ether);
-        tub.cage(price);
-
-        assertEq(gem.balanceOf(pot), 100 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(tub), 0 ether);
-
-        tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
-
-        assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
-
-        tub.bail(cup2); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
-
-        tub.bail(cup3); // 20 skr recovered
-
-        assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
-
-        tub.cash();
-
-        assertEq(sai.totalSupply(), 0);
-        assertEq(gem.balanceOf(this), 100 ether);
-
-        tub.vent();
-        tub.exit(uint128(skr.balanceOf(this))); // exit 90 skr at price 0/90
-
-        assertEq(gem.balanceOf(tub), 0);
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(skr.totalSupply(), 0);
-    }
-
-    function testPeriodicFixValue() {
-        cageSetup();
-
-        assertEq(gem.balanceOf(pot), 0);
-        assertEq(gem.balanceOf(tub), 10 ether);
-        assertEq(gem.balanceOf(this), 90 ether);
-        assertEq(skr.balanceOf(this), 0 ether); // free skr
-        assertEq(skr.balanceOf(pot), 10 ether); // locked skr
-
-        FakePerson person = new FakePerson(tub);
-        mom.setUserRole(person, 1, true);
-        sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
-
-        var price = rdiv(9 ether, 8 ether);
-        tub.cage(price);
-
-        assertEq(gem.balanceOf(pot), rmul(5 ether, tub.fix())); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(tub), hsub(10 ether, rmul(5 ether, tub.fix())));
-
-        tub.cash();
-
-        assertEq(sai.totalSupply(), 2.5 ether);
-        assertEq(sai.balanceOf(person), 2.5 ether);
-        assertEq(gem.balanceOf(this), hadd(90 ether, rmul(2.5 ether, tub.fix())));
-
-        person.cash();
     }
 }
 
