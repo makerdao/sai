@@ -763,7 +763,7 @@ contract TubTest is TubTestBase {
         var sai_before = sai.balanceOf(this);
         var skr_before = skr.balanceOf(this);
         assertEq(sai_before, 16 ether);
-        tub.bust(2 ether);
+        tub.bust(4 ether);
         var sai_after = sai.balanceOf(this);
         var skr_after = skr.balanceOf(this);
         assertEq(sai_before - sai_after, 4 ether);
@@ -780,8 +780,37 @@ contract TubTest is TubTestBase {
         assertEq(skr.totalSupply(), 10 ether);
 
         // now skr will be minted
-        tub.bust(2 ether);
-        assertEq(skr.totalSupply(), 12 ether);
+        uint128 saiAmount = 2 ether;
+        tub.bust(saiAmount);
+        uint128 skrEquivalentAfterMint = hadd(10 ether, rdiv(wdiv(saiAmount, tub.tag()), tub.per()));
+        assertEq(skr.totalSupply(), skrEquivalentAfterMint);
+    }
+
+    function testBoom() {
+        tub.cork(100 ether);
+        tub.cuff(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
+        mark(2 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        mark(3 ether);
+        tub.draw(cup, 16 ether);
+
+        assertEq(sai.balanceOf(this), 16 ether);
+        sai.transfer(tub, 16 ether); // Temporary workaround to be able to call boom without fees implementation
+        assertEq(sai.balanceOf(this), 0);
+
+        assertEqWad(tub.joy(), 16 ether);
+
+        tub.join(10 ether);
+        tub.boom(16 ether);
+
+        assertEqWad(tub.joy(), 0 ether);
+        assertEq(sai.balanceOf(this), 16 ether);
+
+        assertEqWad(uint128(skr.balanceOf(this)), hsub(10 ether, rdiv(wdiv(16 ether, tub.tag()), tub.per())));
     }
 
     function testCascade() {
@@ -815,7 +844,7 @@ contract TubTest is TubTestBase {
         // cup holders).
         assertEqWad(tub.fog(), 10 ether);
         assertEqWad(tub.woe(), 50 ether);
-        tub.bust(tub.fog());
+        tub.bust(40 ether);
         assertEqWad(tub.fog(), 0 ether);
         assertEqWad(tub.woe(), 10 ether);
         // price still 1
@@ -823,16 +852,20 @@ contract TubTest is TubTestBase {
 
         // now force some minting, which flips the jar to unsafe
         assert(tub.safe(jar));
-        tub.bust(wdiv(5 ether, 2 ether));
+        var skrTSBeforeMint = uint128(skr.totalSupply());
+        var woe = tub.woe();
+        tub.bust(woe);
+        uint128 skrMinted = rdiv(wdiv(woe, tub.tag()), tub.per());
         assert(!tub.safe(jar));
 
         assertEqWad(tub.woe(), 0);
-        assertEqWad(tub.per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
+        assertEqWad(uint128(skr.totalSupply()), hadd(skrTSBeforeMint, skrMinted));
+        assertEqWad(tub.per(), rdiv(tub.pie() * WAD, uint128(skr.totalSupply()) * WAD));
 
         // mug is now under parity as well
         tub.bite(mug);
-        tub.bust(tub.fog());
-        tub.bust(wdiv(tub.woe(), wmul(tub.per(), tub.tag())));
+        tub.bust(tub.woe());
+        assertEqWad(tub.woe(), 0);
 
         tub.bite(jar);
 
