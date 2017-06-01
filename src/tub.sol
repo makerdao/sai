@@ -105,7 +105,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
         assert(RAY <= tax);
     }
 
-    function chi() internal returns (uint128) {
+    function chi() returns (uint128) {
         drip();
         return _chi;
     }
