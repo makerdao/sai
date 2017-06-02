@@ -9,8 +9,8 @@ pragma solidity ^0.4.10;
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
 import "ds-vault/vault.sol";
-import "ds-value/value.sol";
-import "ds-warp/warp.sol";
+
+import "./tip.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -26,20 +26,20 @@ contract TubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, DSWarp, TubEvents {
+contract Tub is DSThing, TubEvents {
+    Tip      public  tip;
+    DSValue  public  pip;
+
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    DSValue  public  tip;  // Gem price feed (in external reference unit)
-
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
     uint128  public  tax;  // Stability fee
-    uint128  public  way;  // holder fee / interest rate
     // TODO spread?? `gap`
 
     enum Stage { Usual, Caged, Empty }
@@ -49,9 +49,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
     uint128  public  fit;  // gem per skr (just before settlement)
 
     uint64   public  rho;  // time of last drip
-    uint64   public  tau;  // time of last prod
     uint128         _chi;  // internal debt price
-    uint128         _par;  // ref per sai
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -75,7 +73,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, DSValue tip_) {
+    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
         gem = gem_;
         sai = sai_;
         sin = sin_;
@@ -85,15 +83,35 @@ contract Tub is DSThing, DSWarp, TubEvents {
         axe = RAY;
         mat = RAY;
         tax = RAY;
-        way = RAY;
-
-        rho = tau = _era;
 
         _chi = RAY;
-        _par = WAD;
 
         tip = tip_;
+        pip = pip_;
+
+        rho = tip.era();
     }
+
+    // Tip compat layer
+    function tag() returns (uint128) {
+        return uint128(pip.read());
+    }
+    function par() returns (uint128) {
+        return tip.par();
+    }
+    function era() returns (uint64) {
+        return tip.era();
+    }
+    function warp(uint64 age) {
+        tip.warp(age);
+    }
+    function tau() returns (uint64) {
+        return tip.tau();
+    }
+    function coax(uint128 ray) {
+        tip.coax(ray);
+    }
+    ///
 
     function chop(uint128 ray) note auth {
         axe = ray;
@@ -110,20 +128,6 @@ contract Tub is DSThing, DSWarp, TubEvents {
         drip();
         tax = ray;
         assert(RAY <= tax);
-    }
-    function coax(uint128 ray) note auth {
-        way = ray;
-    }
-
-    // ref per sai
-    function par() returns (uint128) {
-        prod();
-        return _par;
-    }
-    function prod() note {
-        var age = era() - tau;
-        _par = rmul(_par, rpow(way, age));
-        tau = era();
     }
 
     function chi() returns (uint128) {
@@ -170,10 +174,6 @@ contract Tub is DSThing, DSWarp, TubEvents {
         return uint128(sai.balanceOf(this));
     }
 
-    // ref per gem
-    function tag() constant returns (uint128) {
-        return uint128(tip.read());
-    }
     // gem per skr
     function per() constant returns (uint128) {
         // this avoids 0 edge case / rounding errors TODO delete me

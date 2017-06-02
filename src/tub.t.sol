@@ -27,6 +27,7 @@ contract FakePerson {
 }
 
 contract TubTestBase is DSTest, DSMath {
+    Tip     tip;
     Tub     tub;
     DSToken gem;
     DSToken sai;
@@ -78,7 +79,9 @@ contract TubTestBase is DSTest, DSMath {
         tmp = new DSVault();  // somewhere to hide tokens for testing
 
         tag = new DSValue();
-        tub = new Tub(gem, sai, sin, skr, pot, tag);
+        tip = new Tip();
+
+        tub = new Tub(gem, sai, sin, skr, pot, tip, tag);
 
         mom = new DSRoles();
         tub.setAuthority(mom);
@@ -89,6 +92,7 @@ contract TubTestBase is DSTest, DSMath {
         sin.setOwner(tub);
         skr.setOwner(tub);
         pot.setOwner(tub);
+        tip.setOwner(tub);
 
         gem.approve(tub, 100000 ether);
         skr.approve(tub, 100000 ether);
