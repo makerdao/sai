@@ -34,6 +34,11 @@ immediate: backing `skr` is taken to cover the `sai` debt at the time of
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
 `sai` at the current feed price. This `sai` pays down the bad CDP debt.
 
+### Fees
+
+Stability fee is continuously charged on all open cups according to `tax`.
+It makes their debt (`tab`) increase over time.
+
 ### Settlement
 
 `sai` can be shut down at a given price with `cage`, after which `sai`
