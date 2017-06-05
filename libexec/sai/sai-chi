@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-chi -- get the internal debt price
+set -e
+ray=$(seth call "${SAI_TUB?}" "chi()")
+sai ray -h "$ray"
