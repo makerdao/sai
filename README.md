@@ -131,7 +131,7 @@ Commands:
 
 ### Current deployments
 
-```
+```bash
 # sai deployment on ethlive from 527dc9b3d84fa460e95a16c2d640e1a9e98511be
 
 export GEM=0xECF8F87f810EcF450940c9f60066b4a7a501d6A7
@@ -146,7 +146,7 @@ export LPC=0x20bdda5f938b3b7661776e158e5b91457d9a55b7
 export SAI_TUB=0x9fcb310dbbe5667f0fe7b0ea0947f365a335be6a
 ```
 
-```
+```bash
 # sai deployment on kovan from 9e1424c486742032f8fa7a049393a45638250cc5
 
 export GEM=0x53eccc9246c1e537d79199d0c7231e425a40f896
