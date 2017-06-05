@@ -137,6 +137,99 @@ Commands:
    take            perform an exchange
 ```
 
+### Sample interaction using `sai`
+
+```bash
+$ export ETH_FROM=0x(...)
+$ export SAI_TUB=0x(...)
+
+# Give Tub access to our GEM (W-ETH), SKR and SAI balances
+$ token approve $(sai gem) $SAI_TUB $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai skr) $SAI_TUB $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai sai) $SAI_TUB $(seth --to-wei 1000000000 ETH)
+
+# We need to have some GEM (W-ETH) balance to start with
+$ token balance $(sai gem) $ETH_FROM
+2.467935274974511817
+
+# Join the system by exchanging some GEM (W-ETH) to SKR
+$ sai join 2.2
+Sending 2.200000000000000000 GEM to TUB...
+$ token balance $(sai gem) $ETH_FROM
+0.267935274974511817
+$ token balance $(sai skr) $ETH_FROM
+2.200000000000000000
+
+# Open a new cup
+$ sai open
+Opening cup...
+Opened cup 62
+
+# We can list cups owned by us at all times
+$ sai cups																
+Your cups ...
+62
+
+# Lock some SKR collateral in the cup and then draw some SAI from it
+$ sai --cup 62 lock 1.5													
+Locking 1.500000000000000000 SKR in cup 62...
+$ sai --cup 62 draw 89.0												
+Drawing 89.000000000000000000 SAI from cup 62...
+$ token balance $(sai skr) $ETH_FROM
+0.700000000000000000
+$ token balance $(sai sai) $ETH_FROM
+89.000000000000000000
+
+# We can examine the cup details, `tab` and `ink` representing
+# the amount of debt and the amount of collateral respectively
+$ sai --cup 62 cup														
+cup id 62...
+lad: 0x(...)
+tab: 89.000000000000000000
+ink: 1.500000000000000000
+
+# We can check whether the cup is still safe
+# (ie. whether the value of collateral locked is high enough)
+$ sai --cup 62 safe
+true
+
+# At some point we will want to wipe our SAI debt
+# which means we can also free the SKR collateral
+$ sai --cup 62 wipe 59.0												
+Wiping 59.000000000000000000 SAI from cup 62...
+$ sai --cup 62 free 1.1													
+Freeing 1.100000000000000000 SKR from cup 62...
+$ token balance $(sai skr) $ETH_FROM
+1.800000000000000000
+$ token balance $(sai sai) $ETH_FROM
+30.000000000000000000
+
+# The `tab` and `ink` values have changed
+$ sai --cup 62 cup
+cup id 62...
+lad: 0x(...)
+tab: 30.000000000000000000
+ink: 0.400000000000000000
+
+# We can also `wipe` and `free` outstanding balances of SAI and SKR by calling `shut`
+$ sai --cup 62 shut
+Closing cup 62...
+
+$ sai --cup 62 cup
+cup id 62...
+lad: 0x0000000000000000000000000000000000000000
+tab: 0.000000000000000000
+ink: 0.000000000000000000
+
+# Exit the system by exchanging SKR back to GEM (W-ETH)
+$ sai exit 2.2
+Sending 2.200000000000000000 SKR to TUB...
+$ token balance $(sai gem) $ETH_FROM
+2.467935274974511817
+$ token balance $(sai skr) $ETH_FROM
+0.000000000000000000
+```
+
 ### Current deployments
 
 ```bash
