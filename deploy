@@ -38,6 +38,7 @@ LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
 LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS)
 
 export SETH_ASYNC=yes
+seth send $SAI_TUB "warp(uint64)" 0x0
 seth send $SAI_TUB "setAuthority(address)" $MOM
 seth send $LPS "setOwner(address)" $LPC
 seth send $LPC "setAuthority(address)" $MOM
