@@ -82,6 +82,7 @@ Read commands:
    tab             get how much debt in a cup
    tag             get the reference price (ref per gem)
    tax             get the stability fee
+   tip             get the gem price feed
    wad             parse and display a 18-decimal fixed-point number
    woe             get the amount of bad debt
 
