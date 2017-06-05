@@ -86,6 +86,8 @@ Commands:
 
    bail            bail the gems out of a cup after cage
    bite            initiate liquidation of an undercollateral cup
+   boom            buy some amount of sai to process joy (surplus)
+   bust            sell some amount of sai to process woe (bad debt)
    cage            lock the system and initiate settlement
    cash            cash in sai balance for gems after cage
    chop            update the liquidation penalty
