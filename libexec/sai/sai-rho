@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-rho -- get the time of last drip
+set -e
+time=$(seth call "${SAI_TUB?}" "rho()")
+echo "$(seth --to-dec $time)"
