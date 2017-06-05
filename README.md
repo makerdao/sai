@@ -58,6 +58,7 @@ Read commands:
 
    air             get the amount of backing collateral
    axe             get the liquidation penalty
+   chi             get the internal debt price
    cup             show the cup info
    fix             get the SAI settlement price
    fog             get the amount of skr pending liquidation
@@ -74,11 +75,13 @@ Read commands:
    pot             get the good debt vault
    ray             parse and display a 27-decimal fixed-point number
    reg             get the tub stage ('register')
+   rho             get the time of last drip
    sai             get the sai token
    sin             get the sin token
    skr             get the skr token
    tab             get how much debt in a cup
    tag             get the reference price (ref per gem)
+   tax             get the stability fee
    wad             parse and display a 18-decimal fixed-point number
    woe             get the amount of bad debt
 
@@ -92,10 +95,12 @@ Commands:
    cash            cash in sai balance for gems after cage
    chop            update the liquidation penalty
    cork            update the debt ceiling
+   crop            update the stability fee
    cuff            update the liquidation ratio
    cupi            get the last cup id
    cups            list your cups
    draw            issue the specified amount of sai stablecoins
+   drip            recalculate the internal debt price
    exit            sell SKR for gems
    free            remove excess SKR collateral from a cup
    give            transfer ownership of a cup
