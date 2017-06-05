@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-cork -- update the debt ceiling
+### Usage: sai cork <new-hat>
 set -e
+[ $# = 1 ] || sai cork --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Setting hat to $wad..."
 wad=$(sai wad "$1")

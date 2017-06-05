@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-cage -- lock the system and initiate settlement
+### Usage: sai cage <final-price>
 set -e
+[ $# = 1 ] || sai cage --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Caging the tub, final price $wad"
 wad=$(sai wad "$1")

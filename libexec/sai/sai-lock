@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 ### sai-lock -- post additional SKR collateral to a cup
+### Usage: sai --cup=<id> lock <amount-in-skr>
 set -e
+[ $# = 1 ] || sai lock --usage
+[ ! -z "$SAI_CUP" ] || sai lock --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Locking $wad SKR in cup $((${SAI_CUP?}))..."
 wad=$(sai wad "$1")

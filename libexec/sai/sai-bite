@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-bite -- initiate liquidation of an undercollateral cup
+### Usage: sai --cup=<id> bite
 set -e
+[ ! -z "$SAI_CUP" ] || sai bite --usage
 echo >&2 "Attempting to bite cup id $((${SAI_CUP?}))..."
 safe=$(sai safe)
 [[ $safe = true ]] && { echo >&2 "${0##*/}: error: cup not unsafe"; exit 1; }

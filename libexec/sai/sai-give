@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 ### sai-give -- transfer ownership of a cup
+### Usage: sai --cup=<id> give <address>
 set -e
+[ $# = 1 ] || sai give --usage
+[ ! -z "$SAI_CUP" ] || sai give --usage
 echo >&2 "Giving cup $((${SAI_CUP?})) to "${1?}"..."
 (set -x; seth send "${SAI_TUB?}" "give(bytes32,address)" "$SAI_CUP" "$1")

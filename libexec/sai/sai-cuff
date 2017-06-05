@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-cuff -- update the liquidation ratio
+### Usage: sai cuff <new-mat>
 set -e
+[ $# = 1 ] || sai cuff --usage
 ray=$(sai ray -h "$1")
 echo >&2 "Setting mat to $ray..."
 ray=$(sai ray "$1")

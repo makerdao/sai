@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-chop -- update the liquidation penalty
+### Usage: sai chop <new-axe>
 set -e
+[ $# = 1 ] || sai chop --usage
 ray=$(sai ray -h "$1")
 echo >&2 "Setting axe to $ray..."
 ray=$(sai ray "$1")
