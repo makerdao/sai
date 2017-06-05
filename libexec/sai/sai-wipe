@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 ### sai-wipe -- repay some portion of your existing sai debt
+### Usage: sai --cup=<id> wipe <amount-in-sai>
 set -e
+[ $# = 1 ] || sai wipe --usage
+[ ! -z "$SAI_CUP" ] || sai wipe --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Wiping $wad SAI from cup $((${SAI_CUP?}))..."
 wad=$(sai wad "$1")

@@ -2,6 +2,7 @@
 ### sai-bust -- sell some amount of sai to process woe (bad debt)
 ### Usage: sai bust <amount-in-skr>
 set -e
+[ $# = 1 ] || sai bust --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Selling $wad SKR-worth amount of SAI to the tub in order to process woe..."
 wad=$(sai wad "$1")

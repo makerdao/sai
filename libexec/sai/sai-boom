@@ -2,6 +2,7 @@
 ### sai-boom -- buy some amount of sai to process joy (surplus)
 ### Usage: sai boom <amount-in-skr>
 set -e
+[ $# = 1 ] || sai boom --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Buying $wad SKR-worth amount of SAI from the tub in order to process joy..."
 wad=$(sai wad "$1")

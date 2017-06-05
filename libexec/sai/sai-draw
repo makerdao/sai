@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 ### sai-draw -- issue the specified amount of sai stablecoins
+### Usage: sai --cup=<id> draw <amount-in-sai>
 set -e
+[ $# = 1 ] || sai draw --usage
+[ ! -z "$SAI_CUP" ] || sai draw --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Drawing $wad SAI from cup $((${SAI_CUP?}))..."
 wad=$(sai wad "$1")

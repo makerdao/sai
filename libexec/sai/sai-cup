@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 ### sai-cup -- show the cup info
+### Usage: sai --cup=<id> cup
 set -e
+[ ! -z "$SAI_CUP" ] || sai cup --usage
 echo >&2 "cup id $((${SAI_CUP?}))..."
 echo "lad: $(sai lad)"
 echo "tab: $(sai tab)"

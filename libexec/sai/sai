@@ -40,6 +40,9 @@ set -e
 
 if [[ $2 = --help ]]; then
   exec "${0##*/}" help -- "$1"
+elif [[ $2 = --usage ]]; then
+  "${0##*/}" help -- "$1"
+  exit 1
 elif [[ $1 = -* ]] && which "${0##*/}-$1" &>/dev/null; then
   exec "${0##*/}-$1" "${@:2}"
 fi

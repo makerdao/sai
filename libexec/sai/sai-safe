@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 ### sai-safe -- determine if a cup is safe
+### Usage: sai --cup=<id> safe
 set -e
+[ ! -z "$SAI_CUP" ] || sai safe --usage
 safe=$(seth call "${SAI_TUB?}" 'safe(bytes32)' "${SAI_CUP?}")
 seth --abi-decode 'f(bytes32)(bool)' "$safe"
