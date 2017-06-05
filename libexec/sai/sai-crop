@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-crop -- update the stability fee
+### Usage: sai crop <new-tax>
+set -e
+[ $# = 1 ] || sai crop --usage
+ray=$(sai ray -h "$1")
+echo >&2 "Setting tax to $ray..."
+ray=$(sai ray "$1")
+(set -x; seth send "${SAI_TUB?}" "crop(uint128)" "$ray")

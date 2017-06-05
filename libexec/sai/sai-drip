@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### sai-drip -- recalculate the internal debt price
+set -e
+(set -x; seth send "${SAI_TUB?}" "drip()")

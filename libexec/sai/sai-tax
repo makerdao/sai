@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-tax -- get the stability fee
+set -e
+ray=$(seth call "${SAI_TUB?}" "tax()")
+sai ray -h "$ray"
