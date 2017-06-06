@@ -1171,6 +1171,7 @@ contract TaxTest is TubTestBase {
             log_named_uint('tab', tub.tab(cup));
             log_named_uint('sin', sin.balanceOf(pot));
         }
+        assert(false);
         // assertEqWad(tub.tab(cup), 105 ether);
         // tub.bite(cup);
         // assertEqWad(tub.tab(cup),   0 ether);
