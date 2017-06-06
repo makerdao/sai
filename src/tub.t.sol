@@ -1156,6 +1156,26 @@ contract TaxTest is TubTestBase {
         assertEqWad(tub.tab(cup),   0 ether);
         assertEqWad(tub.woe(),    105 ether);
     }
+    function testTaxBiteRounding() {
+        var cup = taxSetup();
+        mark(1 ether);
+        tub.cuff(ray(1.5 ether));
+        tub.chop(ray(1.4 ether));
+        tub.crop(ray(1.000000001547126 ether));
+        var (, art, ) = tub.cups(cup);
+        log_named_uint('art', art);
+        log_named_uint('tab', tub.tab(cup));
+        log_named_uint('sin', sin.balanceOf(pot));
+        for (var i=0; i<=10; i++) {
+            tub.warp(10);
+            log_named_uint('tab', tub.tab(cup));
+            log_named_uint('sin', sin.balanceOf(pot));
+        }
+        // assertEqWad(tub.tab(cup), 105 ether);
+        // tub.bite(cup);
+        // assertEqWad(tub.tab(cup),   0 ether);
+        // assertEqWad(tub.woe(),    105 ether);
+    }
     function testTaxBail() {
         var cup = taxSetup();
         tub.warp(1);
