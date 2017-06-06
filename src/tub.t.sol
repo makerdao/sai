@@ -1166,7 +1166,7 @@ contract TaxTest is TubTestBase {
         log_named_uint('art', art);
         log_named_uint('tab', tub.tab(cup));
         log_named_uint('sin', sin.balanceOf(pot));
-        for (var i=0; i<=10; i++) {
+        for (var i=0; i<=50; i++) {
             tub.warp(10);
             log_named_uint('tab', tub.tab(cup));
             log_named_uint('sin', sin.balanceOf(pot));
