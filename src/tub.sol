@@ -115,7 +115,7 @@ contract Tub is DSThing, DSWarp, TubEvents {
         var age = era() - rho;
         var chi = rmul(_chi, rpow(tax, age));
         var rum = rdiv(ice(), _chi);
-        var dew = rmul(rum, rsub(chi, _chi));
+        var dew = wsub(rmul(rum, chi), ice());
 
         lend(dew);
         sin.push(pot, dew);
