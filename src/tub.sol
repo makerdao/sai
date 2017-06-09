@@ -11,6 +11,7 @@ import "ds-token/token.sol";
 import "ds-vault/vault.sol";
 
 import "./tip.sol";
+import "./lib.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -26,12 +27,14 @@ contract TubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, TubEvents {
+contract Tub is DSThing, DSVault, TubEvents {
     Tip      public  tip;
     DSValue  public  pip;
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
+    DSDevil  public  dev;  // jug like sin tracker
+
     DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
@@ -73,8 +76,10 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
+    function Tub(ERC20 gem_, DSDevil dev_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
         gem = gem_;
+
+        dev = dev_;
         sai = sai_;
         sin = sin_;
         skr = skr_;
@@ -142,7 +147,7 @@ contract Tub is DSThing, TubEvents {
         var rum = rdiv(ice(), _chi);
         var dew = wsub(rmul(rum, chi), ice());
 
-        lend(dew);
+        dev.lend(dew);
         sin.push(pot, dew);
 
         _chi = chi;
@@ -248,7 +253,7 @@ contract Tub is DSThing, TubEvents {
         var pen = rdiv(wad, chi());
         cups[cup].art = wadd(cups[cup].art, pen);
 
-        lend(wad);
+        dev.lend(wad);
         sin.push(pot, wad);
         sai.push(msg.sender, wad);
 
@@ -264,7 +269,7 @@ contract Tub is DSThing, TubEvents {
 
         sai.pull(msg.sender, wad);
         pot.push(sin, this, wad);
-        mend(wad);
+        dev.mend(wad);
 
         assert(safe(cup));
         assert(cast(sin.totalSupply()) <= hat);
@@ -274,21 +279,6 @@ contract Tub is DSThing, TubEvents {
         assert(msg.sender == cups[cup].lad);
         assert(lad != 0);
         cups[cup].lad = lad;
-    }
-
-    //------------------------------------------------------------------
-
-    function lend(uint128 wad) internal {
-        sai.mint(wad);
-        sin.mint(wad);
-    }
-    function mend(uint128 wad) internal {
-        sai.burn(wad);
-        sin.burn(wad);
-    }
-    function mend() internal {
-        var omm = hmin(joy(), woe());
-        mend(omm);
     }
 
     //------------------------------------------------------------------
@@ -316,7 +306,7 @@ contract Tub is DSThing, TubEvents {
     function boom(uint128 wad) auth note {
         assert(reg == Stage.Usual);
         drip();
-        mend();
+        dev.heal();
 
         // price of wad in sai
         var ret = wdiv(rmul(wmul(wad, tag()), per()), par());
@@ -330,7 +320,7 @@ contract Tub is DSThing, TubEvents {
     function bust(uint128 wad) auth note {
         assert(reg == Stage.Usual);
         drip();
-        mend();
+        dev.heal();
 
         if (wad > fog()) skr.mint(wad - fog());
 
@@ -339,7 +329,7 @@ contract Tub is DSThing, TubEvents {
 
         skr.push(msg.sender, wad);
         sai.pull(msg.sender, ret);
-        mend();
+        dev.heal();
     }
 
     //------------------------------------------------------------------
@@ -356,7 +346,7 @@ contract Tub is DSThing, TubEvents {
 
         drip();
         pot.push(sin, this);  // take on all the debt
-        mend();               // absorb any pending fees
+        dev.heal();           // absorb any pending fees
         skr.burn(fog());      // burn pending sale skr
 
         // save current gem per skr for collateral calc.
@@ -377,7 +367,7 @@ contract Tub is DSThing, TubEvents {
 
         var hai = cast(sai.balanceOf(msg.sender));
         sai.pull(msg.sender, hai);
-        mend(hai);
+        dev.mend(hai);
 
         pot.push(gem, msg.sender, rmul(hai, fix));
     }

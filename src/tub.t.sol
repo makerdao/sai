@@ -27,16 +27,17 @@ contract FakePerson {
 }
 
 contract TubTestBase is DSTest, DSMath {
-    Tip     tip;
-    Tub     tub;
-    DSToken gem;
-    DSToken sai;
-    DSToken sin;
-    DSToken skr;
-    DSVault pot;
-    DSValue tag;
-    DSVault tmp;
-    DSRoles mom;
+    Tip      tip;
+    Tub      tub;
+    DSToken  gem;
+    DSToken  sai;
+    DSToken  sin;
+    DSDevil  dev;
+    DSToken  skr;
+    DSVault  pot;
+    DSValue  tag;
+    DSVault  tmp;
+    DSRoles  mom;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 10 ** 9;
@@ -73,6 +74,8 @@ contract TubTestBase is DSTest, DSMath {
 
         sai = new DSToken("SAI", "SAI", 18);
         sin = new DSToken("SIN", "SIN", 18);
+        dev = new DSDevil(sai, sin);
+
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();
 
@@ -81,15 +84,17 @@ contract TubTestBase is DSTest, DSMath {
         tag = new DSValue();
         tip = new Tip();
 
-        tub = new Tub(gem, sai, sin, skr, pot, tip, tag);
+        tub = new Tub(gem, dev, sai, sin, skr, pot, tip, tag);
 
         mom = new DSRoles();
         tub.setAuthority(mom);
         mom.setRootUser(this, true);
+        mom.setRootUser(dev, true);   // to allow pull
         setRoles();
 
-        sai.setOwner(tub);
-        sin.setOwner(tub);
+        sai.setOwner(dev);
+        sin.setOwner(dev);
+        dev.setOwner(tub);
         skr.setOwner(tub);
         pot.setOwner(tub);
         tip.setOwner(tub);
