@@ -237,6 +237,8 @@ $ token balance $(sai skr) $ETH_FROM
 
 ### Current deployments
 
+v1.0:
+
 ```bash
 # sai deployment on ethlive from 527dc9b3d84fa460e95a16c2d640e1a9e98511be
 
@@ -265,4 +267,21 @@ export MOM=0x2c67395bbbd658c239f54fb99487aefbbcf95636
 export LPS=0x1ff103858f7954a95df7d43a7d04ff23a926f4da
 export LPC=0x3bd1eeeffcbd8c922cadd5d76b2182debb3ca5af
 export SAI_TUB=0x97bf1ff371ceabbb9e821480d31dd743c4b71e0e
+```
+
+Stability fee:
+
+```bash
+# sai deployment on kovan from cea6929ec72e68818b11062cf7e106802eaa3cd0
+
+export GEM=0x53eccc9246c1e537d79199d0c7231e425a40f896
+export SAI=0xdc2c399da89454066cb954fc57e4c947d27c5b15
+export SIN=0x6e6e645a57b44e7d6d1d81331723d7404ec23801
+export SKR=0xaab5aaa562f8dd950a5b5d1af1182c467a96eb03
+export POT=0x03ee537f862b3aa1ce4c503bf4346060233839e3
+export TAG=0xd5fb49fde313db2deeddc90374772468eb44b973
+export MOM=0x2c67395bbbd658c239f54fb99487aefbbcf95636
+export LPS=0x1435a878c265dee1b15f304d165b8d6fdba4e359
+export LPC=0x10e9b30978d7973f2d1dd3c1b31938ac95be5ca6
+export SAI_TUB=0x557f7e5e83da53e570032f05128483b09c316bdf
 ```
