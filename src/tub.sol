@@ -117,7 +117,7 @@ contract Tub is DSThing, TubEvents {
     function tau() returns (uint64) {
         return tip.tau();
     }
-    function coax(uint128 ray) {
+    function coax(uint128 ray) note auth {
         tip.coax(ray);
     }
     ///
