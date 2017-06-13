@@ -27,7 +27,7 @@ contract TubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, DSVault, TubEvents {
+contract Tub is DSThing, TubEvents {
     Tip      public  tip;
     DSValue  public  pip;
 
@@ -62,6 +62,10 @@ contract Tub is DSThing, DSVault, TubEvents {
 
         uint128  art;      // Outstanding debt (in debt unit)
         uint128  ink;      // Locked collateral (in skr)
+    }
+
+    function push(ERC20 gem, address dst, uint128 wad) note auth {
+        gem.transfer(dst, uint(wad));
     }
 
     function tab(bytes32 cup) constant returns (uint128) {
@@ -334,43 +338,14 @@ contract Tub is DSThing, DSVault, TubEvents {
 
     //------------------------------------------------------------------
 
-    // force settlement of the system at a given price (sai per gem).
-    // This is nearly the equivalent of biting all cups at once.
-    // Important consideration: the gems associated with free skr can
-    // be tapped to make sai whole.
-    function cage(uint128 price) auth note {
+    function cage(uint128 fit_, uint128 fix_) auth note {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
 
-        price = price * (RAY / WAD);  // cast up to ray for precision
-
-        drip();
-        pot.push(sin, this);  // take on all the debt
-        dev.heal();           // absorb any pending fees
-        skr.burn(fog());      // burn pending sale skr
-
-        // save current gem per skr for collateral calc.
-        // we need to know this to work out the skr value of a cups debt
-        fit = per();
-
-        // most gems we can get per sai is the full balance
-        fix = hmin(rdiv(RAY, price), rdiv(pie(), woe()));
-        // gems needed to cover debt
-        var bye = rmul(fix, woe());
-
-        // put the gems backing sai in a safe place
-        gem.transfer(pot, bye);
+        fit = fit_;
+        fix = fix_;
     }
-    // exchange free sai for gems after kill
-    function cash() auth note {
-        assert(reg == Stage.Caged || reg == Stage.Empty);
 
-        var hai = cast(sai.balanceOf(msg.sender));
-        sai.pull(msg.sender, hai);
-        dev.mend(hai);
-
-        pot.push(gem, msg.sender, rmul(hai, fix));
-    }
     // retrieve skr from a cup
     function bail(bytes32 cup) auth note {
         assert(reg == Stage.Caged || reg == Stage.Empty);
@@ -389,5 +364,14 @@ contract Tub is DSThing, DSVault, TubEvents {
     function vent() auth note {
         assert(reg == Stage.Caged);
         reg = Stage.Empty;
+    }
+    function heal() note auth {
+        dev.heal();
+    }
+    function mend(uint128 wad) note auth {
+        dev.mend(wad);
+    }
+    function burn(DSToken gem, uint128 wad) {
+        gem.burn(wad);
     }
 }
