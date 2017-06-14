@@ -28,12 +28,13 @@ contract TubEvents {
 }
 
 contract Tub is DSThing, TubEvents {
-    Tip      public  tip;
-    DSValue  public  pip;
+    Tip      public  tip;  // target price
+    DSValue  public  pip;  // price feed
+    address  public  tap;  // liquidator
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
-    DSDevil  public  dev;  // jug like sin tracker
+    DSDevil  public  dev;  // jug-like sin tracker
 
     DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
@@ -121,6 +122,9 @@ contract Tub is DSThing, TubEvents {
         tax = ray;
         assert(RAY <= tax);
     }
+    function turn(address tap_) note auth {
+        tap = tap_;
+    }
 
     function chi() returns (uint128) {
         drip();
@@ -136,6 +140,7 @@ contract Tub is DSThing, TubEvents {
 
         dev.lend(dew);
         sin.push(pot, dew);
+        sai.push(tap, dew);
 
         _chi = chi;
         rho = tip.era();
@@ -147,7 +152,7 @@ contract Tub is DSThing, TubEvents {
     }
     // Bad debt
     function woe() constant returns (uint128) {
-        return uint128(sin.balanceOf(this));
+        return uint128(sin.balanceOf(tap));
     }
     // Raw collateral
     function pie() constant returns (uint128) {
@@ -159,11 +164,11 @@ contract Tub is DSThing, TubEvents {
     }
     // Collateral pending liquidation
     function fog() constant returns (uint128) {
-        return uint128(skr.balanceOf(this));
+        return uint128(skr.balanceOf(tap));
     }
     // surplus
     function joy() constant returns (uint128) {
-        return uint128(sai.balanceOf(this));
+        return uint128(sai.balanceOf(tap));
     }
 
     // gem per skr
@@ -276,7 +281,7 @@ contract Tub is DSThing, TubEvents {
 
         // take on all of the debt
         var rue = tab(cup);
-        pot.push(sin, this, rue);
+        pot.push(sin, tap, rue);
         cups[cup].art = 0;
 
         // axe the collateral
@@ -286,39 +291,9 @@ contract Tub is DSThing, TubEvents {
 
         if (ink < cab) cab = ink;                    // take at most all the skr
 
-        pot.push(skr, this, cab);
+        pot.push(skr, tap, cab);
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
-    // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint128 wad) auth note {
-        assert(reg == Stage.Usual);
-        drip();
-        dev.heal();
-
-        // price of wad in sai
-        var ret = wdiv(rmul(wmul(wad, tag()), per()), tip.par());
-        assert(ret <= joy());
-
-        skr.pull(msg.sender, wad);
-        skr.burn(wad);
-
-        sai.push(msg.sender, ret);
-    }
-    function bust(uint128 wad) auth note {
-        assert(reg == Stage.Usual);
-        drip();
-        dev.heal();
-
-        if (wad > fog()) skr.mint(wad - fog());
-
-        var ret = wdiv(rmul(wmul(wad, tag()), per()), tip.par());
-        assert(ret <= woe());
-
-        skr.push(msg.sender, wad);
-        sai.pull(msg.sender, ret);
-        dev.heal();
-    }
-
     //------------------------------------------------------------------
 
     function cage(uint128 fit_, uint128 fix_) auth note {

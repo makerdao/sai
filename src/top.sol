@@ -5,12 +5,14 @@
 pragma solidity ^0.4.10;
 
 import './tub.sol';
+import './tap.sol';
 
 contract Top is DSThing {
     uint128  public  fix;
     uint128  public  fit;
 
     Tub      public  tub;
+    Tap      public  tap;
 
     DSToken  public  sai;
     DSToken  public  sin;
@@ -19,8 +21,9 @@ contract Top is DSThing {
 
     enum Stage { Usual, Caged, Empty }
 
-    function Top(Tub tub_) {
+    function Top(Tub tub_, Tap tap_) {
         tub = tub_;
+        tap = tap_;
 
         sai = tub.sai();
         sin = tub.sin();
@@ -37,19 +40,26 @@ contract Top is DSThing {
 
         price = price * (RAY / WAD);  // cast up to ray for precision
 
+        // bring time up to date, collecting any more fees
         tub.drip();
-        tub.pot().push(sin, tub);        // take on all the debt
+        // move all good debt, bad debt and surplus to the tub
+        tub.pot().push(sin, tub);
+        tap.push(sin, tub);
+        tap.push(sai, tub);
+
         tub.heal();                      // absorb any pending fees
-        tub.burn(skr, tub.fog());  // burn pending sale skr
+
+        tap.burn(skr, tap.fog());  // burn pending sale skr
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
         fit = tub.per();
 
         // most gems we can get per sai is the full balance
-        fix = hmin(rdiv(RAY, price), rdiv(tub.pie(), tub.woe()));
+        var woe = cast(sin.balanceOf(tub));
+        fix = hmin(rdiv(RAY, price), rdiv(tub.pie(), woe));
         // gems needed to cover debt
-        var bye = rmul(fix, tub.woe());
+        var bye = rmul(fix, woe);
 
         // put the gems backing sai in a safe place
         tub.push(gem, tub.pot(), bye);
