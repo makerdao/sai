@@ -92,6 +92,7 @@ contract TubTestBase is DSTest, DSMath {
         top = new Top(tub);
 
         mom = new DSRoles();
+        tip.setAuthority(mom);
         tub.setAuthority(mom);
         pot.setAuthority(mom);
         top.setAuthority(mom);
@@ -1085,11 +1086,11 @@ contract LiquidationTest is TubTestBase {
 
 contract TaxTest is TubTestBase {
     function testEraInit() {
-        assertEq(uint(tub.era()), now);
+        assertEq(uint(tip.era()), now);
     }
     function testEraWarp() {
-        tub.warp(20);
-        assertEq(uint(tub.era()), now + 20);
+        tip.warp(20);
+        assertEq(uint(tip.era()), now + 20);
     }
     function taxSetup() returns (bytes32 cup) {
         mark(10 ether);
@@ -1106,9 +1107,9 @@ contract TaxTest is TubTestBase {
     function testTaxEra() {
         var cup = taxSetup();
         assertEqWad(tub.tab(cup), 100 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 110.25 ether);
     }
     // Tax accumulates as sai surplus
@@ -1116,32 +1117,32 @@ contract TaxTest is TubTestBase {
         var cup = taxSetup();
         assertEqWad(tub.joy(),      0 ether);
         assertEqWad(tub.tab(cup), 100 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
         assertEqWad(tub.joy(),      5 ether);
     }
     function testTaxDraw() {
         var cup = taxSetup();
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
         tub.draw(cup, 100 ether);
         assertEqWad(tub.tab(cup), 205 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 215.25 ether);
     }
     function testTaxWipe() {
         var cup = taxSetup();
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
         tub.wipe(cup, 50 ether);
         assertEqWad(tub.tab(cup), 55 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 57.75 ether);
     }
     // collected fees are available through boom
     function testTaxBoom() {
         taxSetup();
-        tub.warp(1);
+        tip.warp(1);
         // should have 5 sai available == 0.5 skr
         tub.join(0.5 ether);  // get some unlocked skr
 
@@ -1162,13 +1163,13 @@ contract TaxTest is TubTestBase {
         var cup = taxSetup();
         mark(1 ether);
         assert(tub.safe(cup));
-        tub.warp(1);
+        tip.warp(1);
         assert(!tub.safe(cup));
     }
     function testTaxBite() {
         var cup = taxSetup();
         mark(1 ether);
-        tub.warp(1);
+        tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
         tub.bite(cup);
         assertEqWad(tub.tab(cup),   0 ether);
@@ -1183,7 +1184,7 @@ contract TaxTest is TubTestBase {
         // log_named_uint('tab', tub.tab(cup));
         // log_named_uint('sin', sin.balanceOf(pot));
         for (var i=0; i<=50; i++) {
-            tub.warp(10);
+            tip.warp(10);
             // log_named_uint('tab', tub.tab(cup));
             // log_named_uint('sin', sin.balanceOf(pot));
         }
@@ -1195,11 +1196,11 @@ contract TaxTest is TubTestBase {
     }
     function testTaxBail() {
         var cup = taxSetup();
-        tub.warp(1);
+        tip.warp(1);
         tub.drip();
         top.cage(10 ether);
 
-        tub.warp(1);  // should have no effect
+        tip.warp(1);  // should have no effect
         tub.drip();
 
         assertEq(skr.balanceOf(this),  0 ether);
@@ -1245,27 +1246,27 @@ contract WayTest is TubTestBase {
     // less ref to wipe (but the same sai)
     // This makes cups *more* collateralised with time.
     function testTau() {
-        assertEq(uint(tub.era()), now);
-        assertEq(uint(tub.tau()), now);
+        assertEq(uint(tip.era()), now);
+        assertEq(uint(tip.tau()), now);
     }
     function testWayPar() {
-        tub.coax(ray(0.95 ether));
+        tip.coax(ray(0.95 ether));
 
-        assertEqWad(tub.par(), 1.00 ether);
-        tub.warp(1);
-        assertEqWad(tub.par(), 0.95 ether);
+        assertEqWad(tip.par(), 1.00 ether);
+        tip.warp(1);
+        assertEqWad(tip.par(), 0.95 ether);
 
-        tub.coax(ray(2 ether));
-        tub.warp(1);
-        assertEqWad(tub.par(), 1.90 ether);
+        tip.coax(ray(2 ether));
+        tip.warp(1);
+        assertEqWad(tip.par(), 1.90 ether);
     }
     function testWayDecreasingPrincipal() {
         var cup = waySetup();
         mark(0.98 ether);
         assert(!tub.safe(cup));
 
-        tub.coax(ray(0.95 ether));
-        tub.warp(1);
+        tip.coax(ray(0.95 ether));
+        tip.warp(1);
         assert(tub.safe(cup));
     }
     // `cage` is slightly affected: the cage price is
@@ -1291,9 +1292,9 @@ contract WayTest is TubTestBase {
         assertEqWad(tub.woe(),  75 ether);
         assertEq(sai.balanceOf(this), 75 ether);
 
-        tub.coax(ray(0.5 ether));
-        tub.warp(1);
-        assertEqWad(tub.par(), 0.5 ether);
+        tip.coax(ray(0.5 ether));
+        tip.warp(1);
+        assertEqWad(tip.par(), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
         tub.bust(50 ether);
@@ -1309,9 +1310,9 @@ contract WayTest is TubTestBase {
 
         assertEqWad(tub.joy(), 100 ether);
         mark(2 ether);
-        tub.coax(ray(2 ether));
-        tub.warp(1);
-        assertEqWad(tub.par(), 2 ether);
+        tip.coax(ray(2 ether));
+        tip.warp(1);
+        assertEqWad(tip.par(), 2 ether);
         tub.boom(100 ether);
         assertEqWad(tub.joy(),   0 ether);
         assertEqWad(tub.per(), ray(2 ether));
@@ -1323,9 +1324,9 @@ contract WayTest is TubTestBase {
         // n.b. per is now 2
         assertEqWad(tub.joy(), 100 ether);
         mark(2 ether);
-        tub.coax(ray(0.5 ether));
-        tub.warp(2);
-        assertEqWad(tub.par(), 0.5 ether);
+        tip.coax(ray(0.5 ether));
+        tip.warp(2);
+        assertEqWad(tip.par(), 0.5 ether);
         tub.boom(12.5 ether);
         assertEqWad(tub.joy(),   0 ether);
     }

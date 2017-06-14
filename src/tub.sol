@@ -101,26 +101,9 @@ contract Tub is DSThing, TubEvents {
         rho = tip.era();
     }
 
-    // Tip compat layer
     function tag() returns (uint128) {
         return uint128(pip.read());
     }
-    function par() returns (uint128) {
-        return tip.par();
-    }
-    function era() returns (uint64) {
-        return tip.era();
-    }
-    function warp(uint64 age) {
-        tip.warp(age);
-    }
-    function tau() returns (uint64) {
-        return tip.tau();
-    }
-    function coax(uint128 ray) note auth {
-        tip.coax(ray);
-    }
-    ///
 
     function chop(uint128 ray) note auth {
         axe = ray;
@@ -146,7 +129,7 @@ contract Tub is DSThing, TubEvents {
     function drip() note {
         if (reg != Stage.Usual) return;  // noop if system caged
 
-        var age = era() - rho;
+        var age = tip.era() - rho;
         var chi = rmul(_chi, rpow(tax, age));
         var rum = rdiv(ice(), _chi);
         var dew = wsub(rmul(rum, chi), ice());
@@ -155,7 +138,7 @@ contract Tub is DSThing, TubEvents {
         sin.push(pot, dew);
 
         _chi = chi;
-        rho = era();
+        rho = tip.era();
     }
 
     // Good debt
@@ -199,7 +182,7 @@ contract Tub is DSThing, TubEvents {
     function safe(bytes32 cup) constant returns (bool) {
         var jam = rmul(per(), cups[cup].ink);
         var pro = wmul(tag(), jam);
-        var con = wmul(par(), tab(cup));
+        var con = wmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
         return (pro >= min);
     }
@@ -298,7 +281,7 @@ contract Tub is DSThing, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, par()), rmul(tag(), per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, tip.par()), rmul(tag(), per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -313,7 +296,7 @@ contract Tub is DSThing, TubEvents {
         dev.heal();
 
         // price of wad in sai
-        var ret = wdiv(rmul(wmul(wad, tag()), per()), par());
+        var ret = wdiv(rmul(wmul(wad, tag()), per()), tip.par());
         assert(ret <= joy());
 
         skr.pull(msg.sender, wad);
@@ -328,7 +311,7 @@ contract Tub is DSThing, TubEvents {
 
         if (wad > fog()) skr.mint(wad - fog());
 
-        var ret = wdiv(rmul(wmul(wad, tag()), per()), par());
+        var ret = wdiv(rmul(wmul(wad, tag()), per()), tip.par());
         assert(ret <= woe());
 
         skr.push(msg.sender, wad);
