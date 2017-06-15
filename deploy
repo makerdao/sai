@@ -2,48 +2,70 @@
 set -ex
 
 export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
-export ETH_GAS=${ETH_GAS:-"4200000"}
+export ETH_GAS=${ETH_GAS:-"4500000"}
 
 dapp build
 
 export SETH_ASYNC=yes
+
 test -z $GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
 test -z $TAG && TAGtx=$(dapp create DSValue)
+test -z $MOM && MOMtx=$(dapp create DSRoles)
 SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
 SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
 SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
+LPStx=$(dapp create DSToken 'LPS' 'LPS' 18)
 POTtx=$(dapp create DSVault)
-MOMtx=$(dapp create DSRoles)
+TIPtx=$(dapp create Tip)
+
 export SETH_ASYNC=no
 
-test -z $GEM && GEM=$(seth receipt $GEMtx contractAddress)
-test -z $TAG && TAG=$(seth receipt $TAGtx contractAddress)
 SAI=$(seth receipt $SAItx contractAddress)
 SIN=$(seth receipt $SINtx contractAddress)
+DEV=$(dapp create DSDevil $SAI $SIN)
+test -z $GEM && GEM=$(seth receipt $GEMtx contractAddress)
+test -z $TAG && TAG=$(seth receipt $TAGtx contractAddress)
+test -z $MOM && MOM=$(seth receipt $MOMtx contractAddress)
 SKR=$(seth receipt $SKRtx contractAddress)
 POT=$(seth receipt $POTtx contractAddress)
-MOM=$(seth receipt $MOMtx contractAddress)
+TIP=$(seth receipt $TIPtx contractAddress)
 
-SAI_TUB=$(dapp create Tub $GEM $SAI $SIN $SKR $POT $TAG)
-export SAI_TUB=$SAI_TUB
+SAI_TUB=$(dapp create Tub $GEM $DEV $SAI $SIN $SKR $POT $TIP $TAG)
+TAP=$(dapp create Tap $SAI_TUB)
+TOP=$(dapp create Top $SAI_TUB $TAP)
+# export SAI_TUB=$SAI_TUB
 
-export SETH_ASYNC=yes
-seth send $SAI "setOwner(address)" $SAI_TUB
-seth send $SIN "setOwner(address)" $SAI_TUB
-seth send $SKR "setOwner(address)" $SAI_TUB
-seth send $POT "setOwner(address)" $SAI_TUB
-export SETH_ASYNC=no
-
-LPS=$(dapp create DSToken 'LPS' 'LPS' 18)
+LPS=$(seth receipt $LPStx contractAddress)
 LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS)
 
 export SETH_ASYNC=yes
-seth send $SAI_TUB "warp(uint64)" 0x0
+AUTH1tx=$(seth send $POT "setAuthority(address)" $MOM)
+AUTH2tx=$(seth send $TIP "setAuthority(address)" $MOM)
+AUTH3tx=$(seth send $SKR "setAuthority(address)" $MOM)
+seth send $SAI_TUB "turn(address)" $TAP
 seth send $SAI_TUB "setAuthority(address)" $MOM
-seth send $LPS "setOwner(address)" $LPC
+seth send $TAP "setAuthority(address)" $MOM
+seth send $TOP "setAuthority(address)" $MOM
 seth send $LPC "setAuthority(address)" $MOM
 seth send $MOM "setRootUser(address,bool)" $ETH_FROM true
+seth send $MOM "setRootUser(address,bool)" $DEV true
+seth send $MOM "setRootUser(address,bool)" $TOP true
+seth send $MOM "setRootUser(address,bool)" $TAP true
+
+seth send $LPS "setOwner(address)" $LPC
+seth send $SAI "setOwner(address)" $DEV
+seth send $SIN "setOwner(address)" $DEV
+seth send $DEV "setOwner(address)" $SAI_TUB
 export SETH_ASYNC=no
+
+seth receipt $AUTH1tx
+seth receipt $AUTH2tx
+seth receipt $AUTH3tx
+
+export SETH_ASYNC=yes
+seth send $SKR "setOwner(address)" $SAI_TUB
+seth send $POT "setOwner(address)" $SAI_TUB
+seth send $TIP "setOwner(address)" $SAI_TUB
 
 tub_capabilities="
 join(uint128)
@@ -56,10 +78,16 @@ draw(bytes32,uint128)
 wipe(bytes32,uint128)
 give(bytes32,address)
 bite(bytes32)
+bail(bytes32)
+"
+
+tap_capabilities="
 boom(uint128)
 bust(uint128)
+"
+
+top_capabilities="
 cash()
-bail(bytes32)
 "
 
 lpc_capabilities="
@@ -68,10 +96,17 @@ exit(address,uint128)
 take(address,uint128)
 "
 
-export SETH_ASYNC=yes
 for capability in $tub_capabilities; do
     sig=$(seth calldata $capability)
     seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $SAI_TUB $sig true
+done
+for capability in $tap_capabilities; do
+    sig=$(seth calldata $capability)
+    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $TAP $sig true
+done
+for capability in $top_capabilities; do
+    sig=$(seth calldata $capability)
+    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $TOP $sig true
 done
 for capability in $lpc_capabilities; do
     sig=$(seth calldata $capability)
@@ -88,11 +123,15 @@ export GEM=$GEM
 export SAI=$SAI
 export SIN=$SIN
 export SKR=$SKR
+export DEV=$DEV
 export POT=$POT
+export TIP=$TIP
 export TAG=$TAG
 export MOM=$MOM
+export TAP=$TAP
 export LPS=$LPS
 export LPC=$LPC
+export TOP=$TOP
 export SAI_TUB=$SAI_TUB
 EOF
 
