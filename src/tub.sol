@@ -150,10 +150,6 @@ contract Tub is DSThing, TubEvents {
     function ice() constant returns (uint128) {
         return uint128(sin.balanceOf(pot));
     }
-    // Bad debt
-    function woe() constant returns (uint128) {
-        return uint128(sin.balanceOf(tap));
-    }
     // Raw collateral
     function pie() constant returns (uint128) {
         return uint128(gem.balanceOf(this));
@@ -161,14 +157,6 @@ contract Tub is DSThing, TubEvents {
     // Backing collateral
     function air() constant returns (uint128) {
         return uint128(skr.balanceOf(pot));
-    }
-    // Collateral pending liquidation
-    function fog() constant returns (uint128) {
-        return uint128(skr.balanceOf(tap));
-    }
-    // surplus
-    function joy() constant returns (uint128) {
-        return uint128(sai.balanceOf(tap));
     }
 
     // gem per skr

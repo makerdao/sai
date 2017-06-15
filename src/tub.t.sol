@@ -246,9 +246,9 @@ contract TubTest is TubTestBase {
         tub.draw(cup, 5 ether);           // 200% collateralisation
         tag.poke(bytes32(1 ether / 4));   // 50% collateralisation
 
-        assertEq(tub.fog(), uint(0));
+        assertEq(tap.fog(), uint(0));
         tub.bite(cup);
-        assertEq(tub.fog(), uint(10 ether));
+        assertEq(tap.fog(), uint(10 ether));
     }
     function testBiteOverParity() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation
@@ -261,9 +261,9 @@ contract TubTest is TubTestBase {
         tag.poke(bytes32(1 ether / 2));   // 125% collateralisation
         assert(!tub.safe(cup));
 
-        assertEq(tub.fog(), uint(0));
+        assertEq(tap.fog(), uint(0));
         tub.bite(cup);
-        assertEq(tub.fog(), uint(8 ether));
+        assertEq(tap.fog(), uint(8 ether));
 
         // cdp should now be safe with 0 sai debt and 2 skr remaining
         var skr_before = skr.balanceOf(this);
@@ -309,10 +309,10 @@ contract TubTest is TubTestBase {
         tag.poke(bytes32(1 ether / 2));  // 100% collat
 
         assertEq(tub.air(), uint(10 ether));
-        assertEq(tub.fog(), uint(0 ether));
+        assertEq(tap.fog(), uint(0 ether));
         tub.bite(cup);
         assertEq(tub.air(), uint(0 ether));
-        assertEq(tub.fog(), uint(10 ether));
+        assertEq(tap.fog(), uint(10 ether));
 
         tub.join(10 ether);
         // skr hasn't been diluted yet so still 1:1 skr:gem
@@ -338,7 +338,7 @@ contract CageTest is TubTestBase {
 
         assertEqWad(tub.fix(), 0);
         assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.woe(), 0);         // no bad debt
+        assertEqWad(tap.woe(), 0);         // no bad debt
         assertEqWad(tub.pie(), 10 ether);
 
         tub.join(20 ether);   // give us some more skr
@@ -1010,7 +1010,7 @@ contract LiquidationTest is TubTestBase {
         // 20 ref of gem on 16 ref of sai
         // 125%
         // 100% = 16ref of gem == 8 gem
-        assertEqWad(tub.fog(), 8 ether);
+        assertEqWad(tap.fog(), 8 ether);
 
         // 8 skr for sale
         assertEqWad(tub.per(), ray(1 ether));
@@ -1031,7 +1031,7 @@ contract LiquidationTest is TubTestBase {
         // get 6 skr, pay 6 sai
         tap.bust(6 ether);
         // no more skr remaining to sell
-        assertEqWad(tub.fog(), 0);
+        assertEqWad(tap.fog(), 0);
         // but skr supply unchanged
         assertEq(skr.totalSupply(), 10 ether);
 
@@ -1069,11 +1069,11 @@ contract LiquidationTest is TubTestBase {
         // Beyond this price fall, there is inflation.
         // This is an extra justification for axe (beyond penalising bad
         // cup holders).
-        assertEqWad(tub.fog(), 10 ether);
-        assertEqWad(tub.woe(), 50 ether);
-        tap.bust(tub.fog());
-        assertEqWad(tub.fog(), 0 ether);
-        assertEqWad(tub.woe(), 10 ether);
+        assertEqWad(tap.fog(), 10 ether);
+        assertEqWad(tap.woe(), 50 ether);
+        tap.bust(tap.fog());
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tap.woe(), 10 ether);
         // price still 1
         assertEqWad(tub.per(), ray(1 ether));
 
@@ -1082,13 +1082,13 @@ contract LiquidationTest is TubTestBase {
         tap.bust(wdiv(5 ether, 2 ether));
         assert(!tub.safe(jar));
 
-        assertEqWad(tub.woe(), 0);
+        assertEqWad(tap.woe(), 0);
         assertEqWad(tub.per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
 
         // mug is now under parity as well
         tub.bite(mug);
-        tap.bust(tub.fog());
-        tap.bust(wdiv(tub.woe(), wmul(tub.per(), tub.tag())));
+        tap.bust(tap.fog());
+        tap.bust(wdiv(tap.woe(), wmul(tub.per(), tub.tag())));
 
         tub.bite(jar);
 
@@ -1127,11 +1127,11 @@ contract TaxTest is TubTestBase {
     // Tax accumulates as sai surplus
     function testTaxJoy() {
         var cup = taxSetup();
-        assertEqWad(tub.joy(),      0 ether);
+        assertEqWad(tap.joy(),      0 ether);
         assertEqWad(tub.tab(cup), 100 ether);
         tip.warp(1);
         assertEqWad(tub.tab(cup), 105 ether);
-        assertEqWad(tub.joy(),      5 ether);
+        assertEqWad(tap.joy(),      5 ether);
     }
     function testTaxDraw() {
         var cup = taxSetup();
@@ -1185,7 +1185,7 @@ contract TaxTest is TubTestBase {
         assertEqWad(tub.tab(cup), 105 ether);
         tub.bite(cup);
         assertEqWad(tub.tab(cup),   0 ether);
-        assertEqWad(tub.woe(),    105 ether);
+        assertEqWad(tap.woe(),    105 ether);
     }
     function testTaxBiteRounding() {
         var cup = taxSetup();
@@ -1204,7 +1204,7 @@ contract TaxTest is TubTestBase {
         assertEqWad(tub.tab(cup), debtAfterWarp);
         tub.bite(cup);
         assertEqWad(tub.tab(cup), 0 ether);
-        assertEqWad(tub.woe(), rmul(100 ether, rpow(tub.tax(), 510)));
+        assertEqWad(tap.woe(), rmul(100 ether, rpow(tub.tax(), 510)));
     }
     function testTaxBail() {
         var cup = taxSetup();
@@ -1293,15 +1293,15 @@ contract WayTest is TubTestBase {
         mark(0.5 ether);
         tub.bite(cup);
 
-        assertEqWad(tub.joy(),   0 ether);
-        assertEqWad(tub.woe(), 100 ether);
-        assertEqWad(tub.fog(), 100 ether);
+        assertEqWad(tap.joy(),   0 ether);
+        assertEqWad(tap.woe(), 100 ether);
+        assertEqWad(tap.fog(), 100 ether);
         assertEq(sai.balanceOf(this), 100 ether);
 
         tap.bust(50 ether);
 
-        assertEqWad(tub.fog(),  50 ether);
-        assertEqWad(tub.woe(),  75 ether);
+        assertEqWad(tap.fog(),  50 ether);
+        assertEqWad(tap.woe(),  75 ether);
         assertEq(sai.balanceOf(this), 75 ether);
 
         tip.coax(ray(0.5 ether));
@@ -1311,8 +1311,8 @@ contract WayTest is TubTestBase {
         // for the same skr
         tap.bust(50 ether);
 
-        assertEqWad(tub.fog(),   0 ether);
-        assertEqWad(tub.woe(),  25 ether);
+        assertEqWad(tap.fog(),   0 ether);
+        assertEqWad(tap.woe(),  25 ether);
         assertEq(sai.balanceOf(this), 25 ether);
     }
     function testWayBoom() {
