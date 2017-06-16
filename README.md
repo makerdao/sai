@@ -84,7 +84,7 @@ Read commands:
    sai             get the sai token
    sin             get the sin token
    skr             get the skr token
-   tab             get how much debt in a cup
+   tab             get the amount of debt in a cup
    tag             get the reference price (ref per gem)
    tax             get the stability fee
    tip             get the gem price feed

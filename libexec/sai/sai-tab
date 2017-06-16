@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-tab -- get how much debt in a cup
+### sai-tab -- get the amount of debt in a cup
 ### Usage: sai --cup=<id> tab
 set -e
 [ ! -z "$SAI_CUP" ] || sai tab --usage
