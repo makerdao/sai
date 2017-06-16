@@ -91,7 +91,7 @@ contract TubTestBase is DSTest, DSMath {
         tag = new DSValue();
         tip = new Tip();
 
-        tub = new Tub(gem, dev, sai, sin, skr, pot, tip, tag);
+        tub = new Tub(gem, dev, skr, pot, tip, tag);
 
         tap = new Tap(tub, pit);
         top = new Top(tub, tap);

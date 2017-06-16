@@ -81,12 +81,12 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSDevil dev_, DSToken sai_, DSToken sin_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
+    function Tub(ERC20 gem_, DSDevil dev_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
         gem = gem_;
 
         dev = dev_;
-        sai = sai_;
-        sin = sin_;
+        sai = dev.gem();
+        sin = dev.sin();
         skr = skr_;
         pot = pot_;
 
