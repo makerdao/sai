@@ -14,6 +14,7 @@ contract Top is DSThing {
     Tub      public  tub;
     Tap      public  tap;
 
+    DSVault  public  jar;
     DSVault  public  pot;
     DSVault  public  pit;
 
@@ -30,6 +31,7 @@ contract Top is DSThing {
         tub = tub_;
         tap = tap_;
 
+        jar = tub.jar();
         pot = tub.pot();
         pit = tap.pit();
 
@@ -69,7 +71,7 @@ contract Top is DSThing {
         var bye = rmul(fix, woe);
 
         // put the gems backing sai in a safe place
-        tub.push(gem, pot, bye);
+        jar.push(gem, pot, bye);
         tub.cage(fit, fix);
     }
     // exchange free sai for gems after kill

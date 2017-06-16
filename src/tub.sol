@@ -12,6 +12,7 @@ import "ds-vault/vault.sol";
 
 import "./tip.sol";
 import "./lib.sol";
+import "./jar.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -29,16 +30,17 @@ contract TubEvents {
 
 contract Tub is DSThing, TubEvents {
     Tip      public  tip;  // target price
-    DSValue  public  pip;  // price feed
-    address  public  pit;  // liquidator vault
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
     DSDevil  public  dev;  // jug-like sin tracker
 
-    DSVault  public  pot;  // Good debt vault
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
+
+    DSVault  public  pot;  // Good debt vault
+    address  public  pit;  // liquidator vault
+    SaiJar   public  jar;  // collateral vault
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
@@ -65,10 +67,6 @@ contract Tub is DSThing, TubEvents {
         uint128  ink;      // Locked collateral (in skr)
     }
 
-    function push(ERC20 gem, address dst, uint128 wad) note auth {
-        gem.transfer(dst, uint(wad));
-    }
-
     function tab(bytes32 cup) constant returns (uint128) {
         return rmul(cups[cup].art, chi());
     }
@@ -81,8 +79,9 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(ERC20 gem_, DSDevil dev_, DSToken skr_, DSVault pot_, Tip tip_, DSValue pip_) {
-        gem = gem_;
+    function Tub(SaiJar jar_, DSDevil dev_, DSToken skr_, DSVault pot_, Tip tip_) {
+        jar = jar_;
+        gem = jar.token();
 
         dev = dev_;
         sai = dev.gem();
@@ -97,13 +96,8 @@ contract Tub is DSThing, TubEvents {
         _chi = RAY;
 
         tip = tip_;
-        pip = pip_;
 
         rho = tip.era();
-    }
-
-    function tag() returns (uint128) {
-        return uint128(pip.read());
     }
 
     function chop(uint128 ray) note auth {
@@ -151,7 +145,7 @@ contract Tub is DSThing, TubEvents {
     }
     // Raw collateral
     function pie() constant returns (uint128) {
-        return uint128(gem.balanceOf(this));
+        return uint128(gem.balanceOf(jar));
     }
     // Backing collateral
     function air() constant returns (uint128) {
@@ -173,7 +167,7 @@ contract Tub is DSThing, TubEvents {
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
         var jam = rmul(per(), cups[cup].ink);
-        var pro = wmul(tag(), jam);
+        var pro = wmul(jar.tag(), jam);
         var con = wmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
         return (pro >= min);
@@ -185,17 +179,17 @@ contract Tub is DSThing, TubEvents {
         assert(reg == Stage.Usual);
 
         var ink = rdiv(jam, per());
-        pot.mint(skr, ink);
-        pot.push(skr, msg.sender, ink);
-        gem.transferFrom(msg.sender, this, jam);
+        jar.mint(skr, ink);
+        jar.push(skr, msg.sender, ink);
+        jar.pull(gem, msg.sender, jam);
     }
     function exit(uint128 ink) auth note {
         assert(reg == Stage.Usual || reg == Stage.Empty );
 
         var jam = rmul(ink, per());
-        pot.pull(skr, msg.sender, ink);
-        pot.burn(skr, ink);
-        gem.transfer(msg.sender, jam);
+        jar.pull(skr, msg.sender, ink);
+        jar.burn(skr, ink);
+        jar.push(gem, msg.sender, jam);
     }
 
     function open() auth note returns (bytes32 cup) {
@@ -275,7 +269,7 @@ contract Tub is DSThing, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, tip.par()), rmul(tag(), per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr

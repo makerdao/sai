@@ -8,9 +8,13 @@ import "ds-vault/vault.sol";
 import "ds-value/value.sol";
 
 contract SaiJar is DSVault {
-    DSValue  public  tag;
+    DSValue  public  pip;
 
-    function SaiJar(DSValue tag_) {
-        tag = tag_;
+    function SaiJar(ERC20 gem_, DSValue tag_) {
+        token = gem_;
+        pip = tag_;
+    }
+    function tag() constant returns (uint128) {
+        return uint128(pip.read());
     }
 }
