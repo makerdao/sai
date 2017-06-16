@@ -144,8 +144,8 @@ export TAG=$TAG
 export MOM=$MOM
 export TAP=$TAP
 export LPS=$LPS
-export LPC=$LPC
 export JAR=$JAR
+export LPC=$LPC
 export TOP=$TOP
 export SAI_TUB=$SAI_TUB
 EOF
