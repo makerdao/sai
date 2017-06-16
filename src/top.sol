@@ -14,6 +14,11 @@ contract Top is DSThing {
     Tub      public  tub;
     Tap      public  tap;
 
+    DSVault  public  pot;
+    DSVault  public  pit;
+
+    DSDevil  public  dev;
+
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
@@ -24,6 +29,11 @@ contract Top is DSThing {
     function Top(Tub tub_, Tap tap_) {
         tub = tub_;
         tap = tap_;
+
+        pot = tub.pot();
+        pit = tap.pit();
+
+        dev = tub.dev();
 
         sai = tub.sai();
         sin = tub.sin();
@@ -42,27 +52,24 @@ contract Top is DSThing {
 
         // bring time up to date, collecting any more fees
         tub.drip();
-        // move all good debt, bad debt and surplus to the tub
-        tub.pot().push(sin, tub);
-        tap.push(sin, tub);
-        tap.push(sai, tub);
-
-        tub.heal();                      // absorb any pending fees
-
-        tap.burn(skr, tap.fog());  // burn pending sale skr
+        // move all good debt, bad debt and surplus to the pot
+        pit.push(sin, pot);
+        pit.push(sai, pot);
+        dev.heal(pot);       // absorb any pending fees
+        pit.burn(skr);       // burn pending sale skr
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
         fit = tub.per();
 
         // most gems we can get per sai is the full balance
-        var woe = cast(sin.balanceOf(tub));
+        var woe = cast(sin.balanceOf(pot));
         fix = hmin(rdiv(RAY, price), rdiv(tub.pie(), woe));
         // gems needed to cover debt
         var bye = rmul(fix, woe);
 
         // put the gems backing sai in a safe place
-        tub.push(gem, tub.pot(), bye);
+        tub.push(gem, pot, bye);
         tub.cage(fit, fix);
     }
     // exchange free sai for gems after kill
@@ -70,10 +77,9 @@ contract Top is DSThing {
         assert(tub.reg() == Tub.Stage.Caged || tub.reg() == Tub.Stage.Empty);
 
         var hai = cast(sai.balanceOf(msg.sender));
-        sai.pull(msg.sender, hai);
-        sai.push(tub, hai);
-        tub.mend(hai);
+        pot.pull(sai, msg.sender);
+        dev.mend(pot, hai);
 
-        tub.pot().push(gem, msg.sender, rmul(hai, fix));
+        pot.push(gem, msg.sender, rmul(hai, fix));
     }
 }

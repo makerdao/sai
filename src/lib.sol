@@ -15,23 +15,17 @@ contract DSDevil is DSThing {
         gem = gem_;
         sin = sin_;
     }
-    function lend(uint128 wad) note auth {
-        gem.mint(wad);
-        sin.mint(wad);
-
-        gem.push(msg.sender, wad);
-        sin.push(msg.sender, wad);
+    function lend(DSVault guy, uint128 wad) note auth {
+        guy.mint(gem, wad);
+        guy.mint(sin, wad);
     }
-    function mend(uint128 wad) note {
-        DSVault(msg.sender).push(gem, this, wad);
-        DSVault(msg.sender).push(sin, this, wad);
-
-        gem.burn(wad);
-        sin.burn(wad);
+    function mend(DSVault guy, uint128 wad) note {
+        guy.burn(gem, wad);
+        guy.burn(sin, wad);
     }
-    function heal() note {
-        var joy = cast(gem.balanceOf(msg.sender));
-        var woe = cast(sin.balanceOf(msg.sender));
-        mend(hmin(joy, woe));
+    function heal(DSVault guy) note {
+        var joy = cast(gem.balanceOf(guy));
+        var woe = cast(sin.balanceOf(guy));
+        mend(guy, hmin(joy, woe));
     }
 }

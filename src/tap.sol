@@ -8,6 +8,7 @@ import "./tub.sol";
 
 contract Tap is DSThing, DSVault {
     Tub      public  tub;
+    DSVault  public  pit;
 
     DSToken  public  sai;
     DSToken  public  sin;
@@ -15,8 +16,9 @@ contract Tap is DSThing, DSVault {
 
     DSDevil  public  dev;
 
-    function Tap(Tub tub_) {
+    function Tap(Tub tub_, DSVault pit_) {
         tub = tub_;
+        pit = pit_;
 
         sai = tub.sai();
         sin = tub.sin();
@@ -27,15 +29,15 @@ contract Tap is DSThing, DSVault {
 
     // surplus
     function joy() constant returns (uint128) {
-        return uint128(sai.balanceOf(this));
+        return uint128(sai.balanceOf(pit));
     }
     // Bad debt
     function woe() constant returns (uint128) {
-        return uint128(sin.balanceOf(this));
+        return uint128(sin.balanceOf(pit));
     }
     // Collateral pending liquidation
     function fog() constant returns (uint128) {
-        return uint128(skr.balanceOf(this));
+        return uint128(skr.balanceOf(pit));
     }
 
     // skr per sai
@@ -47,30 +49,30 @@ contract Tap is DSThing, DSVault {
     function boom(uint128 wad) auth note {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
-        dev.heal();
+        dev.heal(pit);
 
         // price of wad in sai
         var ret = wmul(wad, s2s());
         assert(ret <= joy());
 
-        skr.pull(msg.sender, wad);
-        skr.burn(wad);
+        pit.pull(skr, msg.sender, wad);
+        pit.burn(skr, wad);
 
-        sai.push(msg.sender, ret);
+        pit.push(sai, msg.sender, ret);
     }
     function bust(uint128 wad) auth note {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
-        dev.heal();
+        dev.heal(pit);
 
-        if (wad > fog()) skr.mint(wad - fog());
+        if (wad > fog()) pit.mint(skr, wad - fog());
 
         var ret = wmul(wad, s2s());
         assert(ret <= woe());
 
-        skr.push(msg.sender, wad);
-        sai.pull(msg.sender, ret);
-        dev.heal();
+        pit.push(skr, msg.sender, wad);
+        pit.pull(sai, msg.sender, ret);
+        dev.heal(pit);
     }
 
 }

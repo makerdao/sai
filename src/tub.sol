@@ -30,7 +30,7 @@ contract TubEvents {
 contract Tub is DSThing, TubEvents {
     Tip      public  tip;  // target price
     DSValue  public  pip;  // price feed
-    address  public  tap;  // liquidator
+    address  public  pit;  // liquidator vault
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
@@ -122,8 +122,8 @@ contract Tub is DSThing, TubEvents {
         tax = ray;
         assert(RAY <= tax);
     }
-    function turn(address tap_) note auth {
-        tap = tap_;
+    function turn(address pit_) note auth {
+        pit = pit_;
     }
 
     function chi() returns (uint128) {
@@ -138,9 +138,8 @@ contract Tub is DSThing, TubEvents {
         var rum = rdiv(ice(), _chi);
         var dew = wsub(rmul(rum, chi), ice());
 
-        dev.lend(dew);
-        sin.push(pot, dew);
-        sai.push(tap, dew);
+        dev.lend(pot, dew);
+        pot.push(sai, pit, dew);
 
         _chi = chi;
         rho = tip.era();
@@ -184,16 +183,18 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) auth note {
         assert(reg == Stage.Usual);
+
         var ink = rdiv(jam, per());
+        pot.mint(skr, ink);
+        pot.push(skr, msg.sender, ink);
         gem.transferFrom(msg.sender, this, jam);
-        skr.mint(ink);
-        skr.push(msg.sender, ink);
     }
     function exit(uint128 ink) auth note {
         assert(reg == Stage.Usual || reg == Stage.Empty );
+
         var jam = rmul(ink, per());
-        skr.pull(msg.sender, ink);
-        skr.burn(ink);
+        pot.pull(skr, msg.sender, ink);
+        pot.burn(skr, ink);
         gem.transfer(msg.sender, jam);
     }
 
@@ -214,16 +215,18 @@ contract Tub is DSThing, TubEvents {
     function lock(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
+
         cups[cup].ink = hadd(cups[cup].ink, wad);
-        skr.pull(msg.sender, wad);
-        skr.push(pot, wad);
+        pot.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
+
         cups[cup].ink = hsub(cups[cup].ink, wad);
-        assert(safe(cup));
         pot.push(skr, msg.sender, wad);
+
+        assert(safe(cup));
     }
 
     function draw(bytes32 cup, uint128 wad) auth note {
@@ -233,9 +236,8 @@ contract Tub is DSThing, TubEvents {
         var pen = rdiv(wad, chi());
         cups[cup].art = wadd(cups[cup].art, pen);
 
-        dev.lend(wad);
-        sin.push(pot, wad);
-        sai.push(msg.sender, wad);
+        dev.lend(pot, wad);
+        pot.push(sai, msg.sender, wad);
 
         assert(safe(cup));
         assert(cast(sin.totalSupply()) <= hat);
@@ -247,9 +249,8 @@ contract Tub is DSThing, TubEvents {
         var pen = rdiv(wad, chi());
         cups[cup].art = wsub(cups[cup].art, pen);
 
-        sai.pull(msg.sender, wad);
-        pot.push(sin, this, wad);
-        dev.mend(wad);
+        pot.pull(sai, msg.sender, wad);
+        dev.mend(pot, wad);
 
         assert(safe(cup));
         assert(cast(sin.totalSupply()) <= hat);
@@ -269,7 +270,7 @@ contract Tub is DSThing, TubEvents {
 
         // take on all of the debt
         var rue = tab(cup);
-        pot.push(sin, tap, rue);
+        pot.push(sin, pit, rue);
         cups[cup].art = 0;
 
         // axe the collateral
@@ -279,7 +280,7 @@ contract Tub is DSThing, TubEvents {
 
         if (ink < cab) cab = ink;                    // take at most all the skr
 
-        pot.push(skr, tap, cab);
+        pot.push(skr, pit, cab);
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
     //------------------------------------------------------------------
@@ -302,22 +303,12 @@ contract Tub is DSThing, TubEvents {
 
         var ash = hmin(pro, con);  // skr taken to cover the debt
         pot.push(skr, cups[cup].lad, hsub(pro, ash));
-        pot.push(skr, this, ash);
-        skr.burn(ash);
+        pot.burn(skr, ash);
 
         delete cups[cup];
     }
     function vent() auth note {
         assert(reg == Stage.Caged);
         reg = Stage.Empty;
-    }
-    function heal() note auth {
-        dev.heal();
-    }
-    function mend(uint128 wad) note auth {
-        dev.mend(wad);
-    }
-    function burn(DSToken gem, uint128 wad) {
-        gem.burn(wad);
     }
 }

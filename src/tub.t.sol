@@ -23,7 +23,7 @@ contract FakePerson {
     }
 
     function cash() {
-        sai.approve(top, sai.balanceOf(this));
+        sai.approve(top.pot(), sai.balanceOf(this));
         top.cash();
     }
 }
@@ -40,6 +40,7 @@ contract TubTestBase is DSTest, DSMath {
     DSDevil  dev;
     DSToken  skr;
     DSVault  pot;
+    DSVault  pit;
     DSValue  tag;
     DSVault  tmp;
     DSRoles  mom;
@@ -83,6 +84,7 @@ contract TubTestBase is DSTest, DSMath {
 
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();
+        pit = new DSVault();
 
         tmp = new DSVault();  // somewhere to hide tokens for testing
 
@@ -91,23 +93,30 @@ contract TubTestBase is DSTest, DSMath {
 
         tub = new Tub(gem, dev, sai, sin, skr, pot, tip, tag);
 
-        tap = new Tap(tub);
+        tap = new Tap(tub, pit);
         top = new Top(tub, tap);
 
-        tub.turn(tap);
+        tub.turn(pit);
 
         mom = new DSRoles();
+        pot.setAuthority(mom);
+        pit.setAuthority(mom);
+
         tip.setAuthority(mom);
         tub.setAuthority(mom);
-        pot.setAuthority(mom);
         top.setAuthority(mom);
         tap.setAuthority(mom);
+
+        sai.setAuthority(mom);
+        sin.setAuthority(mom);
         skr.setAuthority(mom);
 
         mom.setRootUser(this, true);
         mom.setRootUser(dev, true);   // to allow pull
         mom.setRootUser(top, true);
         mom.setRootUser(tap, true);
+        mom.setRootUser(pot, true);
+        mom.setRootUser(pit, true);
         setRoles();
 
         sai.setOwner(dev);
@@ -118,12 +127,13 @@ contract TubTestBase is DSTest, DSMath {
         tip.setOwner(tub);
 
         gem.approve(tub, 100000 ether);
-        skr.approve(tub, 100000 ether);
-        skr.approve(pot, 100000 ether);
-        sai.approve(tub, 100000 ether);
         sai.approve(top, 100000 ether);
-        sai.approve(tap, 100000 ether);
-        skr.approve(tap, 100000 ether);
+
+        sai.approve(pot, 100000 ether);
+        skr.approve(pot, 100000 ether);
+
+        sai.approve(pit, 100000 ether);
+        skr.approve(pit, 100000 ether);
 
         sai.approve(tmp, 100000 ether);
         skr.approve(tmp, 100000 ether);
@@ -344,7 +354,7 @@ contract CageTest is TubTestBase {
         tub.join(20 ether);   // give us some more skr
         top.cage(1 ether);
 
-        var woe = cast(sin.balanceOf(tub));
+        var woe = cast(sin.balanceOf(pot));
         assertEqWad(woe, 5 ether);       // all good debt now bad debt
         assertEqWad(tub.fix(), ray(1 ether));       // sai redeems 1:1 with gem
         assertEqWad(tub.fit(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
@@ -1159,15 +1169,15 @@ contract TaxTest is TubTestBase {
         tub.join(0.5 ether);  // get some unlocked skr
 
         assertEq(skr.totalSupply(),   100.5 ether);
-        assertEq(sai.balanceOf(tap),    0 ether);
-        assertEq(sin.balanceOf(tap),    0 ether);
+        assertEq(sai.balanceOf(pit),    0 ether);
+        assertEq(sin.balanceOf(pit),    0 ether);
         assertEq(sai.balanceOf(this), 100 ether);
         tub.drip();
-        assertEq(sai.balanceOf(tap),    5 ether);
+        assertEq(sai.balanceOf(pit),    5 ether);
         tap.boom(0.5 ether);
         assertEq(skr.totalSupply(),   100 ether);
-        assertEq(sai.balanceOf(tap),    0 ether);
-        assertEq(sin.balanceOf(tap),    0 ether);
+        assertEq(sai.balanceOf(pit),    0 ether);
+        assertEq(sin.balanceOf(pit),    0 ether);
         assertEq(sai.balanceOf(this), 105 ether);
     }
     // Tax can flip a cup to unsafe
@@ -1318,7 +1328,7 @@ contract WayTest is TubTestBase {
     function testWayBoom() {
         var cup = waySetup();
         tub.join(100 ether);       // give us some spare skr
-        sai.push(tap, 100 ether);  // force some joy into the tap
+        sai.push(pit, 100 ether);  // force some joy into the tap
         assertEqWad(tap.joy(), 100 ether);
 
         mark(2 ether);
@@ -1331,7 +1341,7 @@ contract WayTest is TubTestBase {
 
         tub.join(100 ether);
         tub.draw(cup, 100 ether);
-        sai.push(tap, 100 ether);  // force some joy into the tap
+        sai.push(pit, 100 ether);  // force some joy into the tap
 
         // n.b. per is now 2
         assertEqWad(tap.joy(), 100 ether);
