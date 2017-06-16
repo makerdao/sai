@@ -2,20 +2,21 @@
 set -ex
 
 export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
-export ETH_GAS=${ETH_GAS:-"4500000"}
+export ETH_GAS=${ETH_GAS:-"3900000"}
 
 dapp build
 
 export SETH_ASYNC=yes
 
+SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
+SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
 test -z $GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
 test -z $TAG && TAGtx=$(dapp create DSValue)
 test -z $MOM && MOMtx=$(dapp create DSRoles)
-SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
-SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
 SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
 LPStx=$(dapp create DSToken 'LPS' 'LPS' 18)
 POTtx=$(dapp create DSVault)
+PITtx=$(dapp create DSVault)
 TIPtx=$(dapp create Tip)
 
 export SETH_ASYNC=no
@@ -23,15 +24,17 @@ export SETH_ASYNC=no
 SAI=$(seth receipt $SAItx contractAddress)
 SIN=$(seth receipt $SINtx contractAddress)
 DEV=$(dapp create DSDevil $SAI $SIN)
+SKR=$(seth receipt $SKRtx contractAddress)
 test -z $GEM && GEM=$(seth receipt $GEMtx contractAddress)
 test -z $TAG && TAG=$(seth receipt $TAGtx contractAddress)
+JAR=$(dapp create SaiJar $SKR $GEM $TAG)
 test -z $MOM && MOM=$(seth receipt $MOMtx contractAddress)
-SKR=$(seth receipt $SKRtx contractAddress)
 POT=$(seth receipt $POTtx contractAddress)
 TIP=$(seth receipt $TIPtx contractAddress)
 
-SAI_TUB=$(dapp create Tub $GEM $DEV $SAI $SIN $SKR $POT $TIP $TAG)
-TAP=$(dapp create Tap $SAI_TUB)
+SAI_TUB=$(dapp create Tub $JAR $DEV $POT $TIP)
+PIT=$(seth receipt $PITtx contractAddress)
+TAP=$(dapp create Tap $SAI_TUB $PIT)
 TOP=$(dapp create Top $SAI_TUB $TAP)
 # export SAI_TUB=$SAI_TUB
 
@@ -39,33 +42,43 @@ LPS=$(seth receipt $LPStx contractAddress)
 LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS)
 
 export SETH_ASYNC=yes
-AUTH1tx=$(seth send $POT "setAuthority(address)" $MOM)
-AUTH2tx=$(seth send $TIP "setAuthority(address)" $MOM)
-AUTH3tx=$(seth send $SKR "setAuthority(address)" $MOM)
-seth send $SAI_TUB "turn(address)" $TAP
+AUTH1tx=$(seth send $SKR "setAuthority(address)" $MOM)
+AUTH2tx=$(seth send $POT "setAuthority(address)" $MOM)
+AUTH3tx=$(seth send $TIP "setAuthority(address)" $MOM)
+AUTH4tx=$(seth send $SAI "setAuthority(address)" $MOM)
+AUTH5tx=$(seth send $SIN "setAuthority(address)" $MOM)
+seth send $SAI_TUB "turn(address)" $PIT
 seth send $SAI_TUB "setAuthority(address)" $MOM
 seth send $TAP "setAuthority(address)" $MOM
 seth send $TOP "setAuthority(address)" $MOM
+seth send $JAR "setAuthority(address)" $MOM
+seth send $PIT "setAuthority(address)" $MOM
 seth send $LPC "setAuthority(address)" $MOM
 seth send $MOM "setRootUser(address,bool)" $ETH_FROM true
+seth send $MOM "setRootUser(address,bool)" $SAI_TUB true
 seth send $MOM "setRootUser(address,bool)" $DEV true
 seth send $MOM "setRootUser(address,bool)" $TOP true
 seth send $MOM "setRootUser(address,bool)" $TAP true
+seth send $MOM "setRootUser(address,bool)" $JAR true
+seth send $MOM "setRootUser(address,bool)" $POT true
+seth send $MOM "setRootUser(address,bool)" $PIT true
 
 seth send $LPS "setOwner(address)" $LPC
-seth send $SAI "setOwner(address)" $DEV
-seth send $SIN "setOwner(address)" $DEV
 seth send $DEV "setOwner(address)" $SAI_TUB
 export SETH_ASYNC=no
 
 seth receipt $AUTH1tx
 seth receipt $AUTH2tx
 seth receipt $AUTH3tx
+seth receipt $AUTH4tx
+seth receipt $AUTH5tx
 
 export SETH_ASYNC=yes
 seth send $SKR "setOwner(address)" $SAI_TUB
 seth send $POT "setOwner(address)" $SAI_TUB
 seth send $TIP "setOwner(address)" $SAI_TUB
+seth send $SAI "setOwner(address)" $DEV
+seth send $SIN "setOwner(address)" $DEV
 
 tub_capabilities="
 join(uint128)
@@ -125,12 +138,14 @@ export SIN=$SIN
 export SKR=$SKR
 export DEV=$DEV
 export POT=$POT
+export PIT=$PIT
 export TIP=$TIP
 export TAG=$TAG
 export MOM=$MOM
 export TAP=$TAP
 export LPS=$LPS
 export LPC=$LPC
+export JAR=$JAR
 export TOP=$TOP
 export SAI_TUB=$SAI_TUB
 EOF
