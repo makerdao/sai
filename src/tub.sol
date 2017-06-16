@@ -79,14 +79,14 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(SaiJar jar_, DSDevil dev_, DSToken skr_, DSVault pot_, Tip tip_) {
+    function Tub(SaiJar jar_, DSDevil dev_, DSVault pot_, Tip tip_) {
         jar = jar_;
-        gem = jar.token();
+        gem = jar.gem();
+        skr = jar.skr();
 
         dev = dev_;
         sai = dev.gem();
         sin = dev.sin();
-        skr = skr_;
         pot = pot_;
 
         axe = RAY;
@@ -152,21 +152,9 @@ contract Tub is DSThing, TubEvents {
         return uint128(skr.balanceOf(pot));
     }
 
-    // gem per skr
-    function per() constant returns (uint128) {
-        // this avoids 0 edge case / rounding errors TODO delete me
-        // TODO delegate edge case via fee built into conversion formula
-        // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
-
-        // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
-        return skr.totalSupply() == 0
-            ? RAY
-            : rdiv(pie(), uint128(skr.totalSupply()));
-    }
-
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var jam = rmul(per(), cups[cup].ink);
+        var jam = rmul(jar.per(), cups[cup].ink);
         var pro = wmul(jar.tag(), jam);
         var con = wmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
@@ -177,20 +165,14 @@ contract Tub is DSThing, TubEvents {
 
     function join(uint128 jam) auth note {
         assert(reg == Stage.Usual);
-
-        var ink = rdiv(jam, per());
-        jar.mint(skr, ink);
-        jar.push(skr, msg.sender, ink);
-        jar.pull(gem, msg.sender, jam);
+        jar.join(msg.sender, jam);
     }
     function exit(uint128 ink) auth note {
         assert(reg == Stage.Usual || reg == Stage.Empty );
-
-        var jam = rmul(ink, per());
-        jar.pull(skr, msg.sender, ink);
-        jar.burn(skr, ink);
-        jar.push(gem, msg.sender, jam);
+        jar.exit(msg.sender, ink);
     }
+
+    //------------------------------------------------------------------
 
     function open() auth note returns (bytes32 cup) {
         assert(reg == Stage.Usual);
@@ -269,7 +251,7 @@ contract Tub is DSThing, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), jar.per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -277,6 +259,7 @@ contract Tub is DSThing, TubEvents {
         pot.push(skr, pit, cab);
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
+
     //------------------------------------------------------------------
 
     function cage(uint128 fit_, uint128 fix_) auth note {
@@ -286,7 +269,10 @@ contract Tub is DSThing, TubEvents {
         fit = fit_;
         fix = fix_;
     }
-
+    function vent() auth note {
+        assert(reg == Stage.Caged);
+        reg = Stage.Empty;
+    }
     // retrieve skr from a cup
     function bail(bytes32 cup) auth note {
         assert(reg == Stage.Caged || reg == Stage.Empty);
@@ -300,9 +286,5 @@ contract Tub is DSThing, TubEvents {
         pot.burn(skr, ash);
 
         delete cups[cup];
-    }
-    function vent() auth note {
-        assert(reg == Stage.Caged);
-        reg = Stage.Empty;
     }
 }

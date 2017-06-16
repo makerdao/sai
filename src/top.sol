@@ -62,7 +62,7 @@ contract Top is DSThing {
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
-        fit = tub.per();
+        fit = tub.jar().per();
 
         // most gems we can get per sai is the full balance
         var woe = cast(sin.balanceOf(pot));

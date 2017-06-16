@@ -42,7 +42,10 @@ contract Tap is DSThing, DSVault {
 
     // skr per sai
     function s2s() returns (uint128) {
-        return wdiv(rmul(tub.jar().tag(), tub.per()), tub.tip().par());
+        var tag = tub.jar().tag();
+        var per = tub.jar().per();
+        var par = tub.tip().par();
+        return wdiv(rmul(tag, per), par);
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
