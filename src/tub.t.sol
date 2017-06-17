@@ -307,7 +307,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.woe(), 0);         // no bad debt
         assertEqWad(tub.pie(), 10 ether);
 
@@ -316,7 +316,7 @@ contract CageTest is TubTestBase {
 
         assertEqWad(tub.woe(), 5 ether);       // all good debt now bad debt
         assertEqWad(tub.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEqWad(tub.par(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
 
         assertEq(gem.balanceOf(pot),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(tub), 25 ether);  // saved for skr
@@ -325,7 +325,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -333,7 +333,7 @@ contract CageTest is TubTestBase {
         tub.cage(price);        // 150% collat
 
         assertEqWad(tub.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEqWad(tub.par(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -344,7 +344,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
@@ -357,7 +357,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -365,13 +365,13 @@ contract CageTest is TubTestBase {
         tub.cage(price);
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.par(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
     }
     function testCageUnderCollat() {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
@@ -385,7 +385,7 @@ contract CageTest is TubTestBase {
         cageSetup();
 
         assertEqWad(tub.fix(), 0);
-        assertEqWad(tub.par(), 0);
+        assertEqWad(tub.fit(), 0);
         assertEqWad(tub.per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
@@ -508,7 +508,7 @@ contract CageTest is TubTestBase {
         // this should all be returned
         var ink = tub.ink(cup);
         var tab = tub.tab(cup);
-        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.par()));
+        var skrToRecover = hsub(ink, rdiv(rmul(tab, tub.fix()), tub.fit()));
         tub.bail(cup);
 
         assertEq(skr.balanceOf(this), 20 ether + skrToRecover);
@@ -1199,5 +1199,116 @@ contract TaxTest is TubTestBase {
         // also question of the joy in cage
         // this is absorbed via mend, meaning skr holders have it
         // distributed if system in surplus
+    }
+}
+
+contract WayTest is TubTestBase {
+    function waySetup() returns (bytes32 cup) {
+        mark(10 ether);
+        gem.mint(1000 ether);
+
+        tub.cork(1000 ether);
+
+        cup = tub.open();
+        tub.join(100 ether);
+        tub.lock(cup, 100 ether);
+        tub.draw(cup, 100 ether);
+    }
+    // what does way actually do?
+    // it changes the value of sai relative to ref
+    // way > 1 -> par increasing, more ref per sai
+    // way < 1 -> par decreasing, less ref per sai
+
+    // this changes the safety level of cups,
+    // affecting `draw`, `wipe`, `free` and `bite`
+
+    // if way < 1, par is decreasing and the con (in ref)
+    // of a cup is decreasing, so cup holders need
+    // less ref to wipe (but the same sai)
+    // This makes cups *more* collateralised with time.
+    function testTau() {
+        assertEq(uint(tub.era()), now);
+        assertEq(uint(tub.tau()), now);
+    }
+    function testWayPar() {
+        tub.coax(ray(0.95 ether));
+
+        assertEqWad(tub.par(), 1.00 ether);
+        tub.warp(1);
+        assertEqWad(tub.par(), 0.95 ether);
+
+        tub.coax(ray(2 ether));
+        tub.warp(1);
+        assertEqWad(tub.par(), 1.90 ether);
+    }
+    function testWayDecreasingPrincipal() {
+        var cup = waySetup();
+        mark(0.98 ether);
+        assert(!tub.safe(cup));
+
+        tub.coax(ray(0.95 ether));
+        tub.warp(1);
+        assert(tub.safe(cup));
+    }
+    // `cage` is slightly affected: the cage price is
+    // now in *sai per gem*, where before ref per gem
+    // was equivalent.
+    // `bail` is unaffected, as all values are in sai.
+
+    // `boom` and `bust` as par is now needed to determine
+    // the skr / sai price.
+    function testWayBust() {
+        var cup = waySetup();
+        mark(0.5 ether);
+        tub.bite(cup);
+
+        assertEqWad(tub.joy(),   0 ether);
+        assertEqWad(tub.woe(), 100 ether);
+        assertEqWad(tub.fog(), 100 ether);
+        assertEq(sai.balanceOf(this), 100 ether);
+
+        tub.bust(50 ether);
+
+        assertEqWad(tub.fog(),  50 ether);
+        assertEqWad(tub.woe(),  75 ether);
+        assertEq(sai.balanceOf(this), 75 ether);
+
+        tub.coax(ray(0.5 ether));
+        tub.warp(1);
+        assertEqWad(tub.par(), 0.5 ether);
+        // sai now worth half as much, so we cover twice as much debt
+        // for the same skr
+        tub.bust(50 ether);
+
+        assertEqWad(tub.fog(),   0 ether);
+        assertEqWad(tub.woe(),  25 ether);
+        assertEq(sai.balanceOf(this), 25 ether);
+    }
+    function testWayBoom() {
+        var cup = waySetup();
+        tub.join(100 ether);       // give us some spare skr
+        sai.push(tub, 100 ether);  // force some joy into the tub
+
+        assertEqWad(tub.joy(), 100 ether);
+        mark(2 ether);
+        tub.coax(ray(2 ether));
+        tub.warp(1);
+        assertEqWad(tub.par(), 2 ether);
+        tub.boom(100 ether);
+        assertEqWad(tub.joy(),   0 ether);
+        assertEqWad(tub.per(), ray(2 ether));
+
+        tub.join(100 ether);
+        tub.draw(cup, 100 ether);
+        sai.push(tub, 100 ether);  // force some joy into the tub
+
+        // n.b. per is now 2
+        assertEqWad(tub.joy(), 100 ether);
+        mark(2 ether);
+        tub.coax(ray(0.5 ether));
+        tub.warp(2);
+        assertEqWad(tub.par(), 0.5 ether);
+        tub.boom(12.5 ether);
+        assertEqWad(tub.joy(),   0 ether);
     }
 }
