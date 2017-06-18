@@ -45,5 +45,4 @@ contract SaiJar is DSThing, DSVault {
         burn(skr, ink);
         push(gem, guy, jam);
     }
-
 }

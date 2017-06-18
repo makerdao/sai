@@ -38,9 +38,9 @@ contract Tub is DSThing, TubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
+    SaiJar   public  jar;  // collateral vault
     DSVault  public  pot;  // Good debt vault
     address  public  pit;  // liquidator vault
-    SaiJar   public  jar;  // collateral vault
 
     uint128  public  axe;  // Liquidation penalty
     uint128  public  hat;  // Debt ceiling
@@ -149,7 +149,7 @@ contract Tub is DSThing, TubEvents {
     }
     // Backing collateral
     function air() constant returns (uint128) {
-        return uint128(skr.balanceOf(pot));
+        return uint128(skr.balanceOf(jar));
     }
 
     // returns true if cup overcollateralized
@@ -193,14 +193,14 @@ contract Tub is DSThing, TubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].ink = hadd(cups[cup].ink, wad);
-        pot.pull(skr, msg.sender, wad);
+        jar.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].ink = hsub(cups[cup].ink, wad);
-        pot.push(skr, msg.sender, wad);
+        jar.push(skr, msg.sender, wad);
 
         assert(safe(cup));
     }
@@ -256,7 +256,7 @@ contract Tub is DSThing, TubEvents {
 
         if (ink < cab) cab = ink;                    // take at most all the skr
 
-        pot.push(skr, pit, cab);
+        jar.push(skr, pit, cab);
         cups[cup].ink = hsub(cups[cup].ink, cab);
     }
 
@@ -282,8 +282,8 @@ contract Tub is DSThing, TubEvents {
         var con = rdiv(rmul(tab(cup), fix), fit);
 
         var ash = hmin(pro, con);  // skr taken to cover the debt
-        pot.push(skr, cups[cup].lad, hsub(pro, ash));
-        pot.burn(skr, ash);
+        jar.push(skr, cups[cup].lad, hsub(pro, ash));
+        jar.burn(skr, ash);
 
         delete cups[cup];
     }

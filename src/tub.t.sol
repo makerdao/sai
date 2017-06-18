@@ -142,7 +142,7 @@ contract TubTestBase is DSTest, DSMath {
         sai.approve(top, 100000 ether);
 
         sai.approve(pot, 100000 ether);
-        skr.approve(pot, 100000 ether);
+        skr.approve(jar, 100000 ether);
 
         sai.approve(pit, 100000 ether);
         skr.approve(pit, 100000 ether);
@@ -158,45 +158,45 @@ contract TubTestBase is DSTest, DSMath {
 
 contract TubTest is TubTestBase {
     function testBasic() {
-        assertEq( tub.skr().balanceOf(pot), 0 ether );
-        assertEq( tub.skr().balanceOf(this), 0 ether );
-        assertEq( tub.gem().balanceOf(jar), 0 ether );
+        assertEq( skr.balanceOf(jar), 0 ether );
+        assertEq( skr.balanceOf(this), 0 ether );
+        assertEq( gem.balanceOf(jar), 0 ether );
 
         // edge case
         assertEq( uint256(tub.jar().per()), ray(1 ether) );
         tub.join(10 ether);
         assertEq( uint256(tub.jar().per()), ray(1 ether) );
 
-        assertEq( tub.skr().balanceOf(this), 10 ether );
-        assertEq( tub.gem().balanceOf(jar), 10 ether );
+        assertEq( skr.balanceOf(this), 10 ether );
+        assertEq( gem.balanceOf(jar), 10 ether );
         // price formula
         tub.join(10 ether);
         assertEq( uint256(tub.jar().per()), ray(1 ether) );
-        assertEq( tub.skr().balanceOf(this), 20 ether );
-        assertEq( tub.gem().balanceOf(jar), 20 ether );
+        assertEq( skr.balanceOf(this), 20 ether );
+        assertEq( gem.balanceOf(jar), 20 ether );
 
         var cup = tub.open();
 
-        assertEq( tub.skr().balanceOf(this), 20 ether );
-        assertEq( tub.skr().balanceOf(pot), 0 ether );
+        assertEq( skr.balanceOf(this), 20 ether );
+        assertEq( skr.balanceOf(jar), 0 ether );
         tub.lock(cup, 10 ether); // lock skr token
-        assertEq( tub.skr().balanceOf(this), 10 ether );
-        assertEq( tub.skr().balanceOf(pot), 10 ether );
+        assertEq( skr.balanceOf(this), 10 ether );
+        assertEq( skr.balanceOf(jar), 10 ether );
 
-        assertEq( tub.sai().balanceOf(this), 0 ether);
+        assertEq( sai.balanceOf(this), 0 ether);
         tub.draw(cup, 5 ether);
-        assertEq( tub.sai().balanceOf(this), 5 ether);
+        assertEq( sai.balanceOf(this), 5 ether);
 
 
-        assertEq( tub.sai().balanceOf(this), 5 ether);
+        assertEq( sai.balanceOf(this), 5 ether);
         tub.wipe(cup, 2 ether);
-        assertEq( tub.sai().balanceOf(this), 3 ether);
+        assertEq( sai.balanceOf(this), 3 ether);
 
-        assertEq( tub.sai().balanceOf(this), 3 ether);
-        assertEq( tub.skr().balanceOf(this), 10 ether );
+        assertEq( sai.balanceOf(this), 3 ether);
+        assertEq( skr.balanceOf(this), 10 ether );
         tub.shut(cup);
-        assertEq( tub.sai().balanceOf(this), 0 ether);
-        assertEq( tub.skr().balanceOf(this), 20 ether );
+        assertEq( sai.balanceOf(this), 0 ether);
+        assertEq( skr.balanceOf(this), 20 ether );
     }
     function testMold() {
         var chop = bytes4(sha3('chop(uint128)'));
@@ -735,7 +735,7 @@ contract CageTest is TubTestBase {
         assertEq(gem.balanceOf(jar), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = 1 ether;
         top.cage(price);
@@ -746,17 +746,17 @@ contract CageTest is TubTestBase {
         tub.bail(cup); // 5 skr recovered, and 5 skr burnt
 
         assertEq(skr.balanceOf(this), 55 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 40 ether); // locked skr
 
         tub.bail(cup2); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 75 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 20 ether); // locked skr
 
         tub.bail(cup3); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 95 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
+        assertEq(skr.balanceOf(jar), 0); // locked skr
 
         top.cash();
 
@@ -783,7 +783,7 @@ contract CageTest is TubTestBase {
         assertEq(gem.balanceOf(jar), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 2 ether);
         top.cage(price);
@@ -794,17 +794,17 @@ contract CageTest is TubTestBase {
         tub.bail(cup); // 10 skr burnt
 
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 40 ether); // locked skr
 
         tub.bail(cup2); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 20 ether); // locked skr
 
         tub.bail(cup3); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
+        assertEq(skr.balanceOf(jar), 0); // locked skr
 
         top.cash();
 
@@ -831,7 +831,7 @@ contract CageTest is TubTestBase {
         assertEq(gem.balanceOf(jar), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 4 ether);
         top.cage(price);
@@ -842,17 +842,17 @@ contract CageTest is TubTestBase {
         tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
 
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 40 ether); // locked skr
 
         tub.bail(cup2); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 20 ether); // locked skr
 
         tub.bail(cup3); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
+        assertEq(skr.balanceOf(jar), 0); // locked skr
 
         top.cash();
 
@@ -879,7 +879,7 @@ contract CageTest is TubTestBase {
         assertEq(gem.balanceOf(jar), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 50 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 20 ether);
         top.cage(price);
@@ -890,17 +890,17 @@ contract CageTest is TubTestBase {
         tub.bail(cup); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
 
         assertEq(skr.balanceOf(this), 50 ether); // free skr
-        assertEq(skr.balanceOf(pot), 40 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 40 ether); // locked skr
 
         tub.bail(cup2); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 70 ether); // free skr
-        assertEq(skr.balanceOf(pot), 20 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 20 ether); // locked skr
 
         tub.bail(cup3); // 20 skr recovered
 
         assertEq(skr.balanceOf(this), 90 ether); // free skr
-        assertEq(skr.balanceOf(pot), 0); // locked skr
+        assertEq(skr.balanceOf(jar), 0); // locked skr
 
         top.cash();
 
@@ -923,7 +923,7 @@ contract CageTest is TubTestBase {
         assertEq(gem.balanceOf(jar), 10 ether);
         assertEq(gem.balanceOf(this), 90 ether);
         assertEq(skr.balanceOf(this), 0 ether); // free skr
-        assertEq(skr.balanceOf(pot), 10 ether); // locked skr
+        assertEq(skr.balanceOf(jar), 10 ether); // locked skr
 
         FakePerson person = new FakePerson(top);
         mom.setUserRole(person, 1, true);
@@ -1238,10 +1238,10 @@ contract TaxTest is TubTestBase {
         tub.drip();
 
         assertEq(skr.balanceOf(this),  0 ether);
-        assertEq(skr.balanceOf(pot), 100 ether);
+        assertEq(skr.balanceOf(jar), 100 ether);
         tub.bail(cup);
         assertEq(skr.balanceOf(this), 89.5 ether);
-        assertEq(skr.balanceOf(pot),     0 ether);
+        assertEq(skr.balanceOf(jar),     0 ether);
 
         assertEq(sai.balanceOf(this),  100 ether);
         assertEq(gem.balanceOf(this), 1000 ether);
