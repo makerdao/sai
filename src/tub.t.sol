@@ -362,7 +362,8 @@ contract CageTest is TubTestBase {
         assertEqWad(tub.pie(), 10 ether);
 
         tub.join(20 ether);   // give us some more skr
-        top.cage(1 ether);
+        mark(1 ether);
+        top.cage();
 
         var woe = cast(sin.balanceOf(pot));
         assertEqWad(woe, 5 ether);       // all good debt now bad debt
@@ -381,7 +382,8 @@ contract CageTest is TubTestBase {
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
-        top.cage(price);        // 150% collat
+        mark(price);
+        top.cage();        // 150% collat
 
         assertEqWad(tub.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
         assertEqWad(tub.fit(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
@@ -399,7 +401,8 @@ contract CageTest is TubTestBase {
         assertEqWad(tub.jar().per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
         assertEqWad(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
@@ -413,7 +416,8 @@ contract CageTest is TubTestBase {
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
         assertEqWad(tub.fit(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
@@ -426,7 +430,8 @@ contract CageTest is TubTestBase {
         assertEqWad(tub.jar().per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(2 * sai.totalSupply(), gem.balanceOf(pot));
         assertEqWad(tub.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 2:1 with ref
@@ -441,7 +446,8 @@ contract CageTest is TubTestBase {
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(4 * sai.totalSupply(), gem.balanceOf(pot));
         assertEqWad(tub.fix(), ray(4 ether));                 // sai redeems 1:4 with gem, 1:1 with ref
@@ -450,7 +456,8 @@ contract CageTest is TubTestBase {
     // ensure cash returns the expected amount
     function testCashSafeOverCollat() {
         var cup = cageSetup();
-        top.cage(1 ether);
+        mark(1 ether);
+        top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
@@ -478,7 +485,8 @@ contract CageTest is TubTestBase {
     function testCashSafeOverCollatWithFreeSkr() {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        top.cage(1 ether);
+        mark(1 ether);
+        top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
@@ -503,7 +511,8 @@ contract CageTest is TubTestBase {
         // fails because exit is before bail
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
-        top.cage(1 ether);
+        mark(1 ether);
+        top.cage();
 
         top.cash();
         tub.exit(uint128(skr.balanceOf(this)));
@@ -533,7 +542,8 @@ contract CageTest is TubTestBase {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
-        top.cage(price);        // 150% collat
+        mark(price);
+        top.cage();        // 150% collat
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
@@ -575,7 +585,8 @@ contract CageTest is TubTestBase {
     function testCashAtCollat() {
         var cup = cageSetup();
         var price = wdiv(1 ether, 2 ether);  // 100% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
@@ -606,7 +617,8 @@ contract CageTest is TubTestBase {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(sai.balanceOf(this),   5 ether);
         assertEq(skr.balanceOf(this),  20 ether);
@@ -627,7 +639,8 @@ contract CageTest is TubTestBase {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
@@ -661,7 +674,8 @@ contract CageTest is TubTestBase {
     function testCashUnderCollat() {
         var cup = cageSetup();
         var price = wdiv(1 ether, 4 ether);  // 50% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
@@ -692,7 +706,8 @@ contract CageTest is TubTestBase {
         var cup = cageSetup();
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         tmp.pull(skr, this);  // stash skr
 
@@ -736,7 +751,8 @@ contract CageTest is TubTestBase {
         assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = 1 ether;
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(gem.balanceOf(pot), 5 ether); // Needed to payout 5 sai
         assertEq(gem.balanceOf(jar), 95 ether);
@@ -784,7 +800,8 @@ contract CageTest is TubTestBase {
         assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 2 ether);
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(gem.balanceOf(pot), 10 ether); // Needed to payout 10 sai
         assertEq(gem.balanceOf(jar), 90 ether);
@@ -832,7 +849,8 @@ contract CageTest is TubTestBase {
         assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 4 ether);
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(gem.balanceOf(pot), 20 ether); // Needed to payout 5 sai
         assertEq(gem.balanceOf(jar), 80 ether);
@@ -880,7 +898,8 @@ contract CageTest is TubTestBase {
         assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
         var price = wdiv(1 ether, 20 ether);
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(gem.balanceOf(pot), 100 ether); // Needed to payout 5 sai
         assertEq(gem.balanceOf(jar), 0 ether);
@@ -928,7 +947,8 @@ contract CageTest is TubTestBase {
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         var price = rdiv(9 ether, 8 ether);
-        top.cage(price);
+        mark(price);
+        top.cage();
 
         assertEq(gem.balanceOf(pot), rmul(5 ether, tub.fix())); // Needed to payout 5 sai
         assertEq(gem.balanceOf(jar), hsub(10 ether, rmul(5 ether, tub.fix())));
@@ -1230,7 +1250,8 @@ contract TaxTest is TubTestBase {
         var cup = taxSetup();
         tip.warp(1);
         tub.drip();
-        top.cage(10 ether);
+        mark(10 ether);
+        top.cage();
 
         tip.warp(1);  // should have no effect
         tub.drip();
@@ -1305,6 +1326,21 @@ contract WayTest is TubTestBase {
     // now in *sai per gem*, where before ref per gem
     // was equivalent.
     // `bail` is unaffected, as all values are in sai.
+    function testWayCage() {
+        waySetup();
+
+        tip.coax(ray(2 ether));
+        tip.warp(1);  // par now 2
+
+        // we have 100 sai
+        // gem is worth 10 ref
+        // sai is worth 2 ref
+        // we should get back 100 / (10 / 2) = 20 gem
+        top.cage();
+        assertEq(gem.balanceOf(this), 1000 ether);
+        top.cash();
+        assertEq(gem.balanceOf(this), 1020 ether);
+    }
 
     // `boom` and `bust` as par is now needed to determine
     // the skr / sai price.
