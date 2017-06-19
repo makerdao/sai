@@ -28,7 +28,7 @@ contract LPCTest is DSTest, DSMath {
     ERC20   ref;
     ERC20   alt;
     DSToken lps;
-    DSValue tip;
+    DSValue pip;
     SaiLPC  lpc;
     DSRoles mom;
 
@@ -52,12 +52,12 @@ contract LPCTest is DSTest, DSMath {
         alt = new DSTokenBase(10 ** 24);
         lps = new DSToken('LPS', 'LPS', 18);
 
-        tip = new DSValue();
-        tip.poke(bytes32(2 ether)); // 2 refs per gem
+        pip = new DSValue();
+        pip.poke(bytes32(2 ether)); // 2 refs per gem
 
         var gap = 1.04 ether;
 
-        lpc = new SaiLPC(ref, alt, tip, lps);
+        lpc = new SaiLPC(ref, alt, pip, lps);
         lpc.jump(gap);
         lps.setOwner(lpc);
 
@@ -102,7 +102,7 @@ contract LPCTest is DSTest, DSMath {
         t1.take(ref, 50 ether);
         assertEqWad(lpc.pie(), 204 ether);
 
-        tip.poke(bytes32(1 ether));  // 1 ref per gem
+        pip.poke(bytes32(1 ether));  // 1 ref per gem
 
         m3.pool(ref, 100 ether);
         assertEqWad(lpc.pie(), 252 ether);

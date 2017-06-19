@@ -28,14 +28,14 @@ contract SaiLPC is DSThing {
     ERC20    public  ref;
     ERC20    public  alt;
 
-    DSValue  public  tip;  // price feed, giving refs per alt
+    DSValue  public  pip;  // price feed, giving refs per alt
     uint128  public  gap;  // spread, charged on `take`
     DSToken  public  lps;  // 'liquidity provider shares', earns spread
 
-    function SaiLPC(ERC20 ref_, ERC20 alt_, DSValue tip_, DSToken lps_) {
+    function SaiLPC(ERC20 ref_, ERC20 alt_, DSValue pip_, DSToken lps_) {
         ref = ref_;
         alt = alt_;
-        tip = tip_;
+        pip = pip_;
 
         lps = lps_;
         gap = WAD;
@@ -48,7 +48,7 @@ contract SaiLPC is DSThing {
 
     // ref per alt
     function tag() constant returns (uint128) {
-        return uint128(tip.read());
+        return uint128(pip.read());
     }
 
     // total pool value
