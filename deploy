@@ -39,7 +39,7 @@ TOP=$(dapp create Top $SAI_TUB $TAP)
 # export SAI_TUB=$SAI_TUB
 
 LPS=$(seth receipt $LPStx contractAddress)
-LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS)
+LPC=$(dapp create SaiLPC $SAI $GEM $TAG $LPS $TIP)
 
 export SETH_ASYNC=yes
 AUTH1tx=$(seth send $SKR "setAuthority(address)" $MOM)

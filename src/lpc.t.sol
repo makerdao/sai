@@ -31,6 +31,7 @@ contract LPCTest is DSTest, DSMath {
     DSValue pip;
     SaiLPC  lpc;
     DSRoles mom;
+    Tip     tip;
 
     Tester   t1;
     Tester   m1;
@@ -39,6 +40,10 @@ contract LPCTest is DSTest, DSMath {
 
     function assertEqWad(uint128 x, uint128 y) {
         assertEq(uint256(x), uint256(y));
+    }
+
+    function ray(uint128 wad) returns (uint128) {
+        return wad * 10 ** 9;
     }
 
     function setRoles() {
@@ -57,7 +62,9 @@ contract LPCTest is DSTest, DSMath {
 
         var gap = 1.04 ether;
 
-        lpc = new SaiLPC(ref, alt, pip, lps);
+        tip = new Tip();
+
+        lpc = new SaiLPC(ref, alt, pip, lps, tip);
         lpc.jump(gap);
         lps.setOwner(lpc);
 
@@ -84,7 +91,6 @@ contract LPCTest is DSTest, DSMath {
 
     function testBasicLPC() {
         assertEqWad(lpc.per(), RAY);
-
         m1.pool(ref, 100 ether);
         assertEq(lps.balanceOf(m1), 100 ether);
 
@@ -111,5 +117,61 @@ contract LPCTest is DSTest, DSMath {
         assertEqWad(rdiv(uint128(lps.balanceOf(m3)), lpc.per()), 100 ether);
         // but m1, m2 have less claim each
         assertEqWad(rdiv(uint128(lps.balanceOf(m1) + lps.balanceOf(m2)), lpc.per()), 152 ether);
+    }
+
+    function testWarpLPC() {
+        var way = ray(0.8 ether);
+        tip.coax(way);
+        // t1 pools 100 ETH
+        t1.pool(alt, 100 ether);
+
+        // At time 0, we have a pie of 100 * 2 SAI
+        assertEqWad(lpc.pie(), 200 ether);
+        assertEqWad(lpc.per(), RAY);
+        tip.warp(1);
+        var par = way;
+        // At time 1, we have a pie of 200 / 0.8 = 250 SAI
+        var pie = rdiv(200 ether, par);
+        assertEqWad(lpc.pie(), pie);
+        assertEqWad(lpc.per(), way);
+        tip.warp(1);
+        par = rmul(way, way);
+        // At time 2, we have a pie of 200 / (0.8 * 0.8) = 312.5 SAI
+        pie = rdiv(200 ether, par);
+        assertEqWad(lpc.pie(), pie);
+        assertEqWad(lpc.per(), par);
+
+        assertEq(lps.balanceOf(t1), 200 ether);
+
+        // m1 takes 10 ETH
+        m1.take(alt, 10 ether);
+        assertEq(lps.balanceOf(m1), 0);
+        assertEq(alt.balanceOf(m1), 10 ether);
+        assertEq(alt.balanceOf(lpc), 90 ether);
+        // m1 has to pay a value in SAI that is equivalent to 10 ETH adding the corresponding gap value
+        uint128 refBalanceOfLPC = rdiv(wmul(wmul(10 ether, lpc.tag()), lpc.gap()), par);
+        assertEq(ref.balanceOf(lpc), refBalanceOfLPC);
+        pie += rdiv(wmul(wmul(10 ether, lpc.tag()), lpc.gap() - 1 ether), par);
+        assertEqWad(lpc.pie(), pie);
+
+        // m2 pools 100 SAI
+        m2.pool(ref, 100 ether);
+        assertEqWad(lpc.pie(), pie + 100 ether);
+
+        tip.warp(1);
+        // t1 exits all SAI in the system
+        t1.exit(ref, refBalanceOfLPC + 100 ether);
+        assertEq(ref.balanceOf(lpc), 0);
+        assertEq(alt.balanceOf(lpc), 90 ether);
+
+        // m2 exits the maximum LPS balance in ETH
+        var maxAmountoExitM2 = wdiv(wmul(rdiv(wdiv(uint128(lps.balanceOf(m2)), lpc.gap()), lpc.per()), tip.par()), lpc.tag());
+        m2.exit(alt, maxAmountoExitM2);
+        assertEq(lps.balanceOf(m2), 0);
+        assertEq(alt.balanceOf(lpc), 90 ether - maxAmountoExitM2);
+
+        // t1 exits all the remaining ETH
+        t1.exit(alt, 90 ether - maxAmountoExitM2);
+        assertEqWad(lpc.pie(), 0);
     }
 }
