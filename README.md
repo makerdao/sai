@@ -65,7 +65,8 @@ Read commands:
    axe             get the liquidation penalty
    chi             get the internal debt price
    cup             show the cup info
-   fix             get the SAI settlement price
+   fit             get the gem per skr settlement price
+   fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation
    gem             get the collateral token
    hat             get the debt ceiling
