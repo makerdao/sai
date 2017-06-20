@@ -18,7 +18,9 @@
 ### Sai options:
 ###
 ###    -C, --cup=<id>             ID of cup to perform operation on
-###        --tub=<address>        address of tub to perform operation on
+###        --tub=<address>        address of Tub to perform operation on
+###        --tap=<address>        address of Tap to perform operation on
+###        --top=<address>        address of Top to perform operation on
 ###
 ### Transaction options:
 ###
@@ -30,7 +32,9 @@ sai <command> --help
 --
   Options
 C,cup=id             ID of cup to perform operation on
-tub=address          address of tub to perform operation on
+tub=address          address of Tub to perform operation on
+tap=address          address of Tap to perform operation on
+top=address          address of Top to perform operation on
 F,from=address       account from which to send transaction
 G,gas=number         amount of gas to provide with transaction
 h                    display output in human-readable form
@@ -55,7 +59,9 @@ while [[ $1 ]]; do
 
     -C|--cup)        shift; export SAI_CUP="$(seth --to-hexdata $(seth --to-uint256 $1))";;
        --tub)        shift; export SAI_TUB=$1;;
-    
+       --tap)        shift; export SAI_TAP=$1;;
+       --top)        shift; export SAI_TOP=$1;;
+
     -F|--from)       shift; export ETH_FROM=$1;;
     -G|--gas)        shift; export ETH_GAS=$1;;
     
@@ -66,5 +72,7 @@ while [[ $1 ]]; do
 done
 
 export SAI_TUB=${SAI_TUB:-@sai_tub}
+export SAI_TAP=${SAI_TAP:-@sai_tap}
+export SAI_TOP=${SAI_TOP:-@sai_top}
 
 "${0##*/}-${1-help}" "${@:2}"
