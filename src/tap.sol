@@ -6,7 +6,7 @@ pragma solidity ^0.4.10;
 
 import "./tub.sol";
 
-contract Tap is DSThing, DSVault {
+contract Tap is DSThing {
     Tub      public  tub;
     DSVault  public  pit;
 
