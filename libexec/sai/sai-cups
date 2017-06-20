@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-### sai-cups -- list your cups
+### sai-cups -- list cups created by you
 set -e
-echo >&2 "Your cups ..."
+echo >&2 "Cups created by you..."
 seth rpc eth_getLogs -- -n {} -s ${SAI_TUB?} -i address \
                                  -s earliest    -i fromBlock \
                                    -n [] -s "$(seth keccak $(seth --from-ascii 'LogNewCup(address,bytes32)'))" -i append \

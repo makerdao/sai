@@ -107,7 +107,7 @@ Commands:
    crop            update the stability fee
    cuff            update the liquidation ratio
    cupi            get the last cup id
-   cups            list your cups
+   cups            list cups created by you
    draw            issue the specified amount of sai stablecoins
    drip            recalculate the internal debt price
    exit            sell SKR for gems
@@ -173,9 +173,9 @@ $ sai open
 Opening cup...
 Opened cup 62
 
-# We can list cups owned by us at all times
+# We can list our cups at all times
 $ sai cups																
-Your cups ...
+Cups created by you...
 62
 
 # Lock some SKR collateral in the cup and then draw some SAI from it
