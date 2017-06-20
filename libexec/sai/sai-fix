@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-fix -- get the gem per sai settlement price
 set -e
-wad=$(seth call "${SAI_TUB?}" "fix()")
-sai wad -h "$wad"
+ray=$(seth call "${SAI_TUB?}" "fix()")
+sai ray -h "$ray"
