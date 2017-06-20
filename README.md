@@ -145,6 +145,7 @@ Read commands:
    pip             get the price feed (giving refs per alt)
    ref             get the ref token
    tag             get the current price (refs per alt)
+   tip             get the target price engine
 
 Commands:
 
