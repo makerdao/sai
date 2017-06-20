@@ -65,6 +65,7 @@ Read commands:
    axe             get the liquidation penalty
    chi             get the internal debt price
    cup             show the cup info
+   dev             get the jug-like sin tracker (DSDevil)
    fit             get the gem per skr settlement price
    fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation

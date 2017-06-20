@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-dev -- get the jug-like sin tracker (DSDevil)
+set -e
+dev=$(seth call "${SAI_TUB?}" 'dev()')
+echo "0x$(seth --abi-decode 'f()(address)' "$dev")"
