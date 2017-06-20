@@ -85,6 +85,7 @@ Read commands:
    ray             parse and display a 27-decimal fixed-point number
    reg             get the tub stage ('register')
    rho             get the time of last drip
+   s2s             get the skr per sai rate (for boom and bust)
    sai             get the sai token
    sin             get the sin token
    skr             get the skr token
