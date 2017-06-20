@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
-### sai-par -- get the accrued holder fee
+### sai-prod -- recalculate the accrued holder fee (par)
 set -e
 tip=$(seth call "${SAI_TUB?}" 'tip()')
 tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"
-wad=$(seth call $tip_address "par()")
-sai wad -h "$wad"
+(set -x; seth send $tip_address "prod()")

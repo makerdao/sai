@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-### sai-par -- get the accrued holder fee
+### sai-tau -- get the time of last prod
 set -e
 tip=$(seth call "${SAI_TUB?}" 'tip()')
 tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"
-wad=$(seth call $tip_address "par()")
-sai wad -h "$wad"
+time=$(seth call $tip_address "tau()")
+echo "$(seth --to-dec $time)"

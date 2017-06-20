@@ -76,7 +76,7 @@ Read commands:
    joy             get the amount of surplus sai
    lad             get the owner of a cup
    mat             get the liquidation ratio
-   par             get the gem per skr price just before settlement
+   par             get the accrued holder fee
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
    pip             get the gem price feed
@@ -90,6 +90,7 @@ Read commands:
    skr             get the skr token
    tab             get the amount of debt in a cup
    tag             get the reference price (ref per gem)
+   tau             get the time of last prod
    tax             get the stability fee
    tip             get the target price engine
    wad             parse and display a 18-decimal fixed-point number
@@ -120,6 +121,7 @@ Commands:
    join            buy SKR for gems
    lock            post additional SKR collateral to a cup
    open            create a new cup (collateralized debt position)
+   prod            recalculate the accrued holder fee (par)
    safe            determine if a cup is safe
    shut            close a cup
    vent            mark caged tub as empty
