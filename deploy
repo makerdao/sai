@@ -132,21 +132,18 @@ cat > load-env << EOF
 
 # sai deployment on $(seth chain) from $(git rev-parse HEAD)
 
-export GEM=$GEM
-export SAI=$SAI
-export SIN=$SIN
-export SKR=$SKR
-export DEV=$DEV
-export POT=$POT
-export PIT=$PIT
-export TIP=$TIP
-export TAG=$TAG
-export MOM=$MOM
-export TAP=$TAP
-export LPS=$LPS
-export JAR=$JAR
-export LPC=$LPC
-export TOP=$TOP
+export SAI_GEM=$GEM
+export SAI_SAI=$SAI
+export SAI_SIN=$SIN
+export SAI_SKR=$SKR
+export SAI_DEV=$DEV
+export SAI_POT=$POT
+export SAI_PIT=$PIT
+export SAI_TIP=$TIP
+export SAI_TAG=$TAG
+export SAI_MOM=$MOM
+export SAI_LPS=$LPS
+export SAI_JAR=$JAR
 export SAI_TUB=$SAI_TUB
 export SAI_TAP=$TAP
 export SAI_TOP=$TOP
