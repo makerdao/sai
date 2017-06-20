@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-joy -- get the amount of surplus sai
 set -e
-wad=$(seth call "${SAI_TUB?}" "joy()")
+wad=$(seth call "${SAI_TAP?}" "joy()")
 sai wad -h "$wad"

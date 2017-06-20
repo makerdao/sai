@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-woe -- get the amount of bad debt
 set -e
-wad=$(seth call "${SAI_TUB?}" "woe()")
+wad=$(seth call "${SAI_TAP?}" "woe()")
 sai wad -h "$wad"

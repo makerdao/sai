@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-fog -- get the amount of skr pending liquidation
 set -e
-wad=$(seth call "${SAI_TUB?}" "fog()")
+wad=$(seth call "${SAI_TAP?}" "fog()")
 sai wad -h "$wad"
