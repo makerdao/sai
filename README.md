@@ -151,10 +151,10 @@ Commands:
 $ export ETH_FROM=0x(...)
 $ export SAI_TUB=0x(...)
 
-# Give Tub access to our GEM (W-ETH), SKR and SAI balances
-$ token approve $(sai gem) $SAI_TUB $(seth --to-wei 1000000000 ETH)
-$ token approve $(sai skr) $SAI_TUB $(seth --to-wei 1000000000 ETH)
-$ token approve $(sai sai) $SAI_TUB $(seth --to-wei 1000000000 ETH)
+# Give the system access to our GEM (W-ETH), SKR and SAI balances
+$ token approve $(sai gem) $(sai jar) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai skr) $(sai jar) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai sai) $(sai pot) $(seth --to-wei 1000000000 ETH)
 
 # We need to have some GEM (W-ETH) balance to start with
 $ token balance $(sai gem) $ETH_FROM
