@@ -32,7 +32,7 @@ immediate: backing `skr` is taken to cover the `sai` debt at the time of
 `bite`, plus a liquidation fee (`axe`); any excess remains in the CDP.
 
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
-`sai` at the current feed price. This `sai` pays down the bad CDP debt.
+`sai` at the `s2s` price. This `sai` pays down the bad CDP debt.
 
 ### Fees
 
