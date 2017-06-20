@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-pit -- get the liquidator vault
+set -e
+pit=$(seth call "${SAI_TUB?}" 'pit()')
+echo "0x$(seth --abi-decode 'f()(address)' "$pit")"
