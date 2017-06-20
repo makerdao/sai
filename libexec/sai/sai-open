@@ -4,6 +4,7 @@ set -e
 echo >&2 "Opening cup..."
 export SETH_ASYNC=yes
 tx=$(set -x; seth send "${SAI_TUB?}" "open()(bytes32)")
+export SETH_ASYNC=no
 echo >&2 -n "Waiting for transaction receipt..."
 number=$(SETH_TICK=true seth receipt "$tx" blockNumber)
 echo >&2
