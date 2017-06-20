@@ -35,7 +35,7 @@ Collected stability fees (`joy`) can be purchased with `boom`, in exchange for
 `skr` at the `s2s` price. This `skr` gets burned which profits all `skr` holders.
 
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
-`sai` at the current feed price. This `sai` pays down the bad CDP debt.
+`sai` at the `s2s` price. This `sai` pays down the bad CDP debt.
 
 ### Fees
 
