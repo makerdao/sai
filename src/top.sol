@@ -49,21 +49,20 @@ contract Top is DSThing {
     // be tapped to make sai whole.
     function cage() auth note {
         assert(tub.reg() == Tub.Stage.Usual);
+        tub.drip();  // collect remaining fees
+        tub.cage();
 
         // cast up to ray for precision
         var tag = tub.jar().tag() * (RAY / WAD);
         var par = tub.tip().par() * (RAY / WAD);
         var price = rdiv(tag, par);
 
-        // bring time up to date, collecting any more fees
-        tub.drip();
         // move all good debt, bad debt and surplus to the pot
         dev.heal(pit);       // absorb any pending fees
         pit.burn(skr);       // burn pending sale skr
 
         // save current gem per skr for collateral calc.
         // we need to know this to work out the skr value of a cups debt
-        fit = tub.jar().per();
 
         // most gems we can get per sai is the full balance
         var woe = cast(sin.totalSupply());
@@ -73,7 +72,6 @@ contract Top is DSThing {
 
         // put the gems backing sai in a safe place
         jar.push(gem, pit, bye);
-        tub.cage(fit, fix);
     }
     // exchange free sai for gems after kill
     function cash() auth note {

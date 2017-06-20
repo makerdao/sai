@@ -51,7 +51,6 @@ contract Tub is DSThing, TubEvents {
     enum Stage { Usual, Caged, Empty }
     Stage    public  reg;  // 'register'
 
-    uint128  public  fix;  // sai kill price (gem per sai)
     uint128  public  fit;  // gem per skr (just before settlement)
 
     uint64   public  rho;  // time of last drip
@@ -263,14 +262,9 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function cage(uint128 fit_, uint128 fix_) auth note {
+    function cage() auth note {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
-
-        fit = fit_;
-        fix = fix_;
-
-        axe = RAY;
-        mat = RAY;
+        fit = jar.per();
     }
 }
