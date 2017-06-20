@@ -157,9 +157,15 @@ $ export ETH_FROM=0x(...)
 $ export SAI_TUB=0x(...)
 
 # Give the system access to our GEM (W-ETH), SKR and SAI balances
+# so we can join()/exit() and also draw()/wipe() sai
 $ token approve $(sai gem) $(sai jar) $(seth --to-wei 1000000000 ETH)
 $ token approve $(sai skr) $(sai jar) $(seth --to-wei 1000000000 ETH)
 $ token approve $(sai sai) $(sai pot) $(seth --to-wei 1000000000 ETH)
+
+# If we also plan on using boom() and bust(), a different component
+# (called `pit`) will need to have access to our SKR and SAI balances 
+$ token approve $(sai skr) $(sai pit) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai sai) $(sai pit) $(seth --to-wei 1000000000 ETH)
 
 # We need to have some GEM (W-ETH) balance to start with
 $ token balance $(sai gem) $ETH_FROM
