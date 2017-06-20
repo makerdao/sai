@@ -79,7 +79,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(SaiJar jar_, DSDevil dev_, DSVault pot_, Tip tip_) {
+    function Tub(SaiJar jar_, DSDevil dev_, DSVault pot_, DSVault pit_, Tip tip_) {
         jar = jar_;
         gem = jar.gem();
         skr = jar.skr();
@@ -88,6 +88,7 @@ contract Tub is DSThing, TubEvents {
         sai = dev.gem();
         sin = dev.sin();
         pot = pot_;
+        pit = pit_;
 
         axe = RAY;
         mat = RAY;
@@ -115,9 +116,6 @@ contract Tub is DSThing, TubEvents {
         drip();
         tax = ray;
         assert(RAY <= tax);
-    }
-    function turn(address pit_) note auth {
-        pit = pit_;
     }
 
     function chi() returns (uint128) {

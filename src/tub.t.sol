@@ -97,12 +97,10 @@ contract TubTestBase is DSTest, DSMath {
 
         jar = new SaiJar(skr, gem, tag);
 
-        tub = new Tub(jar, dev, pot, tip);
+        tub = new Tub(jar, dev, pot, pit, tip);
 
         tap = new Tap(tub, pit);
         top = new Top(tub, tap);
-
-        tub.turn(pit);
 
         mom = new DSRoles();
         pot.setAuthority(mom);
