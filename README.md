@@ -71,6 +71,7 @@ Read commands:
    hat             get the debt ceiling
    ice             get the good debt
    ink             get the amount of skr collateral locked in a cup
+   jar             get the collateral vault
    joy             get the amount of surplus sai
    lad             get the owner of a cup
    mat             get the liquidation ratio
