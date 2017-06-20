@@ -93,6 +93,7 @@ Read commands:
    tax             get the stability fee
    tip             get the target price engine
    wad             parse and display a 18-decimal fixed-point number
+   way             get the holder fee (interest rate)
    woe             get the amount of bad debt
 
 Commands:
@@ -104,6 +105,7 @@ Commands:
    cage            lock the system and initiate settlement
    cash            cash in sai balance for gems after cage
    chop            update the liquidation penalty
+   coax            update the holder fee (interest rate)
    cork            update the debt ceiling
    crop            update the stability fee
    cuff            update the liquidation ratio
