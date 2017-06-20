@@ -6,4 +6,4 @@ set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Buying $wad SKR-worth amount of SAI from the tub in order to process joy..."
 wad=$(sai wad "$1")
-(set -x; seth send "${SAI_TUB?}" "boom(uint128)" "$wad")
+(set -x; seth send "${SAI_TAP?}" "boom(uint128)" "$wad")
