@@ -166,7 +166,7 @@ contract Tub is DSThing, TubEvents {
         jar.join(msg.sender, jam);
     }
     function exit(uint128 ink) auth note {
-        assert(reg == Stage.Usual || reg == Stage.Empty );
+        assert(reg == Stage.Usual || (reg == Stage.Caged && ice() == 0) );
         jar.exit(msg.sender, ink);
     }
 
@@ -194,7 +194,7 @@ contract Tub is DSThing, TubEvents {
         jar.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) auth note {
-        assert(reg == Stage.Usual);
+        // assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].ink = hsub(cups[cup].ink, wad);
@@ -238,9 +238,12 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
+    function per() returns (uint128) {
+        return reg == Stage.Usual ? jar.per() : fit;
+    }
+
     function bite(bytes32 cup) auth note {
-        assert(reg == Stage.Usual);
-        assert(!safe(cup));
+        assert(!safe(cup) || reg == Stage.Caged);
 
         // take on all of the debt
         var rue = tab(cup);
@@ -249,7 +252,7 @@ contract Tub is DSThing, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), jar.per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), per()));     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -266,23 +269,8 @@ contract Tub is DSThing, TubEvents {
 
         fit = fit_;
         fix = fix_;
-    }
-    function vent() auth note {
-        assert(reg == Stage.Caged);
-        reg = Stage.Empty;
-    }
-    // retrieve skr from a cup
-    function bail(bytes32 cup) auth note {
-        assert(reg == Stage.Caged || reg == Stage.Empty);
 
-        var pro = cups[cup].ink;
-        // value of the debt in skr at settlement
-        var con = rdiv(rmul(tab(cup), fix), fit);
-
-        var ash = hmin(pro, con);  // skr taken to cover the debt
-        jar.push(skr, cups[cup].lad, hsub(pro, ash));
-        jar.burn(skr, ash);
-
-        delete cups[cup];
+        axe = RAY;
+        mat = RAY;
     }
 }

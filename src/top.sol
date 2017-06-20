@@ -58,9 +58,7 @@ contract Top is DSThing {
         // bring time up to date, collecting any more fees
         tub.drip();
         // move all good debt, bad debt and surplus to the pot
-        pit.push(sin, pot);
-        pit.push(sai, pot);
-        dev.heal(pot);       // absorb any pending fees
+        dev.heal(pit);       // absorb any pending fees
         pit.burn(skr);       // burn pending sale skr
 
         // save current gem per skr for collateral calc.
@@ -68,13 +66,13 @@ contract Top is DSThing {
         fit = tub.jar().per();
 
         // most gems we can get per sai is the full balance
-        var woe = cast(sin.balanceOf(pot));
+        var woe = cast(sin.totalSupply());
         fix = hmin(rdiv(RAY, price), rdiv(tub.pie(), woe));
         // gems needed to cover debt
         var bye = rmul(fix, woe);
 
         // put the gems backing sai in a safe place
-        jar.push(gem, pot, bye);
+        jar.push(gem, pit, bye);
         tub.cage(fit, fix);
     }
     // exchange free sai for gems after kill
@@ -82,9 +80,45 @@ contract Top is DSThing {
         assert(tub.reg() == Tub.Stage.Caged || tub.reg() == Tub.Stage.Empty);
 
         var hai = cast(sai.balanceOf(msg.sender));
-        pot.pull(sai, msg.sender);
-        dev.mend(pot, hai);
+        pit.pull(sai, msg.sender, hai);
+        pit.push(gem, msg.sender, rmul(hai, fix));
+    }
 
-        pot.push(gem, msg.sender, rmul(hai, fix));
+    function heal() note {
+        dev.heal(pit);
+    }
+    function burn() note {
+        assert(tub.ice() == 0);  // otherwise cab is calculated wrong
+
+        // cab = (tab * par) / (tag * per)
+        // per is `fit` - the per at cage
+        // if we burn before all bite then per will increase
+        // however, if we cache the value of fit then this is ok and we
+        // can burn continuously
+        // this cached per also has to be used in safe calc
+        // par can change as well :/ does this need to be fixed yes
+        // also tag
+        // this is implicit in fix
+        // fix = par / tag
+        // fix upper bound is pie / sin.total
+
+        // free checks if safe after
+
+
+        // bite all cups
+        // -> all back at safe
+        // then lad does free
+        // then lad does exit
+
+
+        // tub could be made completely unaware of cage and top could
+        // just make auth changes
+        // top could also intervene in tag and per calc
+
+        pit.burn(skr);
+    }
+    function vent() note {
+        heal();
+        burn();
     }
 }
