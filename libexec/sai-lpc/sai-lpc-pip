@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-lpc-pip -- get the price feed (giving refs per alt)
+set -e
+pip=$(seth call "${SAI_LPC?}" 'pip()')
+echo "0x$(seth --abi-decode 'f()(address)' "$pip")"

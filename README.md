@@ -129,9 +129,9 @@ Read commands:
    lps             get the lps token (liquidity provider shares)
    per             get the lps per ref ratio
    pie             get the total pool value (in ref)
+   pip             get the price feed (giving refs per alt)
    ref             get the ref token
    tag             get the current price (refs per alt)
-   tip             get the price feed (giving refs per alt)
 
 Commands:
 
