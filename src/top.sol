@@ -68,8 +68,7 @@ contract Top is DSThing {
     }
     // exchange free sai for gems after kill
     function cash() auth note {
-        assert(tub.reg() == Tub.Stage.Caged || tub.reg() == Tub.Stage.Empty);
-
+        assert(tub.reg() == Tub.Stage.Caged);
         var hai = cast(sai.balanceOf(msg.sender));
         pit.pull(sai, msg.sender, hai);
         pit.push(gem, msg.sender, rmul(hai, fix));

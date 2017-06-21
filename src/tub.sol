@@ -48,7 +48,7 @@ contract Tub is DSThing, TubEvents {
     uint128  public  tax;  // Stability fee
     // TODO spread?? `gap`
 
-    enum Stage { Usual, Caged, Empty }
+    enum Stage { Usual, Caged }
     Stage    public  reg;  // 'register'
 
     uint128  public  fit;  // gem per skr (just before settlement)
