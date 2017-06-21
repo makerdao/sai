@@ -9,7 +9,6 @@ import './tap.sol';
 
 contract Top is DSThing {
     uint128  public  fix;
-    uint128  public  fit;
 
     Tub      public  tub;
     Tap      public  tap;
@@ -24,8 +23,6 @@ contract Top is DSThing {
     DSToken  public  sin;
     DSToken  public  skr;
     ERC20    public  gem;
-
-    enum Stage { Usual, Caged, Empty }
 
     function Top(Tub tub_, Tap tap_) {
         tub = tub_;
@@ -57,12 +54,8 @@ contract Top is DSThing {
         var par = tub.tip().par() * (RAY / WAD);
         var price = rdiv(tag, par);
 
-        // move all good debt, bad debt and surplus to the pot
         dev.heal(pit);       // absorb any pending fees
         pit.burn(skr);       // burn pending sale skr
-
-        // save current gem per skr for collateral calc.
-        // we need to know this to work out the skr value of a cups debt
 
         // most gems we can get per sai is the full balance
         var woe = cast(sin.totalSupply());
@@ -82,41 +75,9 @@ contract Top is DSThing {
         pit.push(gem, msg.sender, rmul(hai, fix));
     }
 
-    function heal() note {
-        dev.heal(pit);
-    }
-    function burn() note {
-        assert(tub.ice() == 0);  // otherwise cab is calculated wrong
-
-        // cab = (tab * par) / (tag * per)
-        // per is `fit` - the per at cage
-        // if we burn before all bite then per will increase
-        // however, if we cache the value of fit then this is ok and we
-        // can burn continuously
-        // this cached per also has to be used in safe calc
-        // par can change as well :/ does this need to be fixed yes
-        // also tag
-        // this is implicit in fix
-        // fix = par / tag
-        // fix upper bound is pie / sin.total
-
-        // free checks if safe after
-
-
-        // bite all cups
-        // -> all back at safe
-        // then lad does free
-        // then lad does exit
-
-
-        // tub could be made completely unaware of cage and top could
-        // just make auth changes
-        // top could also intervene in tag and per calc
-
-        pit.burn(skr);
-    }
     function vent() note {
-        heal();
-        burn();
+        assert(tub.reg() == Tub.Stage.Caged);
+        dev.heal(pit);
+        pit.burn(skr);
     }
 }

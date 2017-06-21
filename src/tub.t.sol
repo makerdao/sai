@@ -505,7 +505,7 @@ contract CageTest is TubTestBase {
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(jar),    0 ether);
 
-        top.heal();
+        top.vent();
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
 
