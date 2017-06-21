@@ -151,8 +151,7 @@ contract Tub is DSThing, TubEvents {
 
     // returns true if cup overcollateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var jam = rmul(jar.per(), cups[cup].ink);
-        var pro = wmul(jar.tag(), jam);
+        var pro = wmul(jar.tag(), ink(cup));
         var con = wmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
         return (pro >= min);
@@ -237,8 +236,8 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function per() returns (uint128) {
-        return reg == Stage.Usual ? jar.per() : fit;
+    function tag() returns (uint128) {
+        return reg == Stage.Usual ? jar.tag() : fit;
     }
 
     function bite(bytes32 cup) auth note {
@@ -251,7 +250,7 @@ contract Tub is DSThing, TubEvents {
 
         // axe the collateral
         var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, tip.par()), rmul(jar.tag(), per()));     // equivalent in skr
+        var cab = wdiv(wmul(owe, tip.par()), tag());     // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -265,6 +264,6 @@ contract Tub is DSThing, TubEvents {
     function cage() auth note {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
-        fit = jar.per();
+        fit = jar.tag();
     }
 }

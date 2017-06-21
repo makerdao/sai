@@ -50,7 +50,7 @@ contract Top is DSThing {
         tub.cage();
 
         // cast up to ray for precision
-        var tag = tub.jar().tag() * (RAY / WAD);
+        var tag = uint128(tub.jar().pip().read()) * (RAY / WAD);
         var par = tub.tip().par() * (RAY / WAD);
         var price = rdiv(tag, par);
 

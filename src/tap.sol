@@ -43,9 +43,8 @@ contract Tap is DSThing {
     // skr per sai
     function s2s() returns (uint128) {
         var tag = tub.jar().tag();
-        var per = tub.jar().per();
         var par = tub.tip().par();
-        return wdiv(rmul(tag, per), par);
+        return wdiv(tag, par);
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe

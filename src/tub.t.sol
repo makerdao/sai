@@ -368,7 +368,7 @@ contract CageTest is TubTestBase {
         var woe = cast(sin.balanceOf(pot));
         assertEqWad(woe, 5 ether);       // all good debt now bad debt
         assertEqWad(top.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEqWad(tub.fit(), ray(1 ether));       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to pot
 
         assertEq(gem.balanceOf(pit),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(jar), 25 ether);  // saved for skr
@@ -386,7 +386,7 @@ contract CageTest is TubTestBase {
         top.cage();        // 150% collat
 
         assertEqWad(top.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEqWad(tub.fit(), ray(1 ether));               // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -420,7 +420,7 @@ contract CageTest is TubTestBase {
         top.cage();
 
         assertEqWad(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.fit(), ray(1 ether));  // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEqWad(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to pot
     }
     function testCageUnderCollat() {
         cageSetup();
@@ -571,7 +571,7 @@ contract CageTest is TubTestBase {
         // this should all be returned
         var ink = tub.ink(cup);
         var tab = tub.tab(cup);
-        var skrToRecover = hsub(ink, rdiv(rmul(tab, top.fix()), tub.fit()));
+        var skrToRecover = hsub(ink, wdiv(tab, price));
         tub.bite(cup);
         tub.free(cup, tub.ink(cup));
 
@@ -989,8 +989,9 @@ contract CageTest is TubTestBase {
 contract LiquidationTest is TubTestBase {
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
-        var jam = rmul(tub.ink(cup) * WAD, tub.jar().per()) / WAD;
-        var min = rmul(tub.tab(cup), tub.mat());
+        var jam = rmul(tub.ink(cup), tub.jar().per());  // this many eth
+        var con = wmul(tub.tab(cup), tub.tip().par());  // this much ref debt
+        var min = rmul(con, tub.mat());        // minimum ref debt
         return wdiv(min, jam);
     }
     function testLiq() {
@@ -1022,9 +1023,8 @@ contract LiquidationTest is TubTestBase {
     }
     function collat(bytes32 cup) returns (uint128) {
         // compute the collateralised fraction of a cup
-        var jam = rmul(tub.ink(cup), tub.jar().per());
-        var pro = wmul(jam, jar.tag());
-        var con = tub.tab(cup);
+        var pro = wmul(tub.ink(cup), tub.jar().tag());
+        var con = wmul(tub.tab(cup), tub.tip().par());
         return wdiv(pro, con);
     }
     function testCollat() {
