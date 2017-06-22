@@ -164,7 +164,8 @@ contract Tub is DSThing, TubEvents {
         jar.join(msg.sender, jam);
     }
     function exit(uint128 ink) auth note {
-        assert(reg == Stage.Usual || (reg == Stage.Caged && ice() == 0) );
+        assert(reg == Stage.Usual
+            || reg == Stage.Caged && ice() == 0 && skr.balanceOf(pit) == 0 );
         jar.exit(msg.sender, ink);
     }
 
