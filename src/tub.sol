@@ -187,17 +187,13 @@ contract Tub is DSThing, TubEvents {
     function lock(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
-
         cups[cup].ink = hadd(cups[cup].ink, wad);
         jar.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint128 wad) auth note {
-        // assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
-
         cups[cup].ink = hsub(cups[cup].ink, wad);
         jar.push(skr, msg.sender, wad);
-
         assert(safe(cup));
     }
 
@@ -223,9 +219,6 @@ contract Tub is DSThing, TubEvents {
 
         pot.pull(sai, msg.sender, wad);
         dev.mend(pot, wad);
-
-        assert(safe(cup));
-        assert(cast(sin.totalSupply()) <= hat);
     }
 
     function give(bytes32 cup, address lad) auth note {
