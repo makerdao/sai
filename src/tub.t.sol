@@ -1514,3 +1514,49 @@ contract GapTest is TubTestBase {
         assertEq(sai_before - sai_after, 101 ether);
     }
 }
+
+contract GasTest is TubTestBase {
+    function setUp() {
+        super.setUp();
+
+        mark(1 ether);
+        gem.mint(1000 ether);
+
+        tub.cork(1000 ether);
+
+        var cup = tub.open();
+        tub.join(100 ether);
+        tub.lock(cup, 100 ether);
+        tub.draw(cup, 100 ether);
+    }
+    function doDrip() logs_gas {
+        tub.drip();
+    }
+    function doBoom(uint128 wad) logs_gas {
+        tap.boom(wad);
+    }
+    function testGasDrip() {
+        tip.warp(1);
+        doDrip();
+    }
+    function testGasDripNoop() {
+        tub.drip();
+        doDrip();
+    }
+    function testGasBoom() {
+        tub.join(10 ether);
+        sai.mint(100 ether);
+        sai.push(pit, 100 ether);
+        skr.approve(pit, uint(-1));
+        doBoom(1 ether);
+    }
+    function testGasBoomHeal() {
+        tub.join(10 ether);
+        sai.mint(100 ether);
+        sin.mint(100 ether);
+        sai.push(pit, 100 ether);
+        sin.push(pit,  50 ether);
+        skr.approve(pit, uint(-1));
+        doBoom(1 ether);
+    }
+}
