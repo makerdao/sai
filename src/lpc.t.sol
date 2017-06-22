@@ -120,7 +120,7 @@ contract LPCTest is DSTest, DSMath {
     }
 
     function testWarpLPC() {
-        var way = ray(0.8 ether);
+        uint128 way = 999997417323343052486607343;  // 0.8 / day
         tip.coax(way);
         // t1 pools 100 ETH
         t1.pool(alt, 100 ether);
@@ -128,14 +128,15 @@ contract LPCTest is DSTest, DSMath {
         // At time 0, we have a pie of 100 * 2 SAI
         assertEqWad(lpc.pie(), 200 ether);
         assertEqWad(lpc.per(), RAY);
-        tip.warp(1);
-        var par = way;
+        tip.warp(1 days);
+        var par = ray(0.8 ether);
         // At time 1, we have a pie of 200 / 0.8 = 250 SAI
         var pie = rdiv(200 ether, par);
         assertEqWad(lpc.pie(), pie);
-        assertEqWad(lpc.per(), way);
-        tip.warp(1);
-        par = rmul(way, way);
+        assertEqWad(lpc.per(), par);
+
+        tip.warp(1 days);
+        par = rmul(par, par);
         // At time 2, we have a pie of 200 / (0.8 * 0.8) = 312.5 SAI
         pie = rdiv(200 ether, par);
         assertEqWad(lpc.pie(), pie);
@@ -158,7 +159,7 @@ contract LPCTest is DSTest, DSMath {
         m2.pool(ref, 100 ether);
         assertEqWad(lpc.pie(), pie + 100 ether);
 
-        tip.warp(1);
+        tip.warp(1 days);
         // t1 exits all SAI in the system
         t1.exit(ref, refBalanceOfLPC + 100 ether);
         assertEq(ref.balanceOf(lpc), 0);

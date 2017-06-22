@@ -114,6 +114,7 @@ contract Tub is DSThing, TubEvents {
         drip();
         tax = ray;
         assert(RAY <= tax);
+        assert(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
 
     function chi() returns (uint128) {
