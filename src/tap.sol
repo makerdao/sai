@@ -16,6 +16,8 @@ contract Tap is DSThing {
 
     DSDevil  public  dev;
 
+    uint128  public  gap;  // spread
+
     function Tap(Tub tub_, DSVault pit_) {
         tub = tub_;
         pit = pit_;
@@ -47,6 +49,19 @@ contract Tap is DSThing {
         return wdiv(tag, par);
     }
 
+    function jump(uint128 wad) auth note {
+        gap = wad;
+    }
+
+    // price of skr in sai for boom
+    function bid(uint128 wad) constant returns (uint128) {
+        return wmul(wmul(wad, s2s()), wsub(WAD, gap));
+    }
+    // price of skr in sai for bust
+    function ask(uint128 wad) constant returns (uint128) {
+        return wmul(wmul(wad, s2s()), wadd(WAD, gap));
+    }
+
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) auth note {
         assert(tub.reg() == Tub.Stage.Usual);
@@ -54,12 +69,11 @@ contract Tap is DSThing {
         dev.heal(pit);
 
         // price of wad in sai
-        var ret = wmul(wad, s2s());
+        var ret = bid(wad);
         assert(ret <= joy());
 
         pit.pull(skr, msg.sender, wad);
         pit.burn(skr, wad);
-
         pit.push(sai, msg.sender, ret);
     }
     function bust(uint128 wad) auth note {
@@ -69,12 +83,11 @@ contract Tap is DSThing {
 
         if (wad > fog()) pit.mint(skr, wad - fog());
 
-        var ret = wmul(wad, s2s());
+        var ret = ask(wad);
         assert(ret <= woe());
 
         pit.push(skr, msg.sender, wad);
         pit.pull(sai, msg.sender, ret);
         dev.heal(pit);
     }
-
 }

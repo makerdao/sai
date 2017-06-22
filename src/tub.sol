@@ -46,7 +46,6 @@ contract Tub is DSThing, TubEvents {
     uint128  public  hat;  // Debt ceiling
     uint128  public  mat;  // Liquidation ratio
     uint128  public  tax;  // Stability fee
-    // TODO spread?? `gap`
 
     enum Stage { Usual, Caged }
     Stage    public  reg;  // 'register'

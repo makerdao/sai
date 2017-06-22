@@ -1456,3 +1456,62 @@ contract WayTest is TubTestBase {
         assertEqWad(tap.joy(),   0 ether);
     }
 }
+
+contract GapTest is TubTestBase {
+    // boom and bust have a spread parameter
+    function setUp() {
+        super.setUp();
+
+        gem.mint(500 ether);
+        tub.join(500 ether);
+
+        sai.mint(500 ether);
+        sin.mint(500 ether);
+
+        mark(2 ether);  // 2 ref per eth => 2 sai per skr
+    }
+    function testGapBid() {
+        mark(1 ether);
+        tap.jump(0.01 ether);  // 1% spread
+        assertEqWad(tap.bid(100 ether),  99 ether);
+        mark(2 ether);
+        assertEqWad(tap.bid(100 ether), 198 ether);
+    }
+    function testGapAsk() {
+        mark(1 ether);
+        tap.jump(0.01 ether);  // 1% spread
+        assertEqWad(tap.ask(100 ether), 101 ether);
+        mark(2 ether);
+        assertEqWad(tap.ask(100 ether), 202 ether);
+    }
+    function testGapBoom() {
+        sai.push(pit, 198 ether);
+        assertEqWad(tap.joy(), 198 ether);
+
+        tap.jump(0.01 ether);  // 1% spread
+
+        var sai_before = sai.balanceOf(this);
+        var skr_before = skr.balanceOf(this);
+        tap.boom(50 ether);
+        var sai_after = sai.balanceOf(this);
+        var skr_after = skr.balanceOf(this);
+        assertEq(sai_after - sai_before, 99 ether);
+        assertEq(skr_before - skr_after, 50 ether);
+    }
+    function testGapBust() {
+        skr.push(pit, 100 ether);
+        sin.push(pit, 200 ether);
+        assertEqWad(tap.fog(), 100 ether);
+        assertEqWad(tap.woe(), 200 ether);
+
+        tap.jump(0.01 ether);
+
+        var sai_before = sai.balanceOf(this);
+        var skr_before = skr.balanceOf(this);
+        tap.bust(50 ether);
+        var sai_after = sai.balanceOf(this);
+        var skr_after = skr.balanceOf(this);
+        assertEq(skr_after - skr_before,  50 ether);
+        assertEq(sai_before - sai_after, 101 ether);
+    }
+}
