@@ -130,6 +130,7 @@ cat > load-env << EOF
 #!/bin/bash
 
 # sai deployment on $(seth chain) from $(git rev-parse HEAD)
+# $(date)
 
 export SAI_GEM=$GEM
 export SAI_SAI=$SAI
