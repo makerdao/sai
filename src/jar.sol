@@ -11,6 +11,7 @@ contract SaiJar is DSThing, DSVault {
     DSToken  public  skr;
     ERC20    public  gem;
     DSValue  public  pip;
+    uint128  public  gap;
 
     function SaiJar(DSToken skr_, ERC20 gem_, DSValue pip_) {
         skr = skr_;
@@ -33,14 +34,24 @@ contract SaiJar is DSThing, DSVault {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie, ink);
     }
 
+    function jump(uint128 wad) note auth {
+        gap = wad;
+    }
+    function bid() constant returns (uint128) {
+        return rmul(per(), wsub(WAD, gap) * (RAY / WAD));
+    }
+    function ask() constant returns (uint128) {
+        return rmul(per(), wadd(WAD, gap) * (RAY / WAD));
+    }
+
     function join(address guy, uint128 jam) note auth {
-        var ink = rdiv(jam, per());
+        var ink = rdiv(jam, ask());
         mint(skr, ink);
         push(skr, guy, ink);
         pull(gem, guy, jam);
     }
     function exit(address guy, uint128 ink) note auth {
-        var jam = rmul(ink, per());
+        var jam = rmul(ink, bid());
         pull(skr, guy, ink);
         burn(skr, ink);
         push(gem, guy, jam);

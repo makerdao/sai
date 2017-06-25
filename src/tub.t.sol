@@ -1469,14 +1469,14 @@ contract GapTest is TubTestBase {
 
         mark(2 ether);  // 2 ref per eth => 2 sai per skr
     }
-    function testGapBid() {
+    function testGapTapBid() {
         mark(1 ether);
         tap.jump(0.01 ether);  // 1% spread
         assertEqWad(tap.bid(100 ether),  99 ether);
         mark(2 ether);
         assertEqWad(tap.bid(100 ether), 198 ether);
     }
-    function testGapAsk() {
+    function testGapTapAsk() {
         mark(1 ether);
         tap.jump(0.01 ether);  // 1% spread
         assertEqWad(tap.ask(100 ether), 101 ether);
@@ -1512,6 +1512,53 @@ contract GapTest is TubTestBase {
         var skr_after = skr.balanceOf(this);
         assertEq(skr_after - skr_before,  50 ether);
         assertEq(sai_before - sai_after, 101 ether);
+    }
+
+    // join and exit have a spread parameter
+    function testGapJarBidAsk() {
+        assertEqWad(jar.per(), ray(1 ether));
+        assertEqWad(jar.bid(), ray(1 ether));
+        assertEqWad(jar.ask(), ray(1 ether));
+
+        jar.jump(0.01 ether);
+        assertEqWad(jar.bid(), ray(0.99 ether));
+        assertEqWad(jar.ask(), ray(1.01 ether));
+
+        assertEq(skr.balanceOf(this), 500 ether);
+        assertEq(skr.totalSupply(),   500 ether);
+        skr.burn(250 ether);
+
+        assertEqWad(jar.per(), ray(2    ether));
+        assertEqWad(jar.bid(), ray(1.98 ether));
+        assertEqWad(jar.ask(), ray(2.02 ether));
+    }
+    function testGapJoin() {
+        gem.mint(100 ether);
+
+        jar.jump(0.05 ether);
+        var skr_before = skr.balanceOf(this);
+        var gem_before = gem.balanceOf(this);
+        jar.join(this, 100 ether);
+        var skr_after = skr.balanceOf(this);
+        var gem_after = gem.balanceOf(this);
+
+        var res = wdiv(100 ether, 1.05 ether);
+        assertEq(skr_after - skr_before,  res);
+        assertEq(gem_before - gem_after, 100 ether);
+    }
+    function testGapExit() {
+        gem.mint(100 ether);
+        jar.join(this, 100 ether);
+
+        jar.jump(0.05 ether);
+        var skr_before = skr.balanceOf(this);
+        var gem_before = gem.balanceOf(this);
+        jar.exit(this, 100 ether);
+        var skr_after = skr.balanceOf(this);
+        var gem_after = gem.balanceOf(this);
+
+        assertEq(gem_after - gem_before,  95 ether);
+        assertEq(skr_before - skr_after, 100 ether);
     }
 }
 
