@@ -8,7 +8,7 @@ import './tub.sol';
 import './tap.sol';
 
 contract Top is DSThing {
-    uint128  public  fix;
+    uint128  public  fix;  // sai kill price (gem per sai)
 
     Tub      public  tub;
     Tap      public  tap;
