@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-gap -- get the spread
+set -e
+wad=$(seth call "${SAI_TAP?}" "gap()")
+sai wad -h "$wad"
