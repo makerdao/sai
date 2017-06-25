@@ -65,7 +65,9 @@ Excess collateral contained within a single `cup` can be reclaimed with
 Read commands:
 
    air             get the amount of backing collateral
+   ask             get the price of skr in sai for bust
    axe             get the liquidation penalty
+   bid             get the price of skr in sai for boom
    chi             get the internal debt price
    cup             show the cup info
    dev             get the jug-like sin tracker (DSDevil)
