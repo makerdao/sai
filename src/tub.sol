@@ -83,7 +83,7 @@ contract Tub is DSThing, TubEvents {
         skr = jar.skr();
 
         dev = dev_;
-        sai = dev.gem();
+        sai = dev.sai();
         sin = dev.sin();
         pot = pot_;
         pit = pit_;
