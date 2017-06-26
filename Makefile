@@ -14,3 +14,5 @@ uninstall:; rm -r $(addprefix $(prefix)/,$(files))
 check:; ! grep '^#!/bin/sh' libexec/*/* && \
 grep '^#!/usr/bin/env bash' libexec/*/* | \
 cut -d: -f1 | xargs shellcheck
+
+verify:; bats test
