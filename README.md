@@ -74,7 +74,7 @@ Read commands:
    fit             get the gem per skr settlement price
    fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation
-   gap             get the spread
+   gap             get the spread on `boom` and `bust'
    gem             get the collateral token
    hat             get the debt ceiling
    ice             get the good debt
@@ -126,7 +126,7 @@ Commands:
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
    join            buy SKR for gems
-   jump            update the spread
+   jump            update the spread on `boom` and `bust`
    lock            post additional SKR collateral to a cup
    open            create a new cup (collateralized debt position)
    prod            recalculate the accrued holder fee (par)

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-jump -- update the spread
+### sai-jump -- update the spread on `boom` and `bust`
 ### Usage: sai jump <new-gap>
 set -e
 [ $# = 1 ] || sai jump --usage
