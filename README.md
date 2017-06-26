@@ -133,7 +133,7 @@ Commands:
    prod            recalculate the accrued holder fee (par)
    safe            determine if a cup is safe
    shut            close a cup
-   vent            mark caged tub as empty
+   vent            process a caged tub
    wipe            repay some portion of your existing sai debt
 ```
 
