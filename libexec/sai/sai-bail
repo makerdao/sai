@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-### sai-bail -- bail the gems out of a cup after cage
-### Usage: sai --cup=<id> bail
-set -e
-[ ! -z "$SAI_CUP" ] || sai bail --usage
-(set -x; seth send "${SAI_TUB?}" "bail(bytes32)" ${SAI_CUP?})
