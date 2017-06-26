@@ -54,12 +54,12 @@ contract Tap is DSThing {
     }
 
     // price of skr in sai for boom
-    function bid(uint128 wad) constant returns (uint128) {
-        return wmul(wmul(wad, s2s()), wsub(WAD, gap));
+    function bid() constant returns (uint128) {
+        return wmul(s2s(), wsub(WAD, gap));
     }
     // price of skr in sai for bust
-    function ask(uint128 wad) constant returns (uint128) {
-        return wmul(wmul(wad, s2s()), wadd(WAD, gap));
+    function ask() constant returns (uint128) {
+        return wmul(s2s(), wadd(WAD, gap));
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
@@ -69,7 +69,7 @@ contract Tap is DSThing {
         dev.heal(pit);
 
         // price of wad in sai
-        var ret = bid(wad);
+        var ret = wmul(bid(), wad);
         assert(ret <= joy());
 
         pit.pull(skr, msg.sender, wad);
@@ -83,11 +83,11 @@ contract Tap is DSThing {
 
         if (wad > fog()) pit.mint(skr, wad - fog());
 
-        var ret = ask(wad);
-        assert(ret <= woe());
+        var ash = wmul(ask(), wad);
+        assert(ash <= woe());
 
         pit.push(skr, msg.sender, wad);
-        pit.pull(sai, msg.sender, ret);
+        pit.pull(sai, msg.sender, ash);
         dev.heal(pit);
     }
 }

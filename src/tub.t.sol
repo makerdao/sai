@@ -1472,16 +1472,16 @@ contract GapTest is TubTestBase {
     function testGapTapBid() {
         mark(1 ether);
         tap.jump(0.01 ether);  // 1% spread
-        assertEqWad(tap.bid(100 ether),  99 ether);
+        assertEqWad(tap.bid(), 0.99 ether);
         mark(2 ether);
-        assertEqWad(tap.bid(100 ether), 198 ether);
+        assertEqWad(tap.bid(), 1.98 ether);
     }
     function testGapTapAsk() {
         mark(1 ether);
         tap.jump(0.01 ether);  // 1% spread
-        assertEqWad(tap.ask(100 ether), 101 ether);
+        assertEqWad(tap.ask(), 1.01 ether);
         mark(2 ether);
-        assertEqWad(tap.ask(100 ether), 202 ether);
+        assertEqWad(tap.ask(), 2.02 ether);
     }
     function testGapBoom() {
         sai.push(pit, 198 ether);
