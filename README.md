@@ -97,7 +97,7 @@ Read commands:
    sin             get the sin token
    skr             get the skr token
    tab             get the amount of debt in a cup
-   tag             get the reference price (ref per gem)
+   tag             get the reference price (ref per skr)
    tau             get the time of last prod
    tax             get the stability fee
    tip             get the target price engine

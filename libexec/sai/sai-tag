@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-tag -- get the reference price (ref per gem)
+### sai-tag -- get the reference price (ref per skr)
 set -e
 jar=$(seth call "${SAI_TUB?}" 'jar()')
 jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
