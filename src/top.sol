@@ -44,7 +44,7 @@ contract Top is DSThing {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint128 price) auth note {
+    function cage(uint128 price) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();  // collect remaining fees
         tub.cage();
@@ -65,14 +65,14 @@ contract Top is DSThing {
         jar.push(gem, pit, bye);
     }
     // cage by reading the last value from the feed for the price
-    function cage() auth note {
+    function cage() note auth {
         var tag = uint128(tub.jar().pip().read());
         var par = tub.tip().par();
         var price = wdiv(tag, par);
         cage(price);
     }
     // exchange free sai for gems after kill
-    function cash() auth note {
+    function cash() note auth {
         assert(tub.reg() == Tub.Stage.Caged);
         var hai = cast(sai.balanceOf(msg.sender));
         pit.pull(sai, msg.sender, hai);
