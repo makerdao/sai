@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 ### sai-ask -- get the price of skr in sai for bust
-### Usage: sai ask <amount-in-skr>
 set -e
-[ $# = 1 ] || sai ask --usage
-wad=$(sai wad "$1")
-ret=$(seth call "${SAI_TAP?}" "ask(uint128)" "$wad")
-sai wad -h "$ret"
+wad=$(seth call "${SAI_TAP?}" "ask()")
+sai wad -h "$wad"

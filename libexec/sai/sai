@@ -57,7 +57,7 @@ while [[ $1 ]]; do
   case $1 in
     --)              shift; break;;
 
-    -C|--cup)        shift; export SAI_CUP="$(seth --to-hexdata $(seth --to-uint256 $1))";;
+    -C|--cup)        shift; export SAI_CUP="$(seth --to-hexdata "$(seth --to-uint256 "$1")")";;
        --tub)        shift; export SAI_TUB=$1;;
        --tap)        shift; export SAI_TAP=$1;;
        --top)        shift; export SAI_TOP=$1;;
