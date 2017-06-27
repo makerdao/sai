@@ -10,9 +10,9 @@ export SETH_ASYNC=yes
 
 SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
 SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
-test -z $GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
-test -z $PIP && PIPtx=$(dapp create DSValue)
-test -z $MOM && MOMtx=$(dapp create DSRoles)
+test -z $SAI_GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
+test -z $SAI_PIP && PIPtx=$(dapp create DSValue)
+test -z $SAI_MOM && MOMtx=$(dapp create DSRoles)
 SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
 LPStx=$(dapp create DSToken 'LPS' 'LPS' 18)
 POTtx=$(dapp create DSVault)
@@ -21,49 +21,48 @@ TIPtx=$(dapp create Tip)
 
 export SETH_ASYNC=no
 
-SAI=$(seth receipt $SAItx contractAddress)
-SIN=$(seth receipt $SINtx contractAddress)
-DEV=$(dapp create DSDevil $SAI $SIN)
-SKR=$(seth receipt $SKRtx contractAddress)
-test -z $GEM && GEM=$(seth receipt $GEMtx contractAddress)
-test -z $PIP && PIP=$(seth receipt $PIPtx contractAddress)
-JAR=$(dapp create SaiJar $SKR $GEM $PIP)
-test -z $MOM && MOM=$(seth receipt $MOMtx contractAddress)
-POT=$(seth receipt $POTtx contractAddress)
-PIT=$(seth receipt $PITtx contractAddress)
-TIP=$(seth receipt $TIPtx contractAddress)
+SAI_SAI=$(seth receipt $SAItx contractAddress)
+SAI_SIN=$(seth receipt $SINtx contractAddress)
+SAI_DEV=$(dapp create DSDevil $SAI_SAI $SAI_SIN)
+SAI_SKR=$(seth receipt $SKRtx contractAddress)
+test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
+test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
+SAI_JAR=$(dapp create SaiJar $SAI_SKR $SAI_GEM $SAI_PIP)
+test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress)
+SAI_POT=$(seth receipt $POTtx contractAddress)
+SAI_PIT=$(seth receipt $PITtx contractAddress)
+SAI_TIP=$(seth receipt $TIPtx contractAddress)
 
-SAI_TUB=$(dapp create Tub $JAR $DEV $POT $PIT $TIP)
-TAP=$(dapp create Tap $SAI_TUB $PIT)
-TOP=$(dapp create Top $SAI_TUB $TAP)
-# export SAI_TUB=$SAI_TUB
+SAI_TUB=$(dapp create Tub $SAI_JAR $SAI_DEV $SAI_POT $SAI_PIT $SAI_TIP)
+SAI_TAP=$(dapp create Tap $SAI_TUB $SAI_PIT)
+SAI_TOP=$(dapp create Top $SAI_TUB $SAI_TAP)
 
-LPS=$(seth receipt $LPStx contractAddress)
-LPC=$(dapp create SaiLPC $SAI $GEM $PIP $LPS $TIP)
+SAI_LPS=$(seth receipt $LPStx contractAddress)
+SAI_LPC=$(dapp create SaiLPC $SAI_SAI $SAI_GEM $SAI_PIP $SAI_LPS $SAI_TIP)
 
 export SETH_ASYNC=yes
-AUTH1tx=$(seth send $SKR "setAuthority(address)" $MOM)
-AUTH2tx=$(seth send $POT "setAuthority(address)" $MOM)
-AUTH3tx=$(seth send $TIP "setAuthority(address)" $MOM)
-AUTH4tx=$(seth send $SAI "setAuthority(address)" $MOM)
-AUTH5tx=$(seth send $SIN "setAuthority(address)" $MOM)
-seth send $SAI_TUB "setAuthority(address)" $MOM
-seth send $TAP "setAuthority(address)" $MOM
-seth send $TOP "setAuthority(address)" $MOM
-seth send $JAR "setAuthority(address)" $MOM
-seth send $PIT "setAuthority(address)" $MOM
-seth send $LPC "setAuthority(address)" $MOM
-seth send $MOM "setRootUser(address,bool)" $ETH_FROM true
-seth send $MOM "setRootUser(address,bool)" $SAI_TUB true
-seth send $MOM "setRootUser(address,bool)" $DEV true
-seth send $MOM "setRootUser(address,bool)" $TOP true
-seth send $MOM "setRootUser(address,bool)" $TAP true
-seth send $MOM "setRootUser(address,bool)" $JAR true
-seth send $MOM "setRootUser(address,bool)" $POT true
-seth send $MOM "setRootUser(address,bool)" $PIT true
+AUTH1tx=$(seth send $SAI_SKR "setAuthority(address)" $SAI_MOM)
+AUTH2tx=$(seth send $SAI_POT "setAuthority(address)" $SAI_MOM)
+AUTH3tx=$(seth send $SAI_TIP "setAuthority(address)" $SAI_MOM)
+AUTH4tx=$(seth send $SAI_SAI "setAuthority(address)" $SAI_MOM)
+AUTH5tx=$(seth send $SAI_SIN "setAuthority(address)" $SAI_MOM)
+seth send $SAI_TUB "setAuthority(address)" $SAI_MOM
+seth send $SAI_TAP "setAuthority(address)" $SAI_MOM
+seth send $SAI_TOP "setAuthority(address)" $SAI_MOM
+seth send $SAI_JAR "setAuthority(address)" $SAI_MOM
+seth send $SAI_PIT "setAuthority(address)" $SAI_MOM
+seth send $SAI_LPC "setAuthority(address)" $SAI_MOM
+seth send $SAI_MOM "setRootUser(address,bool)" $ETH_FROM true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TUB true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_DEV true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TOP true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TAP true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_JAR true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_POT true
+seth send $SAI_MOM "setRootUser(address,bool)" $SAI_PIT true
 
-seth send $LPS "setOwner(address)" $LPC
-seth send $DEV "setOwner(address)" $SAI_TUB
+seth send $SAI_LPS "setOwner(address)" $SAI_LPC
+seth send $SAI_DEV "setOwner(address)" $SAI_TUB
 export SETH_ASYNC=no
 
 seth receipt $AUTH1tx
@@ -73,81 +72,34 @@ seth receipt $AUTH4tx
 seth receipt $AUTH5tx
 
 export SETH_ASYNC=yes
-seth send $SKR "setOwner(address)" $SAI_TUB
-seth send $POT "setOwner(address)" $SAI_TUB
-seth send $TIP "setOwner(address)" $SAI_TUB
-seth send $SAI "setOwner(address)" $DEV
-seth send $SIN "setOwner(address)" $DEV
+seth send $SAI_SKR "setOwner(address)" $SAI_TUB
+seth send $SAI_POT "setOwner(address)" $SAI_TUB
+seth send $SAI_TIP "setOwner(address)" $SAI_TUB
+seth send $SAI_SAI "setOwner(address)" $SAI_DEV
+seth send $SAI_SIN "setOwner(address)" $SAI_DEV
 
-tub_capabilities="
-join(uint128)
-exit(uint128)
-open()
-shut(bytes32)
-lock(bytes32,uint128)
-free(bytes32,uint128)
-draw(bytes32,uint128)
-wipe(bytes32,uint128)
-give(bytes32,address)
-bite(bytes32)
-bail(bytes32)
-"
-
-tap_capabilities="
-boom(uint128)
-bust(uint128)
-"
-
-top_capabilities="
-cash()
-"
-
-lpc_capabilities="
-pool(address,uint128)
-exit(address,uint128)
-take(address,uint128)
-"
-
-for capability in $tub_capabilities; do
-    sig=$(seth calldata $capability)
-    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $SAI_TUB $sig true
-done
-for capability in $tap_capabilities; do
-    sig=$(seth calldata $capability)
-    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $TAP $sig true
-done
-for capability in $top_capabilities; do
-    sig=$(seth calldata $capability)
-    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $TOP $sig true
-done
-for capability in $lpc_capabilities; do
-    sig=$(seth calldata $capability)
-    seth send $MOM "setRoleCapability(uint8,address,bytes4,bool)" 1 $LPC $sig true
-done
-export SETH_ASYNC=no
-
-cat > load-env << EOF
+cat > load-env-$(seth chain) << EOF
 #!/bin/bash
 
 # sai deployment on $(seth chain) from $(git rev-parse HEAD)
 # $(date)
 
-export SAI_GEM=$GEM
-export SAI_SAI=$SAI
-export SAI_SIN=$SIN
-export SAI_SKR=$SKR
-export SAI_DEV=$DEV
-export SAI_POT=$POT
-export SAI_PIT=$PIT
-export SAI_TIP=$TIP
-export SAI_PIP=$PIP
-export SAI_MOM=$MOM
-export SAI_LPS=$LPS
-export SAI_JAR=$JAR
+export SAI_GEM=$SAI_GEM
+export SAI_SAI=$SAI_SAI
+export SAI_SIN=$SAI_SIN
+export SAI_SKR=$SAI_SKR
+export SAI_DEV=$SAI_DEV
+export SAI_POT=$SAI_POT
+export SAI_PIT=$SAI_PIT
+export SAI_TIP=$SAI_TIP
+export SAI_PIP=$SAI_PIP
+export SAI_MOM=$SAI_MOM
+export SAI_LPS=$SAI_LPS
+export SAI_JAR=$SAI_JAR
 export SAI_TUB=$SAI_TUB
-export SAI_TAP=$TAP
-export SAI_TOP=$TOP
-export SAI_LPC=$LPC
+export SAI_TAP=$SAI_TAP
+export SAI_TOP=$SAI_TOP
+export SAI_LPC=$SAI_LPC
 EOF
 
 echo SAI TUB DEPLOYED AT: $SAI_TUB
