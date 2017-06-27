@@ -2,12 +2,12 @@
 
 load fail_if_not_on_kovan
 
-@test "updating and getting the debt ceiling [sai cork, sai hat]" {
+@test "update and get the debt ceiling [sai cork, sai hat]" {
   sai cork 120000.0
   [ "$(sai hat)" == "120000.000000000000000000" ]
 }
 
-@test "updating and getting the liquidation ratio and the liquidation penalty [sai chop, sai cuff, sai mat, sai axe]" {
+@test "update and get the liquidation ratio and the liquidation penalty [sai chop, sai cuff, sai mat, sai axe]" {
   sai chop 1.0
   sai cuff 1.0
   [ "$(sai mat)" == "1.000000000000000000000000000" ]
@@ -19,7 +19,7 @@ load fail_if_not_on_kovan
   [ "$(sai axe)" == "1.200000000000000000000000000" ]
 }
 
-@test "updating and getting the stability fee [sai crop, sai tax]" {
+@test "update and get the stability fee [sai crop, sai tax]" {
   sai crop 1.0
   [ "$(sai tax)" == "1.000000000000000000000000000" ]
 
@@ -27,7 +27,7 @@ load fail_if_not_on_kovan
   [ "$(sai tax)" == "1.000000000000015000000000000" ]
 }
 
-@test "updating and getting the holder fee [sai coax, sai way]" {
+@test "update and get the holder fee [sai coax, sai way]" {
   sai coax 1.0
   [ "$(sai way)" == "1.000000000000000000000000000" ]
 
