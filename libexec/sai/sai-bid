@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 ### sai-bid -- get the price of skr in sai for boom
-### Usage: sai bid <amount-in-skr>
 set -e
-[ $# = 1 ] || sai bid --usage
-wad=$(sai wad "$1")
-ret=$(seth call "${SAI_TAP?}" "bid(uint128)" "$wad")
-sai wad -h "$ret"
+wad=$(seth call "${SAI_TAP?}" "bid()")
+sai wad -h "$wad"
