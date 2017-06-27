@@ -8,15 +8,15 @@ load fail_if_not_on_kovan
 }
 
 @test "updating and getting the liquidation ratio and the liquidation penalty [sai chop, sai cuff, sai mat, sai axe]" {
-  sai chop 100.0
-  sai cuff 100.0
-  [ "$(sai mat)" == "100.000000000000000000000000000" ]
-  [ "$(sai axe)" == "100.000000000000000000000000000" ]
+  sai chop 1.0
+  sai cuff 1.0
+  [ "$(sai mat)" == "1.000000000000000000000000000" ]
+  [ "$(sai axe)" == "1.000000000000000000000000000" ]
 
-  sai cuff 150.0
-  sai chop 120.0
-  [ "$(sai mat)" == "150.000000000000000000000000000" ]
-  [ "$(sai axe)" == "120.000000000000000000000000000" ]
+  sai cuff 1.5
+  sai chop 1.2
+  [ "$(sai mat)" == "1.500000000000000000000000000" ]
+  [ "$(sai axe)" == "1.200000000000000000000000000" ]
 }
 
 @test "updating and getting the stability fee [sai crop, sai tax]" {
