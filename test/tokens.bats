@@ -3,17 +3,17 @@
 load fail_if_not_on_kovan
 
 @test "get the gem token [sai gem]" {
-  [[ "$(sai gem)" == 0x* ]]
+  [[ "$(sai gem)" == "$SAI_GEM" ]]
 }
 
 @test "get the skr token [sai skr]" {
-  [[ "$(sai skr)" == 0x* ]]
+  [[ "$(sai skr)" == "$SAI_SKR" ]]
 }
 
 @test "get the sai token [sai sai]" {
-  [[ "$(sai sai)" == 0x* ]]
+  [[ "$(sai sai)" == "$SAI_SAI" ]]
 }
 
 @test "get the sin token [sai sin]" {
-  [[ "$(sai sin)" == 0x* ]]
+  [[ "$(sai sin)" == "$SAI_SIN" ]]
 }

@@ -3,26 +3,25 @@
 load fail_if_not_on_kovan
 
 @test "get the jug-like sin tracker (DSDevil) [sai dev]" {
-  [[ "$(sai dev)" == 0x* ]]
+  [[ "$(sai dev)" == "$SAI_DEV" ]]
 }
 
 @test "get the collateral vault [sai jar]" {
-  [[ "$(sai jar)" == 0x* ]]
+  [[ "$(sai jar)" == "$SAI_JAR" ]]
 }
 
 @test "get the good debt vault [sai pot]" {
-  [[ "$(sai pot)" == 0x* ]]
+  [[ "$(sai pot)" == "$SAI_POT" ]]
 }
 
 @test "get the liquidator vault [sai pit]" {
-  [[ "$(sai pit)" == 0x* ]]
+  [[ "$(sai pit)" == "$SAI_PIT" ]]
 }
 
 @test "get the target price engine [sai tip]" {
-  [[ "$(sai tip)" == 0x* ]]
+  [[ "$(sai tip)" == "$SAI_TIP" ]]
 }
 
 @test "get the gem price feed [sai pip]" {
-  [[ "$(sai pip)" == 0x* ]]
+  [[ "$(sai pip)" == "$SAI_PIP" ]]
 }
-
