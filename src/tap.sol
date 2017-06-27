@@ -27,6 +27,8 @@ contract Tap is DSThing {
         skr = tub.skr();
 
         dev = tub.dev();
+
+        gap = WAD;
     }
 
     // surplus
@@ -55,11 +57,11 @@ contract Tap is DSThing {
 
     // price of skr in sai for boom
     function bid() constant returns (uint128) {
-        return wmul(s2s(), wsub(WAD, gap));
+        return wmul(s2s(), wsub(2 * WAD, gap));
     }
     // price of skr in sai for bust
     function ask() constant returns (uint128) {
-        return wmul(s2s(), wadd(WAD, gap));
+        return wmul(s2s(), gap);
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe

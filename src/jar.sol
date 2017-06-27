@@ -17,6 +17,8 @@ contract SaiJar is DSThing, DSVault {
         skr = skr_;
         gem = gem_;
         pip = pip_;
+
+        gap = WAD;
     }
     // ref per skr
     function tag() constant returns (uint128) {
@@ -38,10 +40,10 @@ contract SaiJar is DSThing, DSVault {
         gap = wad;
     }
     function bid() constant returns (uint128) {
-        return rmul(per(), wsub(WAD, gap) * (RAY / WAD));
+        return rmul(per(), wsub(2 * WAD, gap) * (RAY / WAD));
     }
     function ask() constant returns (uint128) {
-        return rmul(per(), wadd(WAD, gap) * (RAY / WAD));
+        return rmul(per(), gap * (RAY / WAD));
     }
 
     function join(address guy, uint128 jam) note auth {
