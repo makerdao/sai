@@ -11,7 +11,7 @@ echo >&2
 seth rpc eth_getLogs -- -n {} -s "${SAI_TUB?}" -i address \
                                  -s "$number"  -i fromBlock \
                                  -s "$number"  -i toBlock \
-                                   -n [] -s "$(seth keccak $(seth --from-ascii 'LogNewCup(address,bytes32)'))" -i append \
+                                   -n [] -s "$(seth keccak "$(seth --from-ascii 'LogNewCup(address,bytes32)')")" -i append \
                                          -s "0x$(seth --to-uint256 "${ETH_FROM?}")" -i append \
                                    -i topics \
                            -i append \
