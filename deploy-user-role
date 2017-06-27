@@ -29,6 +29,7 @@ bust(uint128)
 
 top_capabilities="
 cash()
+vent()
 "
 
 lpc_capabilities="
