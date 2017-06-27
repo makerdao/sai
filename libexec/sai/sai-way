@@ -3,5 +3,5 @@
 set -e
 tip=$(seth call "${SAI_TUB?}" 'tip()')
 tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"
-ray=$(seth call $tip_address "way()")
+ray=$(seth call "$tip_address" "way()")
 sai ray -h "$ray"

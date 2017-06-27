@@ -3,5 +3,5 @@
 set -e
 jar=$(seth call "${SAI_TUB?}" 'jar()')
 jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
-pip=$(seth call $jar_address 'pip()')
+pip=$(seth call "$jar_address" "pip()")
 echo "0x$(seth --abi-decode 'f()(address)' "$pip")"
