@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load fail_if_not_on_kovan
+load ../fail_if_not_on_kovan
 
 @test "get the jug-like sin tracker (DSDevil) [sai dev]" {
   [[ "$(sai dev)" == "$SAI_DEV" ]]

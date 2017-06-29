@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load fail_if_not_on_kovan
+load ../fail_if_not_on_kovan
 
 @test "get the gem token [sai gem]" {
   [[ "$(sai gem)" == "$SAI_GEM" ]]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-load fail_if_not_on_kovan
+load ../fail_if_not_on_kovan
 
 @test "update and get the debt ceiling [sai cork, sai hat]" {
   sai cork 500000.0
@@ -33,4 +33,12 @@ load fail_if_not_on_kovan
 
   sai coax 1.0000000005
   [ "$(sai way)" == "1.000000000500000000000000000" ]
+}
+
+@test "update the spread on boom and bust, get the spread on boom and bust [sai jump, sai gap]" {
+  sai jump 1.0
+  [ "$(sai gap)" == "1.000000000000000000" ]
+
+  sai jump 1.02
+  [ "$(sai gap)" == "1.020000000000000000" ]
 }

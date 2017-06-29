@@ -15,4 +15,4 @@ check:; ! grep '^#!/bin/sh' libexec/*/* && \
 grep '^#!/usr/bin/env bash' libexec/*/* | \
 cut -d: -f1 | xargs shellcheck
 
-verify:; source load-env-kovan && bats test
+verify:; bats test/sai && bats test/sai-lpc
