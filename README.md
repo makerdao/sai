@@ -143,6 +143,7 @@ Read commands:
    alt             get the alt token
    gap             get the spread, charged on `take`
    lps             get the lps token (liquidity provider shares)
+   par             get the accrued holder fee
    per             get the lps per ref ratio
    pie             get the total pool value (in ref)
    pip             get the price feed (giving refs per alt)
