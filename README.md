@@ -74,7 +74,7 @@ Read commands:
    fit             get the gem per skr settlement price
    fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation
-   gap             get the spread on `boom` and `bust'
+   gap             get the spread on `boom` and `bust`
    gem             get the collateral token
    hat             get the debt ceiling
    ice             get the good debt
