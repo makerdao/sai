@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-ask -- get the price of skr in sai for bust
+### sai-tap-ask -- get the price of skr in sai for bust
 set -e
 wad=$(seth call "${SAI_TAP?}" "ask()")
 sai wad -h "$wad"

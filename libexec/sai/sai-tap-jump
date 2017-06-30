@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-### sai-jump -- update the spread on `boom` and `bust`
-### Usage: sai jump <new-gap>
+### sai-tap-jump -- update the spread on `boom` and `bust`
+### Usage: sai tap jump <new-gap>
 set -e
 [ $# = 1 ] || sai jump --usage
 wad=$(sai wad -h "$1")

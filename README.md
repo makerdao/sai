@@ -65,16 +65,13 @@ Excess collateral contained within a single `cup` can be reclaimed with
 Read commands:
 
    air             get the amount of backing collateral
-   ask             get the price of skr in sai for bust
    axe             get the liquidation penalty
-   bid             get the price of skr in sai for boom
    chi             get the internal debt price
    cup             show the cup info
    dev             get the jug-like sin tracker (DSDevil)
    fit             get the gem per skr settlement price
    fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation
-   gap             get the spread on `boom` and `bust`
    gem             get the collateral token
    hat             get the debt ceiling
    ice             get the good debt
@@ -98,6 +95,9 @@ Read commands:
    skr             get the skr token
    tab             get the amount of debt in a cup
    tag             get the reference price (ref per skr)
+   tap ask         get the price of skr in sai for bust
+   tap bid         get the price of skr in sai for boom
+   tap gap         get the spread on `boom` and `bust`
    tau             get the time of last prod
    tax             get the stability fee
    tip             get the target price engine
@@ -126,12 +126,12 @@ Commands:
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
    join            buy SKR for gems
-   jump            update the spread on `boom` and `bust`
    lock            post additional SKR collateral to a cup
    open            create a new cup (collateralized debt position)
    prod            recalculate the accrued holder fee (par)
    safe            determine if a cup is safe
    shut            close a cup
+   tap jump        update the spread on `boom` and `bust`
    vent            process a caged tub
    wipe            repay some portion of your existing sai debt
 ```
