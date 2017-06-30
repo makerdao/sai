@@ -2,7 +2,7 @@
 ### sai-tap-jump -- update the spread on `boom` and `bust`
 ### Usage: sai tap jump <new-gap>
 set -e
-[ $# = 1 ] || sai jump --usage
+[ $# = 1 ] || sai tap jump --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Setting gap to $wad..."
 wad=$(sai wad "$1")
