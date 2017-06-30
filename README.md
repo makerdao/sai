@@ -77,6 +77,9 @@ Read commands:
    ice             get the good debt
    ink             get the amount of skr collateral locked in a cup
    jar             get the collateral vault
+   jar ask         get the price of gem per skr for join
+   jar bid         get the price of gem per skr for exit
+   jar gap         get the spread on `join` and `exit`
    joy             get the amount of surplus sai
    lad             get the owner of a cup
    mat             get the liquidation ratio
@@ -125,6 +128,7 @@ Commands:
    free            remove excess SKR collateral from a cup
    give            transfer ownership of a cup
    help            print help about sai(1) or one of its subcommands
+   jar jump        update the spread on `join` and `exit`
    join            buy SKR for gems
    lock            post additional SKR collateral to a cup
    open            create a new cup (collateralized debt position)

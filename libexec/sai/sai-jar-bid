@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-jar-bid -- get the price of gem per skr for exit
+set -e
+jar=$(seth call "${SAI_TUB?}" 'jar()')
+jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
+ray=$(seth call "$jar_address" "bid()")
+sai ray -h "$ray"

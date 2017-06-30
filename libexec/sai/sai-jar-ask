@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-jar-ask -- get the price of gem per skr for join
+set -e
+jar=$(seth call "${SAI_TUB?}" 'jar()')
+jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
+ray=$(seth call "$jar_address" "ask()")
+sai ray -h "$ray"

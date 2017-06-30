@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-jar-gap -- get the spread on `join` and `exit`
+set -e
+jar=$(seth call "${SAI_TUB?}" 'jar()')
+jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
+wad=$(seth call "$jar_address" "gap()")
+sai wad -h "$wad"
