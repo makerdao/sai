@@ -83,10 +83,14 @@ contract Tap is DSThing {
         tub.drip();
         dev.heal(pit);
 
-        if (wad > fog()) pit.mint(skr, wad - fog());
-
-        var ash = wmul(ask(), wad);
-        assert(ash <= woe());
+        uint128 ash;
+        if (wad > fog()) {
+            pit.mint(skr, wad - fog());
+            ash = wmul(ask(), wad);
+            assert(ash <= woe());
+        } else {
+            ash = wmul(ask(), wad);
+        }
 
         pit.push(skr, msg.sender, wad);
         pit.pull(sai, msg.sender, ash);

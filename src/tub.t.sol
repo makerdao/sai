@@ -1055,7 +1055,7 @@ contract LiquidationTest is TubTestBase {
         assertEqWad(collat(cup), wdiv(5 ether, 4 ether));  // 125%
     }
 
-    function testBust() {
+    function testBustMint() {
         tub.cork(100 ether);
         tub.cuff(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
         mark(2 ether);
@@ -1101,6 +1101,53 @@ contract LiquidationTest is TubTestBase {
         // now skr will be minted
         tap.bust(2 ether);
         assertEq(skr.totalSupply(), 12 ether);
+    }
+    function testBustNoMint() {
+        tub.cork(1000 ether);
+        tub.cuff(ray(2 ether));    // 200% liq limit
+        tub.chop(ray(1.5 ether));  // 150% liq penalty
+        mark(20 ether);
+
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 100 ether);  // 200 % collat
+
+        mark(15 ether);
+        tub.bite(cup);
+
+        // nothing remains in the cup
+        assertEqWad(tub.tab(cup), 0);
+        assertEqWad(tub.ink(cup), 0);
+
+        // all collateral is now fog
+        assertEqWad(tap.fog(), 10 ether);
+        assertEqWad(tap.woe(), 100 ether);
+
+        // the fog is worth 150 sai and the woe is worth 100 sai.
+        // If all the fog is sold, there will be a sai surplus.
+
+        // get some more sai to buy with
+        tub.join(10 ether);
+        var mug = tub.open();
+        tub.lock(mug, 10 ether);
+        tub.draw(mug, 50 ether);
+
+        tap.bust(10 ether);
+        assertEq(sai.balanceOf(this), 0 ether);
+        assertEq(skr.balanceOf(this), 10 ether);
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tap.woe(), 0 ether);
+        assertEqWad(tap.joy(), 50 ether);
+
+        // joy is available through boom
+        assertEqWad(tap.bid(), 15 ether);
+        tap.boom(2 ether);
+        assertEq(sai.balanceOf(this), 30 ether);
+        assertEq(skr.balanceOf(this),  8 ether);
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tap.woe(), 0 ether);
+        assertEqWad(tap.joy(), 20 ether);
     }
 
     function testCascade() {
