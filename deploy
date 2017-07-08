@@ -23,7 +23,7 @@ export SETH_ASYNC=no
 
 SAI_SAI=$(seth receipt $SAItx contractAddress)
 SAI_SIN=$(seth receipt $SINtx contractAddress)
-SAI_DEV=$(dapp create DSDevil $SAI_SAI $SAI_SIN)
+SAI_DEV=$(dapp create SaiJug  $SAI_SAI $SAI_SIN)
 SAI_SKR=$(seth receipt $SKRtx contractAddress)
 test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
 test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)

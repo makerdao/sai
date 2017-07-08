@@ -14,7 +14,7 @@ contract Tap is DSThing {
     DSToken  public  sin;
     DSToken  public  skr;
 
-    DSDevil  public  dev;
+    SaiJug   public  dev;
 
     uint128  public  gap;  // spread
 

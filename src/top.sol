@@ -17,7 +17,7 @@ contract Top is DSThing {
     DSVault  public  pot;
     DSVault  public  pit;
 
-    DSDevil  public  dev;
+    SaiJug   public  dev;
 
     DSToken  public  sai;
     DSToken  public  sin;

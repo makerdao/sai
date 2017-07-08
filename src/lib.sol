@@ -7,11 +7,11 @@ pragma solidity ^0.4.10;
 import "ds-thing/thing.sol";
 import "ds-vault/vault.sol";
 
-contract DSDevil is DSThing {
+contract SaiJug  is DSThing {
     DSToken  public  sai;
     DSToken  public  sin;
 
-    function DSDevil(DSToken sai_, DSToken sin_) {
+    function SaiJug (DSToken sai_, DSToken sin_) {
         sai = sai_;
         sin = sin_;
     }

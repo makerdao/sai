@@ -39,7 +39,7 @@ contract TubTestBase is DSTest, DSMath {
     DSToken  sin;
     DSToken  skr;
 
-    DSDevil  dev;
+    SaiJug   dev;
 
     DSVault  pot;
     DSVault  pit;
@@ -84,7 +84,7 @@ contract TubTestBase is DSTest, DSMath {
 
         sai = new DSToken("SAI", "SAI", 18);
         sin = new DSToken("SIN", "SIN", 18);
-        dev = new DSDevil(sai, sin);
+        dev = new SaiJug (sai, sin);
 
         skr = new DSToken("SKR", "SKR", 18);
         pot = new DSVault();

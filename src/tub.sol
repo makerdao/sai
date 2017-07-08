@@ -33,7 +33,7 @@ contract Tub is DSThing, TubEvents {
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
-    DSDevil  public  dev;  // jug-like sin tracker
+    SaiJug   public  dev;  // jug-like sin tracker
 
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
@@ -77,7 +77,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(SaiJar jar_, DSDevil dev_, DSVault pot_, DSVault pit_, Tip tip_) {
+    function Tub(SaiJar jar_, SaiJug  dev_, DSVault pot_, DSVault pit_, Tip tip_) {
         jar = jar_;
         gem = jar.gem();
         skr = jar.skr();
