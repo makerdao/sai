@@ -40,7 +40,7 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  sin;
     DSToken  skr;
 
-    SaiJug   dev;
+    SaiJug   jug;
 
     DSVault  pot;
     DSVault  pit;
@@ -86,7 +86,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         sai = new DSToken("SAI");
         sin = new DSToken("SIN");
-        dev = new SaiJug (sai, sin);
+        jug = new SaiJug (sai, sin);
 
         skr = new DSToken("SKR");
         pot = new DSVault();
@@ -99,7 +99,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         jar = new SaiJar(skr, gem, tag);
 
-        tub = new Tub(jar, dev, pot, pit, tip);
+        tub = new Tub(jar, jug, pot, pit, tip);
 
         tap = new Tap(tub, pit);
         top = new Top(tub, tap);
@@ -166,14 +166,14 @@ contract SaiTestBase is DSTest, DSMath {
         sin.setAuthority(dad);
         skr.setAuthority(dad);
 
-        mom.setRootUser(tub, true);  // dev.lend,mend,heal
+        mom.setRootUser(tub, true);  // jug.lend,mend,heal
         mom.setRootUser(tap, true);  // skr.mint,burn
         mom.setRootUser(top, true);
 
         mom.setRootUser(pot, true);  // sai,sin mint,burn
         mom.setRootUser(pit, true);  // skr.mint,burn; sin,sai.burn
         mom.setRootUser(jar, true);  // skr
-        mom.setRootUser(dev, true);  // pit,pot.mint,burn
+        mom.setRootUser(jug, true);  // pit,pot.mint,burn
 
         tip.setOwner(0);
         tub.setOwner(0);
@@ -183,7 +183,7 @@ contract SaiTestBase is DSTest, DSMath {
         pot.setOwner(0);
         pit.setOwner(0);
         jar.setOwner(0);
-        dev.setOwner(0);
+        jug.setOwner(0);
 
         sai.setOwner(0);
         sin.setOwner(0);
@@ -1197,17 +1197,17 @@ contract LiquidationTest is SaiTestBase {
         tub.join(40 ether);
         var cup = tub.open();
         var mug = tub.open();
-        var jug = tub.open();
+        var tin = tub.open();
 
         tub.lock(cup, 10 ether);
         tub.lock(mug, 10 ether);
-        tub.lock(jug, 10 ether);
+        tub.lock(tin, 10 ether);
 
         tub.draw(cup, 50 ether);  // 200% collat
         tub.draw(mug, 40 ether);  // 250% collat
-        tub.draw(jug, 19 ether);  // 421% collat
+        tub.draw(tin, 19 ether);  // 421% collat
 
-        mark(4 ether);  // cup 80%, mug 100%, jug 200%
+        mark(4 ether);  // cup 80%, mug 100%, tin 200%
         tub.bite(cup);
 
         // inflation happens when the confiscated skr can no longer
@@ -1224,10 +1224,10 @@ contract LiquidationTest is SaiTestBase {
         // price still 1
         assertEqWad(tub.jar().per(), ray(1 ether));
 
-        // now force some minting, which flips the jug to unsafe
-        assert(tub.safe(jug));
+        // now force some minting, which flips the tin to unsafe
+        assert(tub.safe(tin));
         tap.bust(wdiv(5 ether, 2 ether));
-        assert(!tub.safe(jug));
+        assert(!tub.safe(tin));
 
         assertEqWad(tap.woe(), 0);
         assertEqWad(tub.jar().per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
@@ -1237,7 +1237,7 @@ contract LiquidationTest is SaiTestBase {
         tap.bust(tap.fog());
         tap.bust(wdiv(tap.woe(), wmul(tub.jar().per(), jar.tag())));
 
-        tub.bite(jug);
+        tub.bite(tin);
 
         // N.B from the initial price markdown the whole system was in deficit
     }

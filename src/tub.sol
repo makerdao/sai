@@ -33,7 +33,7 @@ contract Tub is DSThing, TubEvents {
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
-    SaiJug   public  dev;  // jug-like sin tracker
+    SaiJug   public  jug;  // jug-like sin tracker
 
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
@@ -77,14 +77,14 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(SaiJar jar_, SaiJug  dev_, DSVault pot_, DSVault pit_, Tip tip_) {
+    function Tub(SaiJar jar_, SaiJug  jug_, DSVault pot_, DSVault pit_, Tip tip_) {
         jar = jar_;
         gem = jar.gem();
         skr = jar.skr();
 
-        dev = dev_;
-        sai = dev.sai();
-        sin = dev.sin();
+        jug = jug_;
+        sai = jug.sai();
+        sin = jug.sin();
         pot = pot_;
         pit = pit_;
 
@@ -129,7 +129,7 @@ contract Tub is DSThing, TubEvents {
         var rum = rdiv(ice(), _chi);
         var dew = wsub(rmul(rum, chi), ice());
 
-        dev.lend(pot, dew);
+        jug.lend(pot, dew);
         pot.push(sai, pit, dew);
 
         _chi = chi;
@@ -205,7 +205,7 @@ contract Tub is DSThing, TubEvents {
         var pen = rdiv(wad, chi());
         cups[cup].art = wadd(cups[cup].art, pen);
 
-        dev.lend(pot, wad);
+        jug.lend(pot, wad);
         pot.push(sai, msg.sender, wad);
 
         assert(safe(cup));
@@ -219,7 +219,7 @@ contract Tub is DSThing, TubEvents {
         cups[cup].art = wsub(cups[cup].art, pen);
 
         pot.pull(sai, msg.sender, wad);
-        dev.mend(pot, wad);
+        jug.mend(pot, wad);
     }
 
     function give(bytes32 cup, address lad) note auth {

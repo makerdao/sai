@@ -14,7 +14,7 @@ contract Tap is DSThing {
     DSToken  public  sin;
     DSToken  public  skr;
 
-    SaiJug   public  dev;
+    SaiJug   public  jug;
 
     uint128  public  gap;  // spread
 
@@ -26,7 +26,7 @@ contract Tap is DSThing {
         sin = tub.sin();
         skr = tub.skr();
 
-        dev = tub.dev();
+        jug = tub.jug();
 
         gap = WAD;
     }
@@ -70,7 +70,7 @@ contract Tap is DSThing {
     function boom(uint128 wad) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
-        dev.heal(pit);
+        jug.heal(pit);
 
         // price of wad in sai
         var ret = wmul(bid(), wad);
@@ -83,7 +83,7 @@ contract Tap is DSThing {
     function bust(uint128 wad) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
-        dev.heal(pit);
+        jug.heal(pit);
 
         uint128 ash;
         if (wad > fog()) {
@@ -96,6 +96,6 @@ contract Tap is DSThing {
 
         pit.push(skr, msg.sender, wad);
         pit.pull(sai, msg.sender, ash);
-        dev.heal(pit);
+        jug.heal(pit);
     }
 }

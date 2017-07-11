@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-dev -- get the jug-like sin tracker
-set -e
-dev=$(seth call "${SAI_TUB?}" 'dev()')
-echo "0x$(seth --abi-decode 'f()(address)' "$dev")"
