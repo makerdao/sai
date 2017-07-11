@@ -28,7 +28,7 @@ contract FakePerson {
     }
 }
 
-contract TubTestBase is DSTest, DSMath {
+contract SaiTestBase is DSTest, DSMath {
     Tip      tip;
     Tub      tub;
     Top      top;
@@ -154,7 +154,7 @@ contract TubTestBase is DSTest, DSMath {
     }
 }
 
-contract TubTest is TubTestBase {
+contract TubTest is SaiTestBase {
     function testBasic() {
         assertEq( skr.balanceOf(jar), 0 ether );
         assertEq( skr.balanceOf(this), 0 ether );
@@ -340,7 +340,7 @@ contract TubTest is TubTestBase {
     }
 }
 
-contract CageTest is TubTestBase {
+contract CageTest is SaiTestBase {
     // ensure cage sets the settle prices right
     function cageSetup() returns (bytes32) {
         tub.cork(5 ether);            // 5 sai debt ceiling
@@ -986,7 +986,7 @@ contract CageTest is TubTestBase {
     }
 }
 
-contract LiquidationTest is TubTestBase {
+contract LiquidationTest is SaiTestBase {
     function liq(bytes32 cup) returns (uint128) {
         // compute the liquidation price of a cup
         var jam = rmul(tub.ink(cup), tub.jar().per());  // this many eth
@@ -1206,7 +1206,7 @@ contract LiquidationTest is TubTestBase {
     }
 }
 
-contract TaxTest is TubTestBase {
+contract TaxTest is SaiTestBase {
     function testEraInit() {
         assertEq(uint(tip.era()), now);
     }
@@ -1371,7 +1371,7 @@ contract TaxTest is TubTestBase {
     }
 }
 
-contract WayTest is TubTestBase {
+contract WayTest is SaiTestBase {
     function waySetup() returns (bytes32 cup) {
         mark(10 ether);
         gem.mint(1000 ether);
@@ -1503,7 +1503,7 @@ contract WayTest is TubTestBase {
     }
 }
 
-contract GapTest is TubTestBase {
+contract GapTest is SaiTestBase {
     // boom and bust have a spread parameter
     function setUp() {
         super.setUp();
@@ -1619,7 +1619,7 @@ contract GapTest is TubTestBase {
     }
 }
 
-contract GasTest is TubTestBase {
+contract GasTest is SaiTestBase {
     function setUp() {
         super.setUp();
 
