@@ -55,7 +55,7 @@ contract LPCTest is DSTest, DSMath {
     function setUp() {
         ref = new DSTokenBase(10 ** 24);
         alt = new DSTokenBase(10 ** 24);
-        lps = new DSToken('LPS', 'LPS', 18);
+        lps = new DSToken('LPS');
 
         pip = new DSValue();
         pip.poke(bytes32(2 ether)); // 2 refs per gem

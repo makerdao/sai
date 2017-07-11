@@ -79,14 +79,14 @@ contract SaiTestBase is DSTest, DSMath {
     }
 
     function setUp() {
-        gem = new DSToken("collateral", "COL", 18);
+        gem = new DSToken("GEM");
         gem.mint(100 ether);
 
-        sai = new DSToken("SAI", "SAI", 18);
-        sin = new DSToken("SIN", "SIN", 18);
+        sai = new DSToken("SAI");
+        sin = new DSToken("SIN");
         dev = new SaiJug (sai, sin);
 
-        skr = new DSToken("SKR", "SKR", 18);
+        skr = new DSToken("SKR");
         pot = new DSVault();
         pit = new DSVault();
 
