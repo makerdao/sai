@@ -103,37 +103,12 @@ contract SaiTestBase is DSTest, DSMath {
         top = new Top(tub, tap);
 
         mom = new DSRoles();
-        pot.setAuthority(mom);
-        pit.setAuthority(mom);
-        jar.setAuthority(mom);
-
-        tip.setAuthority(mom);
-        tub.setAuthority(mom);
-        top.setAuthority(mom);
-        tap.setAuthority(mom);
-
-        sai.setAuthority(mom);
-        sin.setAuthority(mom);
-        skr.setAuthority(mom);
-
+        // test runner is already the owner of mom, but also need root
+        // user to allow calling anything on anything
         mom.setRootUser(this, true);
-        mom.setRootUser(dev, true);   // to allow pull
 
-        mom.setRootUser(tub, true);
-        mom.setRootUser(tap, true);
-        mom.setRootUser(top, true);
-
-        mom.setRootUser(jar, true);
-        mom.setRootUser(pot, true);
-        mom.setRootUser(pit, true);
+        configureAuth();
         setRoles();
-
-        sai.setOwner(dev);
-        sin.setOwner(dev);
-        dev.setOwner(tub);
-        skr.setOwner(tub);
-        pot.setOwner(tub);
-        tip.setOwner(tub);
 
         gem.approve(jar, 100000 ether);
         skr.approve(jar, 100000 ether);
@@ -151,6 +126,44 @@ contract SaiTestBase is DSTest, DSMath {
         tag.poke(bytes32(1 ether));
 
         tub.cork(20 ether);
+    }
+    function configureAuth() {
+        tip.setAuthority(mom);
+        tub.setAuthority(mom);
+        tap.setAuthority(mom);
+        top.setAuthority(mom);
+
+        pot.setAuthority(mom);
+        pit.setAuthority(mom);
+        jar.setAuthority(mom);
+        dev.setAuthority(mom);
+
+        sai.setAuthority(mom);
+        sin.setAuthority(mom);
+        skr.setAuthority(mom);
+
+        mom.setRootUser(tub, true);  // dev.lend,mend,heal
+        mom.setRootUser(tap, true);  // skr.mint,burn
+        mom.setRootUser(top, true);
+
+        mom.setRootUser(pot, true);  // sai,sin mint,burn
+        mom.setRootUser(pit, true);  // skr.mint,burn; sin,sai.burn
+        mom.setRootUser(jar, true);  // skr
+        mom.setRootUser(dev, true);  // pit,pot.mint,burn
+
+        tip.setOwner(0);
+        tub.setOwner(0);
+        tap.setOwner(0);
+        top.setOwner(0);
+
+        pot.setOwner(0);
+        pit.setOwner(0);
+        jar.setOwner(0);
+        dev.setOwner(0);
+
+        sai.setOwner(0);
+        sin.setOwner(0);
+        skr.setOwner(0);
     }
 }
 
