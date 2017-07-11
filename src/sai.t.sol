@@ -149,6 +149,8 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(jar, skr, bytes4(sha3('mint(uint128)')));
         dad.permit(jar, skr, bytes4(sha3('burn(uint128)')));
 
+        dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
+
         // convenience
         dad.permit(this, sai, bytes4(sha3('mint(uint128)')));
         dad.permit(this, sai, bytes4(sha3('burn(uint128)')));
@@ -160,7 +162,7 @@ contract SaiTestBase is DSTest, DSMath {
         pot.setAuthority(mom);
         pit.setAuthority(mom);
         jar.setAuthority(mom);
-        dev.setAuthority(mom);
+        jug.setAuthority(dad);
 
         sai.setAuthority(dad);
         sin.setAuthority(dad);
