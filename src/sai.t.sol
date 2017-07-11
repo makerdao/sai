@@ -131,11 +131,53 @@ contract SaiTestBase is DSTest, DSMath {
         tub.cork(20 ether);
     }
     function configureAuth() {
+        // user facing, use ds-roles
         tip.setAuthority(mom);
         tub.setAuthority(mom);
         tap.setAuthority(mom);
         top.setAuthority(mom);
         jar.setAuthority(mom);
+
+        // internal, use ds-guard
+        pot.setAuthority(dad);
+        pit.setAuthority(dad);
+        jug.setAuthority(dad);
+
+        sai.setAuthority(dad);
+        sin.setAuthority(dad);
+        skr.setAuthority(dad);
+
+
+        mom.setUserRole(tub, 2, true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("join(address,uint128)")), true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("exit(address,uint128)")), true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("push(address,address,uint128)")), true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("pull(address,address,uint128)")), true);
+
+        mom.setUserRole(top, 3, true);
+        mom.setRoleCapability(3, jar, bytes4(sha3("push(address,address,uint128)")), true);
+        mom.setRoleCapability(3, tub, bytes4(sha3("cage()")), true);
+
+
+        dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
+        dad.permit(tub, pot, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(tub, pot, bytes4(sha3('pull(address,address,uint128)')));
+
+        dad.permit(tap, pit, bytes4(sha3('mint(address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('burn(address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint128)')));
+
+        dad.permit(top, pit, bytes4(sha3('burn(address)')));
+        dad.permit(top, pit, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(top, pit, bytes4(sha3('pull(address,address,uint128)')));
+
+        dad.permit(jar, skr, bytes4(sha3('mint(uint128)')));
+        dad.permit(jar, skr, bytes4(sha3('burn(uint128)')));
+
+        dad.permit(jug, pot, bytes4(sha3('mint(address,uint128)')));
+        dad.permit(jug, pot, bytes4(sha3('burn(address,uint128)')));
+        dad.permit(jug, pit, bytes4(sha3('burn(address,uint128)')));
 
         dad.permit(pot, sai, bytes4(sha3('mint(uint128)')));
         dad.permit(pot, sai, bytes4(sha3('burn(uint128)')));
@@ -147,52 +189,13 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(pit, skr, bytes4(sha3('mint(uint128)')));
         dad.permit(pit, skr, bytes4(sha3('burn(uint128)')));
 
-        dad.permit(jar, skr, bytes4(sha3('mint(uint128)')));
-        dad.permit(jar, skr, bytes4(sha3('burn(uint128)')));
-
-        dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
-
-        dad.permit(jug, pot, bytes4(sha3('mint(address,uint128)')));
-        dad.permit(jug, pot, bytes4(sha3('burn(address,uint128)')));
-
-        dad.permit(tub, pot, bytes4(sha3('push(address,address,uint128)')));
-        dad.permit(tub, pot, bytes4(sha3('pull(address,address,uint128)')));
-
-        dad.permit(tap, pit, bytes4(sha3('mint(address,uint128)')));
-        dad.permit(tap, pit, bytes4(sha3('burn(address,uint128)')));
-        dad.permit(tap, pit, bytes4(sha3('push(address,address,uint128)')));
-        dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint128)')));
-
-        dad.permit(jug, pit, bytes4(sha3('burn(address,uint128)')));
-
-        dad.permit(top, pit, bytes4(sha3('burn(address)')));
-        dad.permit(top, pit, bytes4(sha3('push(address,address,uint128)')));
-        dad.permit(top, pit, bytes4(sha3('pull(address,address,uint128)')));
-
-        // convenience
+        // convenience in tests
         dad.permit(this, sai, bytes4(sha3('mint(uint128)')));
         dad.permit(this, sai, bytes4(sha3('burn(uint128)')));
         dad.permit(this, sin, bytes4(sha3('mint(uint128)')));
         dad.permit(this, sin, bytes4(sha3('burn(uint128)')));
         dad.permit(this, skr, bytes4(sha3('mint(uint128)')));
         dad.permit(this, skr, bytes4(sha3('burn(uint128)')));
-
-        pot.setAuthority(dad);
-        pit.setAuthority(dad);
-        jug.setAuthority(dad);
-
-        sai.setAuthority(dad);
-        sin.setAuthority(dad);
-        skr.setAuthority(dad);
-
-        mom.setRootUser(tub, true);  // jug.lend,mend,heal
-        mom.setRootUser(tap, true);  // skr.mint,burn
-        mom.setRootUser(top, true);
-
-        mom.setRootUser(pot, true);  // sai,sin mint,burn
-        mom.setRootUser(pit, true);  // skr.mint,burn; sin,sai.burn
-        mom.setRootUser(jar, true);  // skr
-        mom.setRootUser(jug, true);  // pit,pot.mint,burn
 
         tip.setOwner(0);
         tub.setOwner(0);
