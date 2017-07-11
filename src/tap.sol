@@ -53,6 +53,8 @@ contract Tap is DSThing {
 
     function jump(uint128 wad) note auth {
         gap = wad;
+        assert(gap <= 1.05 ether);
+        assert(gap >= 0.95 ether);
     }
 
     // price of skr in sai for boom

@@ -1560,6 +1560,16 @@ contract GapTest is TubTestBase {
         assertEq(skr_after - skr_before,  50 ether);
         assertEq(sai_before - sai_after, 101 ether);
     }
+    function testGapLimits() {
+        uint128 legal   = 1.04 ether;
+        uint128 illegal = 1.06 ether;
+
+        assert(tap.call(bytes4(sha3("jump(uint128)")), legal));
+        assertEqWad(tap.gap(), legal);
+
+        assert(!tap.call(bytes4(sha3("jump(uint128)")), illegal));
+        assertEqWad(tap.gap(), legal);
+    }
 
     // join and exit have a spread parameter
     function testGapJarBidAsk() {
