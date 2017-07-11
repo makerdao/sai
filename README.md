@@ -68,7 +68,6 @@ Read commands:
    axe             get the liquidation penalty
    chi             get the internal debt price
    cup             show the cup info
-   dev             get the jug-like sin tracker
    fit             get the gem per skr settlement price
    fix             get the gem per sai settlement price
    fog             get the amount of skr pending liquidation
@@ -81,6 +80,7 @@ Read commands:
    jar bid         get the price of gem per skr for exit
    jar gap         get the spread on `join` and `exit`
    joy             get the amount of surplus sai
+   jug             get the sai / sin tracker
    lad             get the owner of a cup
    mat             get the liquidation ratio
    par             get the accrued holder fee
