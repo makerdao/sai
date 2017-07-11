@@ -135,6 +135,7 @@ contract SaiTestBase is DSTest, DSMath {
         tub.setAuthority(mom);
         tap.setAuthority(mom);
         top.setAuthority(mom);
+        jar.setAuthority(mom);
 
         dad.permit(pot, sai, bytes4(sha3('mint(uint128)')));
         dad.permit(pot, sai, bytes4(sha3('burn(uint128)')));
@@ -151,6 +152,23 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
 
+        dad.permit(jug, pot, bytes4(sha3('mint(address,uint128)')));
+        dad.permit(jug, pot, bytes4(sha3('burn(address,uint128)')));
+
+        dad.permit(tub, pot, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(tub, pot, bytes4(sha3('pull(address,address,uint128)')));
+
+        dad.permit(tap, pit, bytes4(sha3('mint(address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('burn(address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint128)')));
+
+        dad.permit(jug, pit, bytes4(sha3('burn(address,uint128)')));
+
+        dad.permit(top, pit, bytes4(sha3('burn(address)')));
+        dad.permit(top, pit, bytes4(sha3('push(address,address,uint128)')));
+        dad.permit(top, pit, bytes4(sha3('pull(address,address,uint128)')));
+
         // convenience
         dad.permit(this, sai, bytes4(sha3('mint(uint128)')));
         dad.permit(this, sai, bytes4(sha3('burn(uint128)')));
@@ -159,9 +177,8 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(this, skr, bytes4(sha3('mint(uint128)')));
         dad.permit(this, skr, bytes4(sha3('burn(uint128)')));
 
-        pot.setAuthority(mom);
-        pit.setAuthority(mom);
-        jar.setAuthority(mom);
+        pot.setAuthority(dad);
+        pit.setAuthority(dad);
         jug.setAuthority(dad);
 
         sai.setAuthority(dad);
