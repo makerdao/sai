@@ -6,6 +6,7 @@ import "ds-math/math.sol";
 
 import 'ds-token/token.sol';
 import 'ds-vault/vault.sol';
+import 'ds-guard/guard.sol';
 import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
@@ -48,6 +49,7 @@ contract SaiTestBase is DSTest, DSMath {
 
     DSValue  tag;
     DSRoles  mom;
+    DSGuard  dad;
 
     function ray(uint128 wad) returns (uint128) {
         return wad * 10 ** 9;
@@ -102,6 +104,7 @@ contract SaiTestBase is DSTest, DSMath {
         tap = new Tap(tub, pit);
         top = new Top(tub, tap);
 
+        dad = new DSGuard();
         mom = new DSRoles();
         // test runner is already the owner of mom, but also need root
         // user to allow calling anything on anything
@@ -133,14 +136,35 @@ contract SaiTestBase is DSTest, DSMath {
         tap.setAuthority(mom);
         top.setAuthority(mom);
 
+        dad.permit(pot, sai, bytes4(sha3('mint(uint128)')));
+        dad.permit(pot, sai, bytes4(sha3('burn(uint128)')));
+        dad.permit(pot, sin, bytes4(sha3('mint(uint128)')));
+        dad.permit(pot, sin, bytes4(sha3('burn(uint128)')));
+
+        dad.permit(pit, sai, bytes4(sha3('burn(uint128)')));
+        dad.permit(pit, sin, bytes4(sha3('burn(uint128)')));
+        dad.permit(pit, skr, bytes4(sha3('mint(uint128)')));
+        dad.permit(pit, skr, bytes4(sha3('burn(uint128)')));
+
+        dad.permit(jar, skr, bytes4(sha3('mint(uint128)')));
+        dad.permit(jar, skr, bytes4(sha3('burn(uint128)')));
+
+        // convenience
+        dad.permit(this, sai, bytes4(sha3('mint(uint128)')));
+        dad.permit(this, sai, bytes4(sha3('burn(uint128)')));
+        dad.permit(this, sin, bytes4(sha3('mint(uint128)')));
+        dad.permit(this, sin, bytes4(sha3('burn(uint128)')));
+        dad.permit(this, skr, bytes4(sha3('mint(uint128)')));
+        dad.permit(this, skr, bytes4(sha3('burn(uint128)')));
+
         pot.setAuthority(mom);
         pit.setAuthority(mom);
         jar.setAuthority(mom);
         dev.setAuthority(mom);
 
-        sai.setAuthority(mom);
-        sin.setAuthority(mom);
-        skr.setAuthority(mom);
+        sai.setAuthority(dad);
+        sin.setAuthority(dad);
+        skr.setAuthority(dad);
 
         mom.setRootUser(tub, true);  // dev.lend,mend,heal
         mom.setRootUser(tap, true);  // skr.mint,burn
