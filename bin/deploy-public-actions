@@ -5,7 +5,6 @@ test -z $SAI_MOM && exit 1
 test -z $SAI_TUB && exit 1
 test -z $SAI_TAP && exit 1
 test -z $SAI_TOP && exit 1
-test -z $SAI_LPC && exit 1
 
 export ETH_GAS=${ETH_GAS:-"100000"}
 
@@ -32,12 +31,6 @@ cash()
 vent()
 "
 
-lpc_capabilities="
-pool(address,uint128)
-exit(address,uint128)
-take(address,uint128)
-"
-
 export SETH_ASYNC=yes
 
 for capability in $tub_capabilities; do
@@ -51,8 +44,4 @@ done
 for capability in $top_capabilities; do
     sig=$(seth calldata $capability)
     seth send $SAI_MOM "setPublicCapability(address,bytes4,bool)" $SAI_TOP $sig true
-done
-for capability in $lpc_capabilities; do
-    sig=$(seth calldata $capability)
-    seth send $SAI_MOM "setPublicCapability(address,bytes4,bool)" $SAI_LPC $sig true
 done
