@@ -44,19 +44,19 @@ test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress) && seth send 
 
 export SETH_ASYNC=yes
 
-AUTH1tx=$(seth send $SAI_TIP "setAuthority(address)" $SAI_MOM)
-AUTH2tx=$(seth send $SAI_TUB "setAuthority(address)" $SAI_MOM)
-AUTH3tx=$(seth send $SAI_TAP "setAuthority(address)" $SAI_MOM)
-AUTH4tx=$(seth send $SAI_TOP "setAuthority(address)" $SAI_MOM)
-AUTH5tx=$(seth send $SAI_JAR "setAuthority(address)" $SAI_MOM)
+seth send $SAI_TIP "setAuthority(address)" $SAI_MOM
+seth send $SAI_TUB "setAuthority(address)" $SAI_MOM
+seth send $SAI_TAP "setAuthority(address)" $SAI_MOM
+seth send $SAI_TOP "setAuthority(address)" $SAI_MOM
+seth send $SAI_JAR "setAuthority(address)" $SAI_MOM
 
-AUTH6tx=$(seth send $SAI_POT "setAuthority(address)" $SAI_DAD)
-AUTH7tx=$(seth send $SAI_PIT "setAuthority(address)" $SAI_DAD)
-AUTH8tx=$(seth send $SAI_JUG "setAuthority(address)" $SAI_DAD)
+seth send $SAI_POT "setAuthority(address)" $SAI_DAD
+seth send $SAI_PIT "setAuthority(address)" $SAI_DAD
+seth send $SAI_JUG "setAuthority(address)" $SAI_DAD
 
-AUTH9tx=$(seth send $SAI_SAI "setAuthority(address)" $SAI_DAD)
-AUTH10tx=$(seth send $SAI_SIN "setAuthority(address)" $SAI_DAD)
-AUTH11tx=$(seth send $SAI_SKR "setAuthority(address)" $SAI_DAD)
+seth send $SAI_SAI "setAuthority(address)" $SAI_DAD
+seth send $SAI_SIN "setAuthority(address)" $SAI_DAD
+seth send $SAI_SKR "setAuthority(address)" $SAI_DAD
 
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TUB 2 true
 seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_JAR $(seth calldata 'join(address,uint128)') true
@@ -101,35 +101,6 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SIN $(seth --
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
 
-export SETH_ASYNC=no
-
-seth receipt $AUTH1tx
-seth receipt $AUTH2tx
-seth receipt $AUTH3tx
-seth receipt $AUTH4tx
-seth receipt $AUTH5tx
-seth receipt $AUTH6tx
-seth receipt $AUTH7tx
-seth receipt $AUTH8tx
-seth receipt $AUTH9tx
-seth receipt $AUTH10tx
-seth receipt $AUTH11tx
-
-export SETH_ASYNC=yes
-
-seth send $SAI_TIP "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_TUB "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_TAP "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_TOP "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_JAR "setOwner(address)" 0x0000000000000000000000000000000000000000
-
-seth send $SAI_POT "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_PIT "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_JUG "setOwner(address)" 0x0000000000000000000000000000000000000000
-
-seth send $SAI_SAI "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_SIN "setOwner(address)" 0x0000000000000000000000000000000000000000
-seth send $SAI_SKR "setOwner(address)" 0x0000000000000000000000000000000000000000
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
