@@ -99,18 +99,18 @@ contract Tub is DSThing, TubEvents {
         rho = tip.era();
     }
 
-    function chop(uint128 ray) note auth {
+    function chop(uint128 ray) auth note {
         axe = ray;
         assert((RAY <= axe) && (axe <= mat));
     }
-    function cork(uint128 wad) note auth {
+    function cork(uint128 wad) auth note {
         hat = wad;
     }
-    function cuff(uint128 ray) note auth {
+    function cuff(uint128 ray) auth note {
         mat = ray;
         assert((RAY <= axe) && (axe <= mat));
     }
-    function crop(uint128 ray) note auth {
+    function crop(uint128 ray) auth note {
         drip();
         tax = ray;
         assert(RAY <= tax);
@@ -159,11 +159,11 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function join(uint128 jam) note auth {
+    function join(uint128 jam) auth note {
         assert(reg == Stage.Usual);
         jar.join(msg.sender, jam);
     }
-    function exit(uint128 ink) note auth {
+    function exit(uint128 ink) auth note {
         assert(reg == Stage.Usual
             || reg == Stage.Caged && ice() == 0 && skr.balanceOf(pit) == 0 );
         jar.exit(msg.sender, ink);
@@ -171,34 +171,34 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function open() note auth returns (bytes32 cup) {
+    function open() auth note returns (bytes32 cup) {
         assert(reg == Stage.Usual);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         // TODO replace this event with another solution
         LogNewCup(msg.sender, cup);
     }
-    function shut(bytes32 cup) note auth {
+    function shut(bytes32 cup) auth note {
         assert(reg == Stage.Usual);
         wipe(cup, tab(cup));
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
-    function lock(bytes32 cup, uint128 wad) note auth {
+    function lock(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hadd(cups[cup].ink, wad);
         jar.pull(skr, msg.sender, wad);
     }
-    function free(bytes32 cup, uint128 wad) note auth {
+    function free(bytes32 cup, uint128 wad) auth note {
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = hsub(cups[cup].ink, wad);
         jar.push(skr, msg.sender, wad);
         assert(safe(cup));
     }
 
-    function draw(bytes32 cup, uint128 wad) note auth {
+    function draw(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
 
@@ -211,7 +211,7 @@ contract Tub is DSThing, TubEvents {
         assert(safe(cup));
         assert(cast(sin.totalSupply()) <= hat);
     }
-    function wipe(bytes32 cup, uint128 wad) note auth {
+    function wipe(bytes32 cup, uint128 wad) auth note {
         assert(reg == Stage.Usual);
         assert(msg.sender == cups[cup].lad);
 
@@ -222,7 +222,7 @@ contract Tub is DSThing, TubEvents {
         jug.mend(pot, wad);
     }
 
-    function give(bytes32 cup, address lad) note auth {
+    function give(bytes32 cup, address lad) auth note {
         assert(msg.sender == cups[cup].lad);
         assert(lad != 0);
         cups[cup].lad = lad;
@@ -234,7 +234,7 @@ contract Tub is DSThing, TubEvents {
         return reg == Stage.Usual ? jar.tag() : fit;
     }
 
-    function bite(bytes32 cup) note auth {
+    function bite(bytes32 cup) auth note {
         assert(!safe(cup) || reg == Stage.Caged);
 
         // take on all of the debt
@@ -255,7 +255,7 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function cage() note auth {
+    function cage() auth note {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
         fit = jar.tag();

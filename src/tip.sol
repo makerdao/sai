@@ -19,7 +19,7 @@ contract Tip is DSThing, DSWarp {
         tau  = _era;
     }
 
-    function coax(uint128 ray) note auth {
+    function coax(uint128 ray) auth note {
         way = ray;
         assert(way < 10002 * 10 ** 23);  // ~200% per hour
         assert(way >  9998 * 10 ** 23);

@@ -15,15 +15,15 @@ contract SaiJug  is DSThing {
         sai = sai_;
         sin = sin_;
     }
-    function lend(DSVault guy, uint128 wad) note auth {
+    function lend(DSVault guy, uint128 wad) auth note {
         guy.mint(sai, wad);
         guy.mint(sin, wad);
     }
-    function mend(DSVault guy, uint128 wad) note auth {
+    function mend(DSVault guy, uint128 wad) auth note {
         guy.burn(sai, wad);
         guy.burn(sin, wad);
     }
-    function heal(DSVault guy) note auth {
+    function heal(DSVault guy) auth note {
         var joy = cast(sai.balanceOf(guy));
         var woe = cast(sin.balanceOf(guy));
         mend(guy, hmin(joy, woe));

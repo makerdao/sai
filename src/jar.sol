@@ -36,7 +36,7 @@ contract SaiJar is DSThing, DSVault {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie, ink);
     }
 
-    function jump(uint128 wad) note auth {
+    function jump(uint128 wad) auth note {
         gap = wad;
     }
     function bid() constant returns (uint128) {
@@ -46,13 +46,13 @@ contract SaiJar is DSThing, DSVault {
         return rmul(per(), gap * (RAY / WAD));
     }
 
-    function join(address guy, uint128 jam) note auth {
+    function join(address guy, uint128 jam) auth note {
         var ink = rdiv(jam, ask());
         mint(skr, ink);
         push(skr, guy, ink);
         pull(gem, guy, jam);
     }
-    function exit(address guy, uint128 ink) note auth {
+    function exit(address guy, uint128 ink) auth note {
         var jam = rmul(ink, bid());
         pull(skr, guy, ink);
         burn(skr, ink);
