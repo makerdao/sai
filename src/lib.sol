@@ -19,11 +19,11 @@ contract SaiJug  is DSThing {
         guy.mint(sai, wad);
         guy.mint(sin, wad);
     }
-    function mend(DSVault guy, uint128 wad) note {
+    function mend(DSVault guy, uint128 wad) note auth {
         guy.burn(sai, wad);
         guy.burn(sin, wad);
     }
-    function heal(DSVault guy) note {
+    function heal(DSVault guy) note auth {
         var joy = cast(sai.balanceOf(guy));
         var woe = cast(sin.balanceOf(guy));
         mend(guy, hmin(joy, woe));

@@ -160,14 +160,17 @@ contract SaiTestBase is DSTest, DSMath {
 
 
         dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
+        dad.permit(tub, jug, bytes4(sha3('mend(address,uint128)')));
         dad.permit(tub, pot, bytes4(sha3('push(address,address,uint128)')));
         dad.permit(tub, pot, bytes4(sha3('pull(address,address,uint128)')));
 
+        dad.permit(tap, jug, bytes4(sha3('heal(address)')));
         dad.permit(tap, pit, bytes4(sha3('mint(address,uint128)')));
         dad.permit(tap, pit, bytes4(sha3('burn(address,uint128)')));
         dad.permit(tap, pit, bytes4(sha3('push(address,address,uint128)')));
         dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint128)')));
 
+        dad.permit(top, jug, bytes4(sha3('heal(address)')));
         dad.permit(top, pit, bytes4(sha3('burn(address)')));
         dad.permit(top, pit, bytes4(sha3('push(address,address,uint128)')));
         dad.permit(top, pit, bytes4(sha3('pull(address,address,uint128)')));
