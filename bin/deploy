@@ -8,61 +8,99 @@ dapp build
 
 export SETH_ASYNC=yes
 
-SAItx=$(dapp create DSToken 'SAI' 'SAI' 18)
-SINtx=$(dapp create DSToken 'SIN' 'SIN' 18)
-test -z $SAI_GEM && GEMtx=$(dapp create DSToken 'ETH' 'ETH' 18)
+SAItx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SAI')))
+SINtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SIN')))
+test -z $SAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
 test -z $SAI_PIP && PIPtx=$(dapp create DSValue)
-test -z $SAI_MOM && MOMtx=$(dapp create DSRoles)
-SKRtx=$(dapp create DSToken 'SKR' 'SKR' 18)
-LPStx=$(dapp create DSToken 'LPS' 'LPS' 18)
+SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
 POTtx=$(dapp create DSVault)
 PITtx=$(dapp create DSVault)
 TIPtx=$(dapp create Tip)
+LPStx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'LPS')))
+
+DADtx=$(dapp create DSGuard)
+test -z $SAI_MOM && MOMtx=$(dapp create DSRoles)
+
 
 export SETH_ASYNC=no
 
 SAI_SAI=$(seth receipt $SAItx contractAddress)
 SAI_SIN=$(seth receipt $SINtx contractAddress)
-SAI_DEV=$(dapp create SaiJug  $SAI_SAI $SAI_SIN)
+SAI_JUG=$(dapp create SaiJug $SAI_SAI $SAI_SIN)
 SAI_SKR=$(seth receipt $SKRtx contractAddress)
 test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
 test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
 SAI_JAR=$(dapp create SaiJar $SAI_SKR $SAI_GEM $SAI_PIP)
-test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress) && seth send $SAI_MOM "setAuthority(address)" $SAI_MOM
 SAI_POT=$(seth receipt $POTtx contractAddress)
 SAI_PIT=$(seth receipt $PITtx contractAddress)
 SAI_TIP=$(seth receipt $TIPtx contractAddress)
 
-SAI_TUB=$(dapp create Tub $SAI_JAR $SAI_DEV $SAI_POT $SAI_PIT $SAI_TIP)
+SAI_TUB=$(dapp create Tub $SAI_JAR $SAI_JUG $SAI_POT $SAI_PIT $SAI_TIP)
 SAI_TAP=$(dapp create Tap $SAI_TUB $SAI_PIT)
 SAI_TOP=$(dapp create Top $SAI_TUB $SAI_TAP)
 
-SAI_LPS=$(seth receipt $LPStx contractAddress)
-SAI_LPC=$(dapp create SaiLPC $SAI_SAI $SAI_GEM $SAI_PIP $SAI_LPS $SAI_TIP)
+SAI_DAD=$(seth receipt $DADtx contractAddress)
+test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress) && seth send $SAI_MOM "setRootUser(address,bool)" $ETH_FROM true && seth send $SAI_MOM "setAuthority(address)" $SAI_MOM
 
 export SETH_ASYNC=yes
-AUTH1tx=$(seth send $SAI_SKR "setAuthority(address)" $SAI_MOM)
-AUTH2tx=$(seth send $SAI_POT "setAuthority(address)" $SAI_MOM)
-AUTH3tx=$(seth send $SAI_TIP "setAuthority(address)" $SAI_MOM)
-AUTH4tx=$(seth send $SAI_SAI "setAuthority(address)" $SAI_MOM)
-AUTH5tx=$(seth send $SAI_SIN "setAuthority(address)" $SAI_MOM)
-seth send $SAI_TUB "setAuthority(address)" $SAI_MOM
-seth send $SAI_TAP "setAuthority(address)" $SAI_MOM
-seth send $SAI_TOP "setAuthority(address)" $SAI_MOM
-seth send $SAI_JAR "setAuthority(address)" $SAI_MOM
-seth send $SAI_PIT "setAuthority(address)" $SAI_MOM
-seth send $SAI_LPC "setAuthority(address)" $SAI_MOM
-seth send $SAI_MOM "setRootUser(address,bool)" $ETH_FROM true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TUB true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_DEV true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TOP true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_TAP true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_JAR true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_POT true
-seth send $SAI_MOM "setRootUser(address,bool)" $SAI_PIT true
 
-seth send $SAI_LPS "setOwner(address)" $SAI_LPC
-seth send $SAI_DEV "setOwner(address)" $SAI_TUB
+AUTH1tx=$(seth send $SAI_TIP "setAuthority(address)" $SAI_MOM)
+AUTH2tx=$(seth send $SAI_TUB "setAuthority(address)" $SAI_MOM)
+AUTH3tx=$(seth send $SAI_TAP "setAuthority(address)" $SAI_MOM)
+AUTH4tx=$(seth send $SAI_TOP "setAuthority(address)" $SAI_MOM)
+AUTH5tx=$(seth send $SAI_JAR "setAuthority(address)" $SAI_MOM)
+
+AUTH6tx=$(seth send $SAI_POT "setAuthority(address)" $SAI_DAD)
+AUTH7tx=$(seth send $SAI_PIT "setAuthority(address)" $SAI_DAD)
+AUTH8tx=$(seth send $SAI_JUG "setAuthority(address)" $SAI_DAD)
+
+AUTH9tx=$(seth send $SAI_SAI "setAuthority(address)" $SAI_DAD)
+AUTH10tx=$(seth send $SAI_SIN "setAuthority(address)" $SAI_DAD)
+AUTH11tx=$(seth send $SAI_SKR "setAuthority(address)" $SAI_DAD)
+
+seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TUB 2 true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_JAR $(seth calldata 'join(address,uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_JAR $(seth calldata 'exit(address,uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_JAR $(seth calldata 'push(address,address,uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_JAR $(seth calldata 'pull(address,address,uint128)') true
+
+seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TOP 3 true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 3 $SAI_JAR $(seth calldata 'push(address,address,uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 3 $SAI_TUB $(seth calldata 'cage()') true
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'lend(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'mend(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_JUG $(seth --to-bytes32 $(seth calldata 'heal(address)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'mint(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_JUG $(seth --to-bytes32 $(seth calldata 'heal(address)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'mint(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+
 export SETH_ASYNC=no
 
 seth receipt $AUTH1tx
@@ -70,13 +108,28 @@ seth receipt $AUTH2tx
 seth receipt $AUTH3tx
 seth receipt $AUTH4tx
 seth receipt $AUTH5tx
+seth receipt $AUTH6tx
+seth receipt $AUTH7tx
+seth receipt $AUTH8tx
+seth receipt $AUTH9tx
+seth receipt $AUTH10tx
+seth receipt $AUTH11tx
 
 export SETH_ASYNC=yes
-seth send $SAI_SKR "setOwner(address)" $SAI_TUB
-seth send $SAI_POT "setOwner(address)" $SAI_TUB
-seth send $SAI_TIP "setOwner(address)" $SAI_TUB
-seth send $SAI_SAI "setOwner(address)" $SAI_DEV
-seth send $SAI_SIN "setOwner(address)" $SAI_DEV
+
+seth send $SAI_TIP "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_TUB "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_TAP "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_TOP "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_JAR "setOwner(address)" 0x0000000000000000000000000000000000000000
+
+seth send $SAI_POT "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_PIT "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_JUG "setOwner(address)" 0x0000000000000000000000000000000000000000
+
+seth send $SAI_SAI "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_SIN "setOwner(address)" 0x0000000000000000000000000000000000000000
+seth send $SAI_SKR "setOwner(address)" 0x0000000000000000000000000000000000000000
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
@@ -88,18 +141,16 @@ export SAI_GEM=$SAI_GEM
 export SAI_SAI=$SAI_SAI
 export SAI_SIN=$SAI_SIN
 export SAI_SKR=$SAI_SKR
-export SAI_DEV=$SAI_DEV
+export SAI_JUG=$SAI_JUG
 export SAI_POT=$SAI_POT
 export SAI_PIT=$SAI_PIT
 export SAI_TIP=$SAI_TIP
 export SAI_PIP=$SAI_PIP
 export SAI_MOM=$SAI_MOM
-export SAI_LPS=$SAI_LPS
 export SAI_JAR=$SAI_JAR
 export SAI_TUB=$SAI_TUB
 export SAI_TAP=$SAI_TAP
 export SAI_TOP=$SAI_TOP
-export SAI_LPC=$SAI_LPC
 EOF
 
 echo SAI TUB DEPLOYED AT: $SAI_TUB
