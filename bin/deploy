@@ -117,6 +117,7 @@ export SAI_POT=$SAI_POT
 export SAI_PIT=$SAI_PIT
 export SAI_TIP=$SAI_TIP
 export SAI_PIP=$SAI_PIP
+export SAI_DAD=$SAI_DAD
 export SAI_MOM=$SAI_MOM
 export SAI_JAR=$SAI_JAR
 export SAI_TUB=$SAI_TUB
