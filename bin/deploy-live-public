@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -ex
 
 # deploy script for the live and public sai deployment
 
@@ -12,8 +13,7 @@ WETH="0x53eccc9246c1e537d79199d0c7231e425a40f896"
 # kovan medianizer
 MED="0xA944bd4b25C9F186A846fd5668941AA3d3B8425F"
 
-
-TIP=MED GEM=WETH bin/deploy
+SAI_PIP=$MED SAI_GEM=$WETH bin/deploy
 
 CHAIN=$(seth chain)
 
