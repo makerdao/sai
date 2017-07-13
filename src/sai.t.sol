@@ -81,15 +81,15 @@ contract SaiTestBase is DSTest, DSMath {
         skr.setAuthority(dad);
 
 
-        mom.setUserRole(tub, 2, true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("join(address,uint128)")), true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("exit(address,uint128)")), true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("push(address,address,uint128)")), true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("pull(address,address,uint128)")), true);
+        mom.setUserRole(tub, 255, true);
+        mom.setRoleCapability(255, jar, bytes4(sha3("join(address,uint128)")), true);
+        mom.setRoleCapability(255, jar, bytes4(sha3("exit(address,uint128)")), true);
+        mom.setRoleCapability(255, jar, bytes4(sha3("push(address,address,uint128)")), true);
+        mom.setRoleCapability(255, jar, bytes4(sha3("pull(address,address,uint128)")), true);
 
-        mom.setUserRole(top, 3, true);
-        mom.setRoleCapability(3, jar, bytes4(sha3("push(address,address,uint128)")), true);
-        mom.setRoleCapability(3, tub, bytes4(sha3("cage()")), true);
+        mom.setUserRole(top, 254, true);
+        mom.setRoleCapability(254, jar, bytes4(sha3("push(address,address,uint128)")), true);
+        mom.setRoleCapability(254, tub, bytes4(sha3("cage()")), true);
 
 
         dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
@@ -1738,7 +1738,7 @@ contract GapTest is SaiTestBase {
         jar.jump(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
-        jar.join(this, 100 ether);
+        tub.join(100 ether);
         var skr_after = skr.balanceOf(this);
         var gem_after = gem.balanceOf(this);
 
@@ -1748,12 +1748,12 @@ contract GapTest is SaiTestBase {
     }
     function testGapExit() {
         gem.mint(100 ether);
-        jar.join(this, 100 ether);
+        tub.join(100 ether);
 
         jar.jump(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
-        jar.exit(this, 100 ether);
+        tub.exit(100 ether);
         var skr_after = skr.balanceOf(this);
         var gem_after = gem.balanceOf(this);
 
