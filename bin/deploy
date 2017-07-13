@@ -44,6 +44,8 @@ test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress) && seth send 
 
 export SETH_ASYNC=yes
 
+seth send $SAI_TIP "warp(uint64)" 0
+
 seth send $SAI_TIP "setAuthority(address)" $SAI_MOM
 seth send $SAI_TUB "setAuthority(address)" $SAI_MOM
 seth send $SAI_TAP "setAuthority(address)" $SAI_MOM
