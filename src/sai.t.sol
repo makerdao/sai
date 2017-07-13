@@ -147,7 +147,7 @@ contract SaiTestBase is DSTest, DSMath {
         sin.setOwner(0);
         skr.setOwner(0);
     }
-    function setRoles() {
+    function setUserRoles() {
         mom.setRoleCapability(1, tub, bytes4(sha3("join(uint128)")), true);
         mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint128)")), true);
         mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
@@ -177,6 +177,19 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setPublicCapability(tap, bytes4(sha3("bust(uint128)")), true);
         mom.setPublicCapability(top, bytes4(sha3("cash()")), true);
     }
+    function setAdminRoles() {
+        mom.setRoleCapability(2, tub, bytes4(sha3("chop(uint128)")), true);
+        mom.setRoleCapability(2, tub, bytes4(sha3("cork(uint128)")), true);
+        mom.setRoleCapability(2, tub, bytes4(sha3("cuff(uint128)")), true);
+        mom.setRoleCapability(2, tub, bytes4(sha3("crop(uint128)")), true);
+        mom.setRoleCapability(2, tip, bytes4(sha3("coax(uint128)")), true);
+
+        mom.setRoleCapability(2, tap, bytes4(sha3("jump(uint128)")), true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("jump(uint128)")), true);
+
+        mom.setRoleCapability(2, top, bytes4(sha3("cage(uint128)")), true);
+        mom.setRoleCapability(2, top, bytes4(sha3("cage()")), true);
+    }
 
     function setUp() {
         gem = new DSToken("GEM");
@@ -204,12 +217,13 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad = new DSGuard();
         mom = new DSRoles();
-        // test runner is already the owner of mom, but also need root
-        // user to allow calling anything on anything
-        mom.setRootUser(this, true);
 
         configureAuth();
-        setRoles();
+        setUserRoles();
+        setAdminRoles();
+
+        mom.setUserRole(this, 1, true);  // user
+        mom.setUserRole(this, 2, true);  // admin
 
         gem.approve(jar, 100000 ether);
         skr.approve(jar, 100000 ether);
