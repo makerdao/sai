@@ -1046,6 +1046,59 @@ contract CageTest is SaiTestBase {
 
         person.cash();
     }
+
+    function testCageExitAfterPeriod() {
+        var cup = cageSetup();
+        tub.cuff(ray(1 ether));  // 100% collat limit
+        tub.free(cup, 5 ether);  // 100% collat
+
+        assertEq(uint(tub.caged()), 0);
+        top.cage();
+        assertEq(uint(tub.caged()), tip.era());
+
+        // exit fails because ice != 0 && fog !=0 and not enough time passed
+        assert(!tub.call(bytes4(sha3('exit(uint128)')), 5 ether));
+
+        tip.warp(6 hours);
+        assert(!tub.call(bytes4(sha3('exit(uint128)')), 5 ether));
+
+        tip.warp(1 seconds);
+        assertEq(skr.balanceOf(this), 5 ether);
+        assertEq(gem.balanceOf(this), 90 ether);
+        assert(tub.call(bytes4(sha3('exit(uint128)')), 4 ether));
+        assertEq(skr.balanceOf(this), 1 ether);
+        // n.b. we don't get back 4 as there is still skr in the cup
+        assertEq(gem.balanceOf(this), 92 ether);
+
+        // now we can cash in our sai
+        assertEq(sai.balanceOf(this), 5 ether);
+        top.cash();
+        assertEq(sai.balanceOf(this), 0 ether);
+        assertEq(gem.balanceOf(this), 97 ether);
+
+        // the remaining gem can be claimed only if the cup skr is burned
+        assertEqWad(tub.air(), 5 ether);
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tub.ice(), 5 ether);
+        assertEqWad(tap.woe(), 0 ether);
+        tub.bite(cup);
+        assertEqWad(tub.air(), 0 ether);
+        assertEqWad(tap.fog(), 5 ether);
+        assertEqWad(tub.ice(), 0 ether);
+        assertEqWad(tap.woe(), 5 ether);
+
+        top.vent();
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tap.woe(), 0 ether);
+
+        // now this remaining 1 skr will claim all the remaining 3 ether.
+        // this is why exiting early is bad if you want to maximise returns.
+        // if we had exited with all the skr earlier, there would be 2.5 gem
+        // trapped in the jar.
+        tub.exit(1 ether);
+        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(gem.balanceOf(this), 100 ether);
+    }
 }
 
 contract LiquidationTest is SaiTestBase {

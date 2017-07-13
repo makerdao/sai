@@ -165,8 +165,9 @@ contract Tub is DSThing, TubEvents {
         jar.join(msg.sender, jam);
     }
     function exit(uint128 ink) note auth {
-        assert(reg == Stage.Usual
-            || reg == Stage.Caged && ice() == 0 && skr.balanceOf(pit) == 0 );
+        var empty = ice() == 0 && skr.balanceOf(pit) == 0;
+        var ended = tip.era() > caged + 6 hours;
+        assert(reg == Stage.Usual || reg == Stage.Caged && (empty || ended));
         jar.exit(msg.sender, ink);
     }
 
@@ -256,9 +257,12 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
+    uint64 public caged;
+
     function cage() note auth {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
         fit = jar.tag();
+        caged = tip.era();
     }
 }
