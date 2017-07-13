@@ -63,73 +63,6 @@ contract SaiTestBase is DSTest, DSMath {
         tag.poke(bytes32(price));
     }
 
-    function setRoles() {
-        mom.setRoleCapability(1, tub, bytes4(sha3("join(uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("shut(bytes32)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("lock(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("free(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("draw(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("wipe(bytes32,uint128)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("give(bytes32,address)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("bite(bytes32)")), true);
-        mom.setRoleCapability(1, tap, bytes4(sha3("boom(uint128)")), true);
-        mom.setRoleCapability(1, tap, bytes4(sha3("bust(uint128)")), true);
-        mom.setRoleCapability(1, top, bytes4(sha3("cash()")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("bail(bytes32)")), true);
-    }
-
-    function setUp() {
-        gem = new DSToken("GEM");
-        gem.mint(100 ether);
-
-        sai = new DSToken("SAI");
-        sin = new DSToken("SIN");
-        jug = new SaiJug (sai, sin);
-
-        skr = new DSToken("SKR");
-        pot = new DSVault();
-        pit = new DSVault();
-
-        tmp = new DSVault();  // somewhere to hide tokens for testing
-
-        tag = new DSValue();
-        tip = new Tip();
-
-        jar = new SaiJar(skr, gem, tag);
-
-        tub = new Tub(jar, jug, pot, pit, tip);
-
-        tap = new Tap(tub, pit);
-        top = new Top(tub, tap);
-
-        dad = new DSGuard();
-        mom = new DSRoles();
-        // test runner is already the owner of mom, but also need root
-        // user to allow calling anything on anything
-        mom.setRootUser(this, true);
-
-        configureAuth();
-        setRoles();
-
-        gem.approve(jar, 100000 ether);
-        skr.approve(jar, 100000 ether);
-        sai.approve(top, 100000 ether);
-
-        sai.approve(pot, 100000 ether);
-        skr.approve(jar, 100000 ether);
-
-        sai.approve(pit, 100000 ether);
-        skr.approve(pit, 100000 ether);
-
-        sai.approve(tmp, 100000 ether);
-        skr.approve(tmp, 100000 ether);
-
-        tag.poke(bytes32(1 ether));
-
-        tub.cork(20 ether);
-    }
     function configureAuth() {
         // user facing, use ds-roles
         tip.setAuthority(mom);
@@ -213,6 +146,87 @@ contract SaiTestBase is DSTest, DSMath {
         sai.setOwner(0);
         sin.setOwner(0);
         skr.setOwner(0);
+    }
+    function setRoles() {
+        mom.setRoleCapability(1, tub, bytes4(sha3("join(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("shut(bytes32)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("lock(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("free(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("draw(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("wipe(bytes32,uint128)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("give(bytes32,address)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("bite(bytes32)")), true);
+        mom.setRoleCapability(1, tap, bytes4(sha3("boom(uint128)")), true);
+        mom.setRoleCapability(1, tap, bytes4(sha3("bust(uint128)")), true);
+        mom.setRoleCapability(1, top, bytes4(sha3("cash()")), true);
+    }
+    function setPublicRoles() {
+        mom.setPublicCapability(tub, bytes4(sha3("join(uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("exit(uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("open()")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("shut(bytes32)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("lock(bytes32,uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("free(bytes32,uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("draw(bytes32,uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("wipe(bytes32,uint128)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("give(bytes32,address)")), true);
+        mom.setPublicCapability(tub, bytes4(sha3("bite(bytes32)")), true);
+        mom.setPublicCapability(tap, bytes4(sha3("boom(uint128)")), true);
+        mom.setPublicCapability(tap, bytes4(sha3("bust(uint128)")), true);
+        mom.setPublicCapability(top, bytes4(sha3("cash()")), true);
+    }
+
+    function setUp() {
+        gem = new DSToken("GEM");
+        gem.mint(100 ether);
+
+        sai = new DSToken("SAI");
+        sin = new DSToken("SIN");
+        jug = new SaiJug (sai, sin);
+
+        skr = new DSToken("SKR");
+        pot = new DSVault();
+        pit = new DSVault();
+
+        tmp = new DSVault();  // somewhere to hide tokens for testing
+
+        tag = new DSValue();
+        tip = new Tip();
+
+        jar = new SaiJar(skr, gem, tag);
+
+        tub = new Tub(jar, jug, pot, pit, tip);
+
+        tap = new Tap(tub, pit);
+        top = new Top(tub, tap);
+
+        dad = new DSGuard();
+        mom = new DSRoles();
+        // test runner is already the owner of mom, but also need root
+        // user to allow calling anything on anything
+        mom.setRootUser(this, true);
+
+        configureAuth();
+        setRoles();
+
+        gem.approve(jar, 100000 ether);
+        skr.approve(jar, 100000 ether);
+        sai.approve(top, 100000 ether);
+
+        sai.approve(pot, 100000 ether);
+        skr.approve(jar, 100000 ether);
+
+        sai.approve(pit, 100000 ether);
+        skr.approve(pit, 100000 ether);
+
+        sai.approve(tmp, 100000 ether);
+        skr.approve(tmp, 100000 ether);
+
+        tag.poke(bytes32(1 ether));
+
+        tub.cork(20 ether);
     }
 }
 
