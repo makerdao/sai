@@ -51,7 +51,7 @@ contract Tap is DSThing {
         return wdiv(tag, par);
     }
 
-    function jump(uint128 wad) auth note {
+    function jump(uint128 wad) note auth {
         gap = wad;
         assert(gap <= 1.05 ether);
         assert(gap >= 0.95 ether);
@@ -67,7 +67,7 @@ contract Tap is DSThing {
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint128 wad) auth note {
+    function boom(uint128 wad) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
         jug.heal(pit);
@@ -80,7 +80,7 @@ contract Tap is DSThing {
         pit.burn(skr, wad);
         pit.push(sai, msg.sender, ret);
     }
-    function bust(uint128 wad) auth note {
+    function bust(uint128 wad) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();
         jug.heal(pit);
