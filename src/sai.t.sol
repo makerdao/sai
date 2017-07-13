@@ -1682,6 +1682,7 @@ contract GapTest is SaiTestBase {
 }
 
 contract GasTest is SaiTestBase {
+    bytes32 cup;
     function setUp() {
         super.setUp();
 
@@ -1690,16 +1691,28 @@ contract GasTest is SaiTestBase {
 
         tub.cork(1000 ether);
 
-        var cup = tub.open();
-        tub.join(100 ether);
-        tub.lock(cup, 100 ether);
+        cup = tub.open();
+        tub.join(1000 ether);
+        tub.lock(cup, 500 ether);
         tub.draw(cup, 100 ether);
+    }
+    function doLock(uint128 wad) logs_gas {
+        tub.lock(cup, wad);
+    }
+    function doDraw(uint128 wad) logs_gas {
+        tub.draw(cup, wad);
     }
     function doDrip() logs_gas {
         tub.drip();
     }
     function doBoom(uint128 wad) logs_gas {
         tap.boom(wad);
+    }
+    function testGasLock() {
+        doLock(100 ether);
+    }
+    function testGasDraw() {
+        doDraw(100 ether);
     }
     function testGasDrip() {
         tip.warp(1);
