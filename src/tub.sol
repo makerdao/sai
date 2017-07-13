@@ -122,7 +122,7 @@ contract Tub is DSThing, TubEvents {
         return _chi;
     }
     function drip() note {
-        if (reg != Stage.Usual) return;  // noop if system caged
+        return;  // noop XXX FIXME: (optimisation for tax=1)
 
         var age = tip.era() - rho;
         var chi = rmul(_chi, rpow(tax, age));
