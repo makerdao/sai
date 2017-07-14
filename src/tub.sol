@@ -166,7 +166,7 @@ contract Tub is DSThing, TubEvents {
     }
     function exit(uint128 ink) note auth {
         var empty = ice() == 0 && skr.balanceOf(pit) == 0;
-        var ended = tip.era() > caged + 6 hours;
+        var ended = tip.era() > caged + cooldown;
         assert(reg == Stage.Usual || reg == Stage.Caged && (empty || ended));
         jar.exit(msg.sender, ink);
     }
@@ -258,6 +258,11 @@ contract Tub is DSThing, TubEvents {
     //------------------------------------------------------------------
 
     uint64 public caged;
+    uint64 public cooldown = 6 hours;
+
+    function setCooldown(uint64 cooldown_) note auth {
+        cooldown = cooldown_;
+    }
 
     function cage() note auth {
         assert(reg == Stage.Usual);

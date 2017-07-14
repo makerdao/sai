@@ -184,6 +184,8 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(2, tub, bytes4(sha3("crop(uint128)")), true);
         mom.setRoleCapability(2, tip, bytes4(sha3("coax(uint128)")), true);
 
+        mom.setRoleCapability(2, tub, bytes4(sha3("setCooldown(uint64)")), true);
+
         mom.setRoleCapability(2, tap, bytes4(sha3("jump(uint128)")), true);
         mom.setRoleCapability(2, jar, bytes4(sha3("jump(uint128)")), true);
 
@@ -1087,7 +1089,8 @@ contract CageTest is SaiTestBase {
         // exit fails because ice != 0 && fog !=0 and not enough time passed
         assert(!tub.call(bytes4(sha3('exit(uint128)')), 5 ether));
 
-        tip.warp(6 hours);
+        tub.setCooldown(1 days);
+        tip.warp(1 days);
         assert(!tub.call(bytes4(sha3('exit(uint128)')), 5 ether));
 
         tip.warp(1 seconds);
