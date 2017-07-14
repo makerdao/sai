@@ -26,15 +26,3 @@ CHAIN=$(seth chain)
 sai cuff 1.50
 sai chop 1.20
 sai cork 100000000.00
-
-
-##### configure auth
-
-# TODO: deploy multisig
-SAI_MULTISIG="0x4f26ffbe5f04ed43630fdc30a87638d53d0b0876"
-
-# pass cage(), cage(price), tap.jump ctrl to multisig
-seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_MULTISIG 2 true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TOP $(seth calldata 'cage(uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TOP $(seth calldata 'cage()') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TAP $(seth calldata 'jump(uint128)') true
