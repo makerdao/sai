@@ -13,7 +13,7 @@ contract Top is DSThing {
     Tub      public  tub;
     Tap      public  tap;
 
-    DSVault  public  jar;
+    SaiJar   public  jar;
     DSVault  public  pot;
     DSVault  public  pit;
 
@@ -47,7 +47,9 @@ contract Top is DSThing {
     function cage(uint128 price) note auth {
         assert(tub.reg() == Tub.Stage.Usual);
         tub.drip();  // collect remaining fees
-        tub.cage();
+
+        var fit = rmul(wmul(price, tub.tip().par()), jar.per());  // ref per skr
+        tub.cage(fit);
 
         // cast up to ray for precision
         price = price * (RAY / WAD);
@@ -66,9 +68,9 @@ contract Top is DSThing {
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        var tag = uint128(tub.jar().pip().read());
-        var par = tub.tip().par();
-        var price = wdiv(tag, par);
+        var pip = uint128(tub.jar().pip().read()); // ref per gem
+        var par = tub.tip().par();                 // ref per sai
+        var price = wdiv(pip, par);                // sai per gem
         cage(price);
     }
     // exchange free sai for gems after kill

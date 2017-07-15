@@ -68,7 +68,7 @@ seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $
 
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TOP 254 true
 seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_JAR $(seth calldata 'push(address,address,uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_TUB $(seth calldata 'cage()') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_TUB $(seth calldata 'cage(uint128)') true
 
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'lend(address,uint128)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'mend(address,uint128)'))

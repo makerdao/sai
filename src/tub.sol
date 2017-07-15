@@ -245,8 +245,8 @@ contract Tub is DSThing, TubEvents {
         cups[cup].art = 0;
 
         // axe the collateral
-        var owe = rmul(rue, axe);                    // amount owed inc. penalty
-        var cab = wdiv(wmul(owe, tip.par()), tag());     // equivalent in skr
+        var owe = rmul(rue, axe);                    // amount owed w/ penalty
+        var cab = wdiv(wmul(owe, tip.par()), tag()); // equivalent in skr
         var ink = cups[cup].ink;                     // available skr
 
         if (ink < cab) cab = ink;                    // take at most all the skr
@@ -264,10 +264,10 @@ contract Tub is DSThing, TubEvents {
         cooldown = cooldown_;
     }
 
-    function cage() note auth {
+    function cage(uint128 fit_) note auth {
         assert(reg == Stage.Usual);
         reg = Stage.Caged;
-        fit = jar.tag();
+        fit = fit_;         // ref per skr
         caged = tip.era();
     }
 }

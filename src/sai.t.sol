@@ -89,7 +89,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         mom.setUserRole(top, 254, true);
         mom.setRoleCapability(254, jar, bytes4(sha3("push(address,address,uint128)")), true);
-        mom.setRoleCapability(254, tub, bytes4(sha3("cage()")), true);
+        mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint128)")), true);
 
 
         dad.permit(tub, jug, bytes4(sha3('lend(address,uint128)')));
