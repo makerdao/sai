@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -ex
 
+# ethlive multisig
+SAI_MULTISIG=0xee62d2a0420a1a5322fb590340d44e4b93eb96da
 # kovan multisig
-SAI_MULTISIG="0xf24888d405776cc56d29e70448172380708bb7a5"
+# SAI_MULTISIG="0xf24888d405776cc56d29e70448172380708bb7a5"
 
 # pass cage(), cage(price), tap.jump ctrl to multisig
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_MULTISIG 2 true
