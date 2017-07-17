@@ -44,11 +44,11 @@ contract Tap is DSThing {
         return uint128(skr.balanceOf(pit));
     }
 
-    // skr per sai
+    // sai per skr
     function s2s() returns (uint128) {
-        var tag = tub.jar().tag();
-        var par = tub.tip().par();
-        return wdiv(tag, par);
+        var tag = tub.jar().tag();  // ref per skr
+        var par = tub.tip().par();  // ref per sai
+        return wdiv(tag, par);      // sai per skr
     }
 
     function jump(uint128 wad) note auth {
