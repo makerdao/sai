@@ -3,15 +3,19 @@ set -ex
 
 # deploy script for the live and public sai deployment
 
-# mainnet w-eth
-WETH="0xECF8F87f810EcF450940c9f60066b4a7a501d6A7"
-# kovan w-eth
-# WETH="0x53eccc9246c1e537d79199d0c7231e425a40f896"
+CHAIN=$(seth chain)
 
-# mainnet medianizer
-MED="0x729D19f657BD0614b4985Cf1D82531c67569197B"
-# kovan medianizer
-# MED="0xA944bd4b25C9F186A846fd5668941AA3d3B8425F"
+if [ "$CHAIN" = 'kovan' ]; then
+    echo "Deploying to kovan..."
+    WETH="0x53eccc9246c1e537d79199d0c7231e425a40f896"
+    MED="0xA944bd4b25C9F186A846fd5668941AA3d3B8425F"
+elif [ "$CHAIN" = 'ethlive' ]; then
+    echo "Deploying to ethlive..."
+    WETH="0xECF8F87f810EcF450940c9f60066b4a7a501d6A7"
+    MED="0x729D19f657BD0614b4985Cf1D82531c67569197B"
+else
+    exit
+fi
 
 SAI_PIP=$MED SAI_GEM=$WETH bin/deploy
 

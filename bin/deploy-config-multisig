@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 set -ex
 
-# ethlive multisig
-SAI_MULTISIG="0x2305576962e33102b01d8f3dfda2fa640137b15e"
-# kovan multisig
-# SAI_MULTISIG="0xf24888d405776cc56d29e70448172380708bb7a5"
+if [ "$CHAIN" = 'kovan' ]; then
+    echo "Configuring multisig on kovan..."
+    SAI_MULTISIG="0xf24888d405776cc56d29e70448172380708bb7a5"
+elif [ "$CHAIN" = 'ethlive' ]; then
+    echo "Configuring multisig on ethlive..."
+    SAI_MULTISIG="0x2305576962e33102b01d8f3dfda2fa640137b15e"
+else
+    exit
+fi
 
 # pass cage(), cage(price), tap.jump ctrl to multisig
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_MULTISIG 2 true
