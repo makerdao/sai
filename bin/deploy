@@ -16,7 +16,6 @@ SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
 POTtx=$(dapp create DSVault)
 PITtx=$(dapp create DSVault)
 TIPtx=$(dapp create Tip)
-LPStx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'LPS')))
 
 DADtx=$(dapp create DSGuard)
 test -z $SAI_MOM && MOMtx=$(dapp create DSRoles)
