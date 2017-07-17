@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+CHAIN=$(seth chain)
+
 if [ "$CHAIN" = 'kovan' ]; then
     echo "Configuring multisig on kovan..."
     SAI_MULTISIG="0xf24888d405776cc56d29e70448172380708bb7a5"
