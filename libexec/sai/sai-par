@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-### sai-par -- get the accrued holder fee
+### sai-par -- get the accrued holder fee (ref per sai)
 set -e
 tip=$(seth call "${SAI_TUB?}" 'tip()')
 tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"

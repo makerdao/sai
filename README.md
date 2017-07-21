@@ -83,7 +83,7 @@ Read commands:
    jug             get the sai / sin tracker
    lad             get the owner of a cup
    mat             get the liquidation ratio
-   par             get the accrued holder fee
+   par             get the accrued holder fee (ref per sai)
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
    pip             get the gem price feed
