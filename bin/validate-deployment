@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -ex
+trap "VALIDATION FAILED" ERR
+
+export SAI_TUB=0xe819300b6f3d0625632b47196233fe6671a59891
+export SAI_TAP=0x897c798c096d44e511a275153da9de6139ebc249
+export SAI_TOP=0x92bfd0e786e284429c96cf6a6e4a3ecf46fb3e9a
+export SAI_MULTISIG=0x2305576962e33102b01d8f3dfda2fa640137b15e
+
+# risk parameters
+test $(sai hat)     = $(sai wad -h 5000000.0)
+test $(sai mat)     = $(sai ray -h 1.50)
+test $(sai axe)     = $(sai ray -h 1.20)
+test $(sai tax)     = $(sai ray -h 1.0)
+test $(sai tap gap) = $(sai wad -h 0.95)
+test $(sai jar gap) = $(sai wad -h 1.0)
+test $(sai way)     = $(sai ray -h 1.0)
+
+# multisig members
+test $(seth call $SAI_MULTISIG 'memberCount()(uint256)') -eq 6
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "4f26ffbe5f04ed43630fdc30a87638d53d0b0876") = true
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "855Be87Fe5DDeA2761dbD97f1a4e857Aa00a15FD") = true
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "c9107bd75a6971d9beaba390a28ab9bb30adc9bc") = true
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "6ea073f4de9cd42955539033091ae587c06a882c") = true
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "dB33dFD3D61308C33C63209845DaD3e6bfb2c674") = true
+test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "61Bf84D5aB026F58c873F86Ff0DFcA82b55733Ae") = true
+
+# multisig permissions
+export SAI_MOM=$(seth call ${SAI_TOP} 'authority()(address)')
+test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TAP $(seth calldata 'jump(uint128)')) = true
+test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TOP $(seth calldata 'cage(uint128)')) = true
+test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TOP $(seth calldata 'cage()')) = true
+
+echo "VALIDATION OK"
