@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 set -ex
-trap "VALIDATION FAILED" ERR
+trap 'echo "VALIDATION FAILED"' ERR
 
 export SAI_TUB=0xe819300b6f3d0625632b47196233fe6671a59891
 export SAI_TAP=0x897c798c096d44e511a275153da9de6139ebc249
 export SAI_TOP=0x92bfd0e786e284429c96cf6a6e4a3ecf46fb3e9a
 export SAI_MULTISIG=0x2305576962e33102b01d8f3dfda2fa640137b15e
+
+# feed oracle
+test $(sai pip)     = 0x729d19f657bd0614b4985cf1d82531c67569197b
 
 # risk parameters
 test $(sai hat)     = $(sai wad -h 5000000.0)
