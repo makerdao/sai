@@ -85,13 +85,11 @@ contract Tap is DSThing {
         tub.drip();
         jug.heal(pit);
 
-        uint128 ash;
+        uint128 ash = wmul(ask(), wad);
+
         if (wad > fog()) {
             pit.mint(skr, wad - fog());
-            ash = wmul(ask(), wad);
             assert(ash <= woe());
-        } else {
-            ash = wmul(ask(), wad);
         }
 
         pit.push(skr, msg.sender, wad);

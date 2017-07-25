@@ -1314,9 +1314,9 @@ contract LiquidationTest is SaiTestBase {
 
         tub.draw(cup, 50 ether);  // 200% collat
         tub.draw(mug, 40 ether);  // 250% collat
-        tub.draw(tin, 19 ether);  // 421% collat
+        tub.draw(tin, 19 ether);  // 526% collat
 
-        mark(4 ether);  // cup 80%, mug 100%, tin 200%
+        mark(4 ether);  // cup 80%, mug 100%, tin 211%
         tub.bite(cup);
 
         // inflation happens when the confiscated skr can no longer
@@ -1333,18 +1333,29 @@ contract LiquidationTest is SaiTestBase {
         // price still 1
         assertEqWad(tub.jar().per(), ray(1 ether));
 
-        // now force some minting, which flips the tin to unsafe
+        // now force some minting, which affects per() and flips the tin to unsafe
         assert(tub.safe(tin));
         tap.bust(wdiv(5 ether, 2 ether));
         assert(!tub.safe(tin));
 
-        assertEqWad(tap.woe(), 0);
         assertEqWad(tub.jar().per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
+        assertEqWad(tap.woe(), 0 ether);
 
-        // mug is now under parity as well
+        // mug is also under parity as a result of the SKR minting
         tub.bite(mug);
+        assertEqWad(tap.fog(), 10 ether);
+        assertEqWad(tap.woe(), 40 ether);
         tap.bust(tap.fog());
-        tap.bust(wdiv(tap.woe(), wmul(tub.jar().per(), jar.tag())));
+
+        // bust pulls less Sai than was recovered leaving a small woe balance after mend
+        assertEqWad(tap.fog(), 0 ether);
+        assertEqWad(tap.woe(), wsub(40 ether, wmul(10 ether, jar.tag()))); // 2.3
+
+        // buy up remaining debt
+        tap.bust(wdiv(tap.woe(), jar.tag()));
+
+        assertEqWad(tap.fog(), 0);
+        assertEqWad(tap.woe(), 1); // rounding error - should be zero
 
         tub.bite(tin);
 
