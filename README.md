@@ -83,6 +83,7 @@ Read commands:
    jug             get the sai / sin tracker
    lad             get the owner of a cup
    mat             get the liquidation ratio
+   off             get the cage flag
    par             get the accrued holder fee (ref per sai)
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
@@ -90,7 +91,6 @@ Read commands:
    pit             get the liquidator vault
    pot             get the good debt vault
    ray             parse and display a 27-decimal fixed-point number
-   reg             get the tub stage ('register')
    rho             get the time of last drip
    s2s             get the skr per sai rate (for boom and bust)
    sai             get the sai token

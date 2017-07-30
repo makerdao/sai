@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### sai-off -- get the cage flag
+set -e
+seth call "${SAI_TUB?}" "off()(bool)"

@@ -60,7 +60,7 @@ contract LPCTest is DSTest, DSMath {
         pip = new DSValue();
         pip.poke(bytes32(2 ether)); // 2 refs per gem
 
-        var gap = 1.04 ether;
+        uint128 gap = 1.04 ether;
 
         tip = new Tip();
 

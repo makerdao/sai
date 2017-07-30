@@ -68,7 +68,7 @@ contract Tap is DSThing {
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint128 wad) note auth {
-        assert(tub.reg() == Tub.Stage.Usual);
+        assert(!tub.off());
         tub.drip();
         jug.heal(pit);
 
@@ -81,7 +81,7 @@ contract Tap is DSThing {
         pit.push(sai, msg.sender, ret);
     }
     function bust(uint128 wad) note auth {
-        assert(tub.reg() == Tub.Stage.Usual);
+        assert(!tub.off());
         tub.drip();
         jug.heal(pit);
 
