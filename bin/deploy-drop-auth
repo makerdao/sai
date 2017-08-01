@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -x
+set -ex
 
 # drop ownership of a deployed system
 
@@ -19,6 +19,9 @@ $SAI_TUB
 $SAI_TAP
 $SAI_TOP
 "
+
+seth send $SAI_MOM 'setRootUser(address,bool)' $ETH_FROM false
+test $(seth call $SAI_MOM 'isUserRoot(address)(bool)' $ETH_FROM) = false
 
 for object in $objects; do
     seth send $object 'setOwner(address)' $null
