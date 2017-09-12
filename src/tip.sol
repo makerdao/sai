@@ -31,7 +31,7 @@ contract SaiTip is DSThing, DSWarp {
         return _par;
     }
     function prod() note {
-        var age = era() - tau;
+        var age = sub(era(), tau);
         _par = rmul(_par, rpow(way, age));
         tau = era();
     }

@@ -55,10 +55,6 @@ contract SaiTestBase is DSTest, DSMath {
         return wad * 10 ** 9;
     }
 
-    function assertEqWad(uint256 x, uint256 y) {
-        assertEq(uint256(x), uint256(y));
-    }
-
     function mark(uint256 price) {
         tag.poke(bytes32(price));
     }
@@ -448,19 +444,19 @@ contract CageTest is SaiTestBase {
     function testCageSafeOverCollat() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tap.woe(), 0);         // no bad debt
-        assertEqWad(tub.pie(), 10 ether);
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tap.woe(), 0);         // no bad debt
+        assertEq(tub.pie(), 10 ether);
 
         tub.join(20 ether);   // give us some more skr
         mark(1 ether);
         top.cage();
 
         var woe = sin.balanceOf(pot);
-        assertEqWad(woe, 5 ether);       // all good debt now bad debt
-        assertEqWad(top.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEqWad(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(woe, 5 ether);       // all good debt now bad debt
+        assertEq(top.fix(), ray(1 ether));       // sai redeems 1:1 with gem
+        assertEq(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to pot
 
         assertEq(gem.balanceOf(pit),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(jar), 25 ether);  // saved for skr
@@ -468,17 +464,17 @@ contract CageTest is SaiTestBase {
     function testCageUnsafeOverCollat() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tub.jar().per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
         mark(price);
         top.cage();        // 150% collat
 
-        assertEqWad(top.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEqWad(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(top.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
+        assertEq(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to pot
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -488,53 +484,53 @@ contract CageTest is SaiTestBase {
     function testCageAtCollat() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tub.jar().per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
 
-        assertEqWad(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
+        assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
+        assertEq(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
     }
     function testCageAtCollatFreeSkr() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tub.jar().per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
 
-        assertEqWad(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEqWad(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
+        assertEq(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to pot
     }
     function testCageUnderCollat() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tub.jar().per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         mark(price);
         top.cage();
 
         assertEq(2 * sai.totalSupply(), gem.balanceOf(pit));
-        assertEqWad(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 2:1 with ref
-        assertEqWad(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
+        assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 2:1 with ref
+        assertEq(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
     }
     function testCageUnderCollatFreeSkr() {
         cageSetup();
 
-        assertEqWad(top.fix(), 0);
-        assertEqWad(tub.fit(), 0);
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(top.fix(), 0);
+        assertEq(tub.fit(), 0);
+        assertEq(tub.jar().per(), ray(1 ether));
 
         tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
@@ -542,7 +538,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(4 * sai.totalSupply(), gem.balanceOf(pit));
-        assertEqWad(top.fix(), ray(4 ether));                 // sai redeems 1:4 with gem, 1:1 with ref
+        assertEq(top.fix(), ray(4 ether));                 // sai redeems 1:4 with gem, 1:1 with ref
     }
 
     // ensure cash returns the expected amount
@@ -563,9 +559,9 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(this),  95 ether);
         assertEq(gem.balanceOf(jar),    5 ether);
 
-        assertEqWad(tub.ink(cup), 10 ether);
+        assertEq(tub.ink(cup), 10 ether);
         tub.bite(cup);
-        assertEqWad(tub.ink(cup), 5 ether);
+        assertEq(tub.ink(cup), 5 ether);
         tub.free(cup, tub.ink(cup));
         assertEq(skr.balanceOf(this),   5 ether);
         top.vent();
@@ -1108,19 +1104,19 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(this), 97 ether);
 
         // the remaining gem can be claimed only if the cup skr is burned
-        assertEqWad(tub.air(), 5 ether);
-        assertEqWad(tap.fog(), 0 ether);
-        assertEqWad(tub.ice(), 5 ether);
-        assertEqWad(tap.woe(), 0 ether);
+        assertEq(tub.air(), 5 ether);
+        assertEq(tap.fog(), 0 ether);
+        assertEq(tub.ice(), 5 ether);
+        assertEq(tap.woe(), 0 ether);
         tub.bite(cup);
-        assertEqWad(tub.air(), 0 ether);
-        assertEqWad(tap.fog(), 5 ether);
-        assertEqWad(tub.ice(), 0 ether);
-        assertEqWad(tap.woe(), 5 ether);
+        assertEq(tub.air(), 0 ether);
+        assertEq(tap.fog(), 5 ether);
+        assertEq(tub.ice(), 0 ether);
+        assertEq(tap.woe(), 5 ether);
 
         top.vent();
-        assertEqWad(tap.fog(), 0 ether);
-        assertEqWad(tap.woe(), 0 ether);
+        assertEq(tap.fog(), 0 ether);
+        assertEq(tap.woe(), 0 ether);
 
         // now this remaining 1 skr will claim all the remaining 3 ether.
         // this is why exiting early is bad if you want to maximise returns.
@@ -1150,22 +1146,22 @@ contract LiquidationTest is SaiTestBase {
         tub.draw(cup, 10 ether);        // 200% collateralisation
 
         tub.cuff(ray(1 ether));         // require 100% collateralisation
-        assertEqWad(liq(cup), 1 ether);
+        assertEq(liq(cup), 1 ether);
 
         tub.cuff(ray(3 ether / 2));     // require 150% collateralisation
-        assertEqWad(liq(cup), wdiv(3 ether, 2 ether));
+        assertEq(liq(cup), wdiv(3 ether, 2 ether));
 
         mark(6 ether);
-        assertEqWad(liq(cup), wdiv(3 ether, 2 ether));
+        assertEq(liq(cup), wdiv(3 ether, 2 ether));
 
         tub.draw(cup, 30 ether);
-        assertEqWad(liq(cup), 6 ether);
+        assertEq(liq(cup), 6 ether);
 
         tub.join(10 ether);
-        assertEqWad(liq(cup), 6 ether);
+        assertEq(liq(cup), 6 ether);
 
         tub.lock(cup, 10 ether);  // now 40 drawn on 20 gem == 120 ref
-        assertEqWad(liq(cup), 3 ether);
+        assertEq(liq(cup), 3 ether);
     }
     function collat(bytes32 cup) returns (uint256) {
         // compute the collateralised fraction of a cup
@@ -1182,23 +1178,23 @@ contract LiquidationTest is SaiTestBase {
         tub.lock(cup, 10 ether);
         tub.draw(cup, 10 ether);
 
-        assertEqWad(collat(cup), 2 ether);  // 200%
+        assertEq(collat(cup), 2 ether);  // 200%
 
         mark(4 ether);
-        assertEqWad(collat(cup), 4 ether);  // 400%
+        assertEq(collat(cup), 4 ether);  // 400%
 
         tub.draw(cup, 15 ether);
-        assertEqWad(collat(cup), wdiv(8 ether, 5 ether));  // 160%
+        assertEq(collat(cup), wdiv(8 ether, 5 ether));  // 160%
 
         mark(5 ether);
         tub.free(cup, 5 ether);
-        assertEqWad(collat(cup), 1 ether);  // 100%
+        assertEq(collat(cup), 1 ether);  // 100%
 
         mark(4 ether);
-        assertEqWad(collat(cup), wdiv(4 ether, 5 ether));  // 80%
+        assertEq(collat(cup), wdiv(4 ether, 5 ether));  // 80%
 
         tub.wipe(cup, 9 ether);
-        assertEqWad(collat(cup), wdiv(5 ether, 4 ether));  // 125%
+        assertEq(collat(cup), wdiv(5 ether, 4 ether));  // 125%
     }
 
     function testBustMint() {
@@ -1219,10 +1215,10 @@ contract LiquidationTest is SaiTestBase {
         // 20 ref of gem on 16 ref of sai
         // 125%
         // 100% = 16ref of gem == 8 gem
-        assertEqWad(tap.fog(), 8 ether);
+        assertEq(tap.fog(), 8 ether);
 
         // 8 skr for sale
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(tub.jar().per(), ray(1 ether));
 
         // get 2 skr, pay 4 sai (25% of the debt)
         var sai_before = sai.balanceOf(this);
@@ -1240,7 +1236,7 @@ contract LiquidationTest is SaiTestBase {
         // get 6 skr, pay 6 sai
         tap.bust(6 ether);
         // no more skr remaining to sell
-        assertEqWad(tap.fog(), 0);
+        assertEq(tap.fog(), 0);
         // but skr supply unchanged
         assertEq(skr.totalSupply(), 10 ether);
 
@@ -1263,12 +1259,12 @@ contract LiquidationTest is SaiTestBase {
         tub.bite(cup);
 
         // nothing remains in the cup
-        assertEqWad(tub.tab(cup), 0);
-        assertEqWad(tub.ink(cup), 0);
+        assertEq(tub.tab(cup), 0);
+        assertEq(tub.ink(cup), 0);
 
         // all collateral is now fog
-        assertEqWad(tap.fog(), 10 ether);
-        assertEqWad(tap.woe(), 100 ether);
+        assertEq(tap.fog(), 10 ether);
+        assertEq(tap.woe(), 100 ether);
 
         // the fog is worth 150 sai and the woe is worth 100 sai.
         // If all the fog is sold, there will be a sai surplus.
@@ -1282,18 +1278,18 @@ contract LiquidationTest is SaiTestBase {
         tap.bust(10 ether);
         assertEq(sai.balanceOf(this), 0 ether);
         assertEq(skr.balanceOf(this), 10 ether);
-        assertEqWad(tap.fog(), 0 ether);
-        assertEqWad(tap.woe(), 0 ether);
-        assertEqWad(tap.joy(), 50 ether);
+        assertEq(tap.fog(), 0 ether);
+        assertEq(tap.woe(), 0 ether);
+        assertEq(tap.joy(), 50 ether);
 
         // joy is available through boom
-        assertEqWad(tap.bid(), 15 ether);
+        assertEq(tap.bid(), 15 ether);
         tap.boom(2 ether);
         assertEq(sai.balanceOf(this), 30 ether);
         assertEq(skr.balanceOf(this),  8 ether);
-        assertEqWad(tap.fog(), 0 ether);
-        assertEqWad(tap.woe(), 0 ether);
-        assertEqWad(tap.joy(), 20 ether);
+        assertEq(tap.fog(), 0 ether);
+        assertEq(tap.woe(), 0 ether);
+        assertEq(tap.joy(), 20 ether);
     }
 
     function testCascade() {
@@ -1325,21 +1321,21 @@ contract LiquidationTest is SaiTestBase {
         // Beyond this price fall, there is inflation.
         // This is an extra justification for axe (beyond penalising bad
         // cup holders).
-        assertEqWad(tap.fog(), 10 ether);
-        assertEqWad(tap.woe(), 50 ether);
+        assertEq(tap.fog(), 10 ether);
+        assertEq(tap.woe(), 50 ether);
         tap.bust(tap.fog());
-        assertEqWad(tap.fog(), 0 ether);
-        assertEqWad(tap.woe(), 10 ether);
+        assertEq(tap.fog(), 0 ether);
+        assertEq(tap.woe(), 10 ether);
         // price still 1
-        assertEqWad(tub.jar().per(), ray(1 ether));
+        assertEq(tub.jar().per(), ray(1 ether));
 
         // now force some minting, which flips the tin to unsafe
         assert(tub.safe(tin));
         tap.bust(wdiv(5 ether, 2 ether));
         assert(!tub.safe(tin));
 
-        assertEqWad(tap.woe(), 0);
-        assertEqWad(tub.jar().per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
+        assertEq(tap.woe(), 0);
+        assertEq(tub.jar().per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
 
         // mug is now under parity as well
         tub.bite(mug);
@@ -1373,38 +1369,38 @@ contract TaxTest is SaiTestBase {
     }
     function testTaxEra() {
         var cup = taxSetup();
-        assertEqWad(tub.tab(cup), 100 ether);
+        assertEq(tub.tab(cup), 100 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 105 ether);
+        assertEq(tub.tab(cup), 105 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 110.25 ether);
+        assertEq(tub.tab(cup), 110.25 ether);
     }
     // Tax accumulates as sai surplus
     function testTaxJoy() {
         var cup = taxSetup();
-        assertEqWad(tap.joy(),      0 ether);
-        assertEqWad(tub.tab(cup), 100 ether);
+        assertEq(tap.joy(),      0 ether);
+        assertEq(tub.tab(cup), 100 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 105 ether);
-        assertEqWad(tap.joy(),      5 ether);
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tap.joy(),      5 ether);
     }
     function testTaxDraw() {
         var cup = taxSetup();
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 105 ether);
+        assertEq(tub.tab(cup), 105 ether);
         tub.draw(cup, 100 ether);
-        assertEqWad(tub.tab(cup), 205 ether);
+        assertEq(tub.tab(cup), 205 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 215.25 ether);
+        assertEq(tub.tab(cup), 215.25 ether);
     }
     function testTaxWipe() {
         var cup = taxSetup();
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 105 ether);
+        assertEq(tub.tab(cup), 105 ether);
         tub.wipe(cup, 50 ether);
-        assertEqWad(tub.tab(cup), 55 ether);
+        assertEq(tub.tab(cup), 55 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 57.75 ether);
+        assertEq(tub.tab(cup), 57.75 ether);
     }
     // collected fees are available through boom
     function testTaxBoom() {
@@ -1437,10 +1433,10 @@ contract TaxTest is SaiTestBase {
         var cup = taxSetup();
         mark(1 ether);
         tip.warp(1 days);
-        assertEqWad(tub.tab(cup), 105 ether);
+        assertEq(tub.tab(cup), 105 ether);
         tub.bite(cup);
-        assertEqWad(tub.tab(cup),   0 ether);
-        assertEqWad(tap.woe(),    105 ether);
+        assertEq(tub.tab(cup),   0 ether);
+        assertEq(tap.woe(),    105 ether);
     }
     function testTaxBiteRounding() {
         var cup = taxSetup();
@@ -1456,10 +1452,10 @@ contract TaxTest is SaiTestBase {
             // log_named_uint('sin', sin.balanceOf(pot));
         }
         uint256 debtAfterWarp = rmul(100 ether, rpow(tub.tax(), 510));
-        assertEqWad(tub.tab(cup), debtAfterWarp);
+        assertEq(tub.tab(cup), debtAfterWarp);
         tub.bite(cup);
-        assertEqWad(tub.tab(cup), 0 ether);
-        assertEqWad(tap.woe(), rmul(100 ether, rpow(tub.tax(), 510)));
+        assertEq(tub.tab(cup), 0 ether);
+        assertEq(tap.woe(), rmul(100 ether, rpow(tub.tax(), 510)));
     }
     function testTaxBail() {
         var cup = taxSetup();
@@ -1496,24 +1492,24 @@ contract TaxTest is SaiTestBase {
         tip.warp(1 days);
         mark(10 ether);
 
-        assertEqWad(tap.joy(), 0 ether);
+        assertEq(tap.joy(), 0 ether);
         top.cage();                // should drip up to date
-        assertEqWad(tap.joy(), 5 ether);
+        assertEq(tap.joy(), 5 ether);
         tip.warp(1 days);  tub.drip();  // should have no effect
-        assertEqWad(tap.joy(), 5 ether);
+        assertEq(tap.joy(), 5 ether);
 
         var owe = tub.tab(cup);
-        assertEqWad(owe, 105 ether);
-        assertEqWad(tub.ice(), owe);
-        assertEqWad(tap.woe(), 0);
+        assertEq(owe, 105 ether);
+        assertEq(tub.ice(), owe);
+        assertEq(tap.woe(), 0);
         tub.bite(cup);
-        assertEqWad(tub.ice(), 0);
-        assertEqWad(tap.woe(), owe);
+        assertEq(tub.ice(), 0);
+        assertEq(tap.woe(), owe);
 
-        assertEqWad(tap.joy(), 5 ether);
+        assertEq(tap.joy(), 5 ether);
         top.vent();
-        assertEqWad(tap.joy(),   0 ether);
-        assertEqWad(tap.woe(), 100 ether);
+        assertEq(tap.joy(),   0 ether);
+        assertEq(tap.woe(), 100 ether);
     }
 }
 
@@ -1548,13 +1544,13 @@ contract WayTest is SaiTestBase {
     function testWayPar() {
         tip.coax(999999406327787478619865402);  // -5% / day
 
-        assertEqWad(tip.par(), 1.00 ether);
+        assertEq(tip.par(), 1.00 ether);
         tip.warp(1 days);
-        assertEqWad(tip.par(), 0.95 ether);
+        assertEq(tip.par(), 0.95 ether);
 
         tip.coax(1000008022568992670911001251);  // 200% / day
         tip.warp(1 days);
-        assertEqWad(tip.par(), 1.90 ether);
+        assertEq(tip.par(), 1.90 ether);
     }
     function testWayDecreasingPrincipal() {
         var cup = waySetup();
@@ -1598,54 +1594,54 @@ contract WayTest is SaiTestBase {
         mark(0.5 ether);
         tub.bite(cup);
 
-        assertEqWad(tap.joy(),   0 ether);
-        assertEqWad(tap.woe(), 100 ether);
-        assertEqWad(tap.fog(), 100 ether);
+        assertEq(tap.joy(),   0 ether);
+        assertEq(tap.woe(), 100 ether);
+        assertEq(tap.fog(), 100 ether);
         assertEq(sai.balanceOf(this), 100 ether);
 
         tap.bust(50 ether);
 
-        assertEqWad(tap.fog(),  50 ether);
-        assertEqWad(tap.woe(),  75 ether);
+        assertEq(tap.fog(),  50 ether);
+        assertEq(tap.woe(),  75 ether);
         assertEq(sai.balanceOf(this), 75 ether);
 
         tip.coax(999991977495368425989823173);  // -50% / day
         tip.warp(1 days);
-        assertEqWad(tip.par(), 0.5 ether);
+        assertEq(tip.par(), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
         tap.bust(50 ether);
 
-        assertEqWad(tap.fog(),   0 ether);
-        assertEqWad(tap.woe(),  25 ether);
+        assertEq(tap.fog(),   0 ether);
+        assertEq(tap.woe(),  25 ether);
         assertEq(sai.balanceOf(this), 25 ether);
     }
     function testWayBoom() {
         var cup = waySetup();
         tub.join(100 ether);       // give us some spare skr
         sai.push(pit, 100 ether);  // force some joy into the tap
-        assertEqWad(tap.joy(), 100 ether);
+        assertEq(tap.joy(), 100 ether);
 
         mark(2 ether);
         tip.coax(1000008022568992670911001251);  // 200% / day
         tip.warp(1 days);
-        assertEqWad(tip.par(), 2 ether);
+        assertEq(tip.par(), 2 ether);
         tap.boom(100 ether);
-        assertEqWad(tap.joy(),   0 ether);
-        assertEqWad(tub.jar().per(), ray(2 ether));
+        assertEq(tap.joy(),   0 ether);
+        assertEq(tub.jar().per(), ray(2 ether));
 
         tub.join(100 ether);
         tub.draw(cup, 100 ether);
         sai.push(pit, 100 ether);  // force some joy into the tap
 
         // n.b. per is now 2
-        assertEqWad(tap.joy(), 100 ether);
+        assertEq(tap.joy(), 100 ether);
         mark(2 ether);
         tip.coax(999991977495368425989823173);  // -50% / day
         tip.warp(2 days);
-        assertEqWad(tip.par(), 0.5 ether);
+        assertEq(tip.par(), 0.5 ether);
         tap.boom(12.5 ether);
-        assertEqWad(tap.joy(),   0 ether);
+        assertEq(tap.joy(),   0 ether);
     }
 }
 
@@ -1665,20 +1661,20 @@ contract GapTest is SaiTestBase {
     function testGapSaiTapBid() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
-        assertEqWad(tap.bid(), 0.99 ether);
+        assertEq(tap.bid(), 0.99 ether);
         mark(2 ether);
-        assertEqWad(tap.bid(), 1.98 ether);
+        assertEq(tap.bid(), 1.98 ether);
     }
     function testGapSaiTapAsk() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
-        assertEqWad(tap.ask(), 1.01 ether);
+        assertEq(tap.ask(), 1.01 ether);
         mark(2 ether);
-        assertEqWad(tap.ask(), 2.02 ether);
+        assertEq(tap.ask(), 2.02 ether);
     }
     function testGapBoom() {
         sai.push(pit, 198 ether);
-        assertEqWad(tap.joy(), 198 ether);
+        assertEq(tap.joy(), 198 ether);
 
         tap.jump(1.01 ether);  // 1% spread
 
@@ -1693,8 +1689,8 @@ contract GapTest is SaiTestBase {
     function testGapBust() {
         skr.push(pit, 100 ether);
         sin.push(pit, 200 ether);
-        assertEqWad(tap.fog(), 100 ether);
-        assertEqWad(tap.woe(), 200 ether);
+        assertEq(tap.fog(), 100 ether);
+        assertEq(tap.woe(), 200 ether);
 
         tap.jump(1.01 ether);
 
@@ -1711,29 +1707,29 @@ contract GapTest is SaiTestBase {
         uint256 illegal = 1.06 ether;
 
         assert(tap.call(bytes4(sha3("jump(uint256)")), legal));
-        assertEqWad(tap.gap(), legal);
+        assertEq(tap.gap(), legal);
 
         assert(!tap.call(bytes4(sha3("jump(uint256)")), illegal));
-        assertEqWad(tap.gap(), legal);
+        assertEq(tap.gap(), legal);
     }
 
     // join and exit have a spread parameter
     function testGapJarBidAsk() {
-        assertEqWad(jar.per(), ray(1 ether));
-        assertEqWad(jar.bid(), ray(1 ether));
-        assertEqWad(jar.ask(), ray(1 ether));
+        assertEq(jar.per(), ray(1 ether));
+        assertEq(jar.bid(), ray(1 ether));
+        assertEq(jar.ask(), ray(1 ether));
 
         jar.jump(1.01 ether);
-        assertEqWad(jar.bid(), ray(0.99 ether));
-        assertEqWad(jar.ask(), ray(1.01 ether));
+        assertEq(jar.bid(), ray(0.99 ether));
+        assertEq(jar.ask(), ray(1.01 ether));
 
         assertEq(skr.balanceOf(this), 500 ether);
         assertEq(skr.totalSupply(),   500 ether);
         skr.burn(250 ether);
 
-        assertEqWad(jar.per(), ray(2    ether));
-        assertEqWad(jar.bid(), ray(1.98 ether));
-        assertEqWad(jar.ask(), ray(2.02 ether));
+        assertEq(jar.per(), ray(2    ether));
+        assertEq(jar.bid(), ray(1.98 ether));
+        assertEq(jar.ask(), ray(2.02 ether));
     }
     function testGapJoin() {
         gem.mint(100 ether);
