@@ -126,17 +126,15 @@ contract Tub is DSThing, TubEvents {
     }
     function drip() note {
         if (off) return;
-        if (tax == 1) return;  // FIXME: tax=1 release optimisation
 
         var age = tip.era() - rho;
-        var chi = rmul(_chi, rpow(tax, age));
-        var rum = rdiv(ice(), _chi);
-        var dew = wsub(rmul(rum, chi), ice());
+        var inc = rpow(tax, age);
+        var dew = wsub(rmul(ice(), inc), ice());
 
         jug.lend(pot, dew);
         pot.push(sai, pit, dew);
 
-        _chi = chi;
+        _chi = rmul(_chi, inc);
         rho = tip.era();
     }
 
