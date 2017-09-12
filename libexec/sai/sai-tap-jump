@@ -6,4 +6,4 @@ set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Setting gap to $wad..."
 wad=$(sai wad "$1")
-(set -x; seth send "${SAI_TAP?}" "jump(uint128)" "$wad")
+(set -x; seth send "${SAI_TAP?}" "jump(uint256)" "$wad")

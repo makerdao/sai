@@ -6,4 +6,4 @@ set -e
 jam=$(sai wad -h "$1")
 echo >&2 "Sending $jam GEM to TUB..."
 jam=$(sai wad "$1")
-(set -x; seth send "${SAI_TUB?}" "join(uint128)" "$jam")
+(set -x; seth send "${SAI_TUB?}" "join(uint256)" "$jam")

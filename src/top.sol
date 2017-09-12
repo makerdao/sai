@@ -8,7 +8,7 @@ import "./tub.sol";
 import "./tap.sol";
 
 contract SaiTop is DSThing {
-    uint128  public  fix;  // sai kill price (gem per sai)
+    uint256  public  fix;  // sai kill price (gem per sai)
 
     SaiTub   public  tub;
     SaiTap   public  tap;
@@ -44,7 +44,7 @@ contract SaiTop is DSThing {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint128 price) note auth {
+    function cage(uint256 price) note auth {
         assert(!tub.off());
         tub.drip();  // collect remaining fees
 
@@ -58,21 +58,21 @@ contract SaiTop is DSThing {
         pit.burn(skr);       // burn pending sale skr
 
         // most gems we can get per sai is the full balance
-        var woe = cast(sin.totalSupply());
+        var woe = sin.totalSupply();
 
-        fix = hmin(rdiv(RAY, price), rdiv(tub.pie(), woe));
+        fix = min(rdiv(RAY, price), rdiv(tub.pie(), woe));
 
         // put the gems backing sai in a safe place
         jar.push(gem, pit, rmul(fix, woe));
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(wdiv(uint128(tub.jar().pip().read()), tub.tip().par()));
+        cage(wdiv(uint256(tub.jar().pip().read()), tub.tip().par()));
     }
     // exchange free sai for gems after kill
     function cash() note auth {
         assert(tub.off());
-        var wad = cast(sai.balanceOf(msg.sender));
+        var wad = sai.balanceOf(msg.sender);
         pit.pull(sai, msg.sender, wad);
         pit.push(gem, msg.sender, rmul(wad, fix));
     }

@@ -6,4 +6,4 @@ set -e
 ray=$(sai ray -h "$1")
 echo >&2 "Setting mat to $ray..."
 ray=$(sai ray "$1")
-(set -x; seth send "${SAI_TUB?}" "cuff(uint128)" "$ray")
+(set -x; seth send "${SAI_TUB?}" "cuff(uint256)" "$ray")

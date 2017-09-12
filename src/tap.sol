@@ -16,7 +16,7 @@ contract SaiTap is DSThing {
 
     SaiJug   public  jug;
 
-    uint128  public  gap;  // spread
+    uint256  public  gap;  // spread
 
     function SaiTap(SaiTub tub_, DSVault pit_) {
         tub = tub_;
@@ -32,42 +32,42 @@ contract SaiTap is DSThing {
     }
 
     // surplus
-    function joy() constant returns (uint128) {
-        return uint128(sai.balanceOf(pit));
+    function joy() constant returns (uint256) {
+        return uint256(sai.balanceOf(pit));
     }
     // Bad debt
-    function woe() constant returns (uint128) {
-        return uint128(sin.balanceOf(pit));
+    function woe() constant returns (uint256) {
+        return uint256(sin.balanceOf(pit));
     }
     // Collateral pending liquidation
-    function fog() constant returns (uint128) {
-        return uint128(skr.balanceOf(pit));
+    function fog() constant returns (uint256) {
+        return uint256(skr.balanceOf(pit));
     }
 
     // sai per skr
-    function s2s() returns (uint128) {
+    function s2s() returns (uint256) {
         var tag = tub.jar().tag();  // ref per skr
         var par = tub.tip().par();  // ref per sai
         return wdiv(tag, par);      // sai per skr
     }
 
-    function jump(uint128 wad) note auth {
+    function jump(uint256 wad) note auth {
         gap = wad;
         assert(gap <= 1.05 ether);
         assert(gap >= 0.95 ether);
     }
 
     // price of skr in sai for boom
-    function bid() constant returns (uint128) {
-        return wmul(s2s(), wsub(2 * WAD, gap));
+    function bid() constant returns (uint256) {
+        return wmul(s2s(), sub(2 * WAD, gap));
     }
     // price of skr in sai for bust
-    function ask() constant returns (uint128) {
+    function ask() constant returns (uint256) {
         return wmul(s2s(), gap);
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint128 wad) note auth {
+    function boom(uint256 wad) note auth {
         assert(!tub.off());
         tub.drip();
         jug.heal(pit);
@@ -80,12 +80,12 @@ contract SaiTap is DSThing {
         pit.burn(skr, wad);
         pit.push(sai, msg.sender, ret);
     }
-    function bust(uint128 wad) note auth {
+    function bust(uint256 wad) note auth {
         assert(!tub.off());
         tub.drip();
         jug.heal(pit);
 
-        uint128 ash;
+        uint256 ash;
         if (wad > fog()) {
             pit.mint(skr, wad - fog());
             ash = wmul(ask(), wad);

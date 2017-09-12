@@ -7,4 +7,4 @@ set -e
 wad=$(sai wad -h "$1")
 echo >&2 "Freeing $wad SKR from cup $((${SAI_CUP?}))..."
 wad=$(sai wad "$1")
-(set -x; seth send "${SAI_TUB?}" "free(bytes32,uint128)" "$SAI_CUP" "$wad")
+(set -x; seth send "${SAI_TUB?}" "free(bytes32,uint256)" "$SAI_CUP" "$wad")
