@@ -6,4 +6,4 @@ set -e
 ray=$(sai ray -h "$1")
 echo >&2 "Setting tax to $ray..."
 ray=$(sai ray "$1")
-(set -x; seth send "${SAI_TUB?}" "crop(uint128)" "$ray")
+(set -x; seth send "${SAI_TUB?}" "crop(uint256)" "$ray")

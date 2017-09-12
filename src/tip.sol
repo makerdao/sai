@@ -9,9 +9,9 @@ import "ds-value/value.sol";
 import "ds-warp/warp.sol";
 
 contract SaiTip is DSThing, DSWarp {
-    uint128  public  way;  // holder fee / interest rate
+    uint256  public  way;  // holder fee / interest rate
     uint64   public  tau;  // time of last prod
-    uint128         _par;  // ref per sai
+    uint256         _par;  // ref per sai
 
     function SaiTip() {
         way  = RAY;
@@ -19,14 +19,14 @@ contract SaiTip is DSThing, DSWarp {
         tau  = _era;
     }
 
-    function coax(uint128 ray) note auth {
+    function coax(uint256 ray) note auth {
         way = ray;
         assert(way < 10002 * 10 ** 23);  // ~200% per hour
         assert(way >  9998 * 10 ** 23);
     }
 
     // ref per sai
-    function par() returns (uint128) {
+    function par() returns (uint256) {
         prod();
         return _par;
     }

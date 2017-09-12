@@ -9,21 +9,21 @@ test -z $SAI_TOP && exit 1
 export ETH_GAS=${ETH_GAS:-"100000"}
 
 tub_capabilities="
-join(uint128)
-exit(uint128)
+join(uint256)
+exit(uint256)
 open()
 shut(bytes32)
-lock(bytes32,uint128)
-free(bytes32,uint128)
-draw(bytes32,uint128)
-wipe(bytes32,uint128)
+lock(bytes32,uint256)
+free(bytes32,uint256)
+draw(bytes32,uint256)
+wipe(bytes32,uint256)
 give(bytes32,address)
 bite(bytes32)
 "
 
 tap_capabilities="
-boom(uint128)
-bust(uint128)
+boom(uint256)
+bust(uint256)
 "
 
 top_capabilities="

@@ -8,4 +8,4 @@ echo >&2 "Setting gap to $wad..."
 wad=$(sai wad "$1")
 jar=$(seth call "${SAI_TUB?}" 'jar()')
 jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
-(set -x; seth send "$jar_address" "jump(uint128)" "$wad")
+(set -x; seth send "$jar_address" "jump(uint256)" "$wad")

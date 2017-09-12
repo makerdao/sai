@@ -60,47 +60,47 @@ seth send $SAI_SIN "setAuthority(address)" $SAI_DAD
 seth send $SAI_SKR "setAuthority(address)" $SAI_DAD
 
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TUB 255 true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'join(address,uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'exit(address,uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'push(address,address,uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'pull(address,address,uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'join(address,uint256)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'exit(address,uint256)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'push(address,address,uint256)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 255 $SAI_JAR $(seth calldata 'pull(address,address,uint256)') true
 
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_TOP 254 true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_JAR $(seth calldata 'push(address,address,uint128)') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_TUB $(seth calldata 'cage(uint128)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_JAR $(seth calldata 'push(address,address,uint256)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 254 $SAI_TUB $(seth calldata 'cage(uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'lend(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'mend(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'lend(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_JUG $(seth --to-bytes32 $(seth calldata 'mend(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_POT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint256)'))
 
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_JUG $(seth --to-bytes32 $(seth calldata 'heal(address)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'mint(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint256)'))
 
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_JUG $(seth --to-bytes32 $(seth calldata 'heal(address)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'push(address,address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_PIT $(seth --to-bytes32 $(seth calldata 'pull(address,address,uint256)'))
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JAR $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'mint(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_POT $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_JUG $SAI_PIT $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_POT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint128)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint128)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_PIT $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
 
 
 cat > load-env-$(seth chain) << EOF

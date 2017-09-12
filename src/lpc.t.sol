@@ -9,17 +9,17 @@ contract Tester {
     function Tester(SaiLPC lpc_) {
         lpc = lpc_;
 
-        lpc.lps().approve(lpc, uint128(-1));
-        lpc.ref().approve(lpc, uint128(-1));
-        lpc.alt().approve(lpc, uint128(-1));
+        lpc.lps().approve(lpc, uint256(-1));
+        lpc.ref().approve(lpc, uint256(-1));
+        lpc.alt().approve(lpc, uint256(-1));
     }
-    function pool(ERC20 gem, uint128 wad) {
+    function pool(ERC20 gem, uint256 wad) {
         lpc.pool(gem, wad);
     }
-    function exit(ERC20 gem, uint128 wad) {
+    function exit(ERC20 gem, uint256 wad) {
         lpc.exit(gem, wad);
     }
-    function take(ERC20 gem, uint128 wad) {
+    function take(ERC20 gem, uint256 wad) {
         lpc.take(gem, wad);
     }
 }
@@ -38,18 +38,18 @@ contract LPCTest is DSTest, DSMath {
     Tester   m2;
     Tester   m3;
 
-    function assertEqWad(uint128 x, uint128 y) {
+    function assertEqWad(uint256 x, uint256 y) {
         assertEq(uint256(x), uint256(y));
     }
 
-    function ray(uint128 wad) returns (uint128) {
+    function ray(uint256 wad) returns (uint256) {
         return wad * 10 ** 9;
     }
 
     function setRoles() {
-        mom.setRoleCapability(1, address(lpc), bytes4(sha3("pool(address,uint128)")), true);
-        mom.setRoleCapability(1, address(lpc), bytes4(sha3("exit(address,uint128)")), true);
-        mom.setRoleCapability(1, address(lpc), bytes4(sha3("take(address,uint128)")), true);
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("pool(address,uint256)")), true);
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("exit(address,uint256)")), true);
+        mom.setRoleCapability(1, address(lpc), bytes4(sha3("take(address,uint256)")), true);
     }
 
     function setUp() {
@@ -60,7 +60,7 @@ contract LPCTest is DSTest, DSMath {
         pip = new DSValue();
         pip.poke(bytes32(2 ether)); // 2 refs per gem
 
-        uint128 gap = 1.04 ether;
+        uint256 gap = 1.04 ether;
 
         tip = new SaiTip();
 
@@ -103,7 +103,7 @@ contract LPCTest is DSTest, DSMath {
         assertEqWad(lpc.pie(), 202 ether);
 
         // m2 still has claim to $100 worth
-        assertEqWad(rdiv(uint128(lps.balanceOf(m2)), lpc.per()), 100 ether);
+        assertEqWad(rdiv(uint256(lps.balanceOf(m2)), lpc.per()), 100 ether);
 
         t1.take(ref, 50 ether);
         assertEqWad(lpc.pie(), 204 ether);
@@ -114,13 +114,13 @@ contract LPCTest is DSTest, DSMath {
         assertEqWad(lpc.pie(), 252 ether);
 
         // m3 has claim to $100
-        assertEqWad(rdiv(uint128(lps.balanceOf(m3)), lpc.per()), 100 ether);
+        assertEqWad(rdiv(uint256(lps.balanceOf(m3)), lpc.per()), 100 ether);
         // but m1, m2 have less claim each
-        assertEqWad(rdiv(uint128(lps.balanceOf(m1) + lps.balanceOf(m2)), lpc.per()), 152 ether);
+        assertEqWad(rdiv(uint256(lps.balanceOf(m1) + lps.balanceOf(m2)), lpc.per()), 152 ether);
     }
 
     function testWarpLPC() {
-        uint128 way = 999997417323343052486607343;  // 0.8 / day
+        uint256 way = 999997417323343052486607343;  // 0.8 / day
         tip.coax(way);
         // t1 pools 100 ETH
         t1.pool(alt, 100 ether);
@@ -150,7 +150,7 @@ contract LPCTest is DSTest, DSMath {
         assertEq(alt.balanceOf(m1), 10 ether);
         assertEq(alt.balanceOf(lpc), 90 ether);
         // m1 has to pay a value in SAI that is equivalent to 10 ETH adding the corresponding gap value
-        uint128 refBalanceOfLPC = rdiv(wmul(wmul(10 ether, lpc.tag()), lpc.gap()), par);
+        uint256 refBalanceOfLPC = rdiv(wmul(wmul(10 ether, lpc.tag()), lpc.gap()), par);
         assertEq(ref.balanceOf(lpc), refBalanceOfLPC);
         pie += rdiv(wmul(wmul(10 ether, lpc.tag()), lpc.gap() - 1 ether), par);
         assertEqWad(lpc.pie(), pie);
@@ -166,7 +166,7 @@ contract LPCTest is DSTest, DSMath {
         assertEq(alt.balanceOf(lpc), 90 ether);
 
         // m2 exits the maximum LPS balance in ETH
-        var maxAmountoExitM2 = wdiv(wmul(rdiv(wdiv(uint128(lps.balanceOf(m2)), lpc.gap()), lpc.per()), tip.par()), lpc.tag());
+        var maxAmountoExitM2 = wdiv(wmul(rdiv(wdiv(uint256(lps.balanceOf(m2)), lpc.gap()), lpc.per()), tip.par()), lpc.tag());
         m2.exit(alt, maxAmountoExitM2);
         assertEq(lps.balanceOf(m2), 0);
         assertEq(alt.balanceOf(lpc), 90 ether - maxAmountoExitM2);

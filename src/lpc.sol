@@ -30,7 +30,7 @@ contract SaiLPC is DSThing {
     ERC20    public  alt;
 
     DSValue  public  pip;  // price feed, giving refs per alt
-    uint128  public  gap;  // spread, charged on `take`
+    uint256  public  gap;  // spread, charged on `take`
     DSToken  public  lps;  // 'liquidity provider shares', earns spread
     SaiTip   public  tip;
 
@@ -44,31 +44,31 @@ contract SaiLPC is DSThing {
         gap = WAD;
     }
 
-    function jump(uint128 wad) note auth {
+    function jump(uint256 wad) note auth {
         assert(wad != 0);
         gap = wad;
     }
 
     // ref per alt
-    function tag() constant returns (uint128) {
-        return uint128(pip.read());
+    function tag() constant returns (uint256) {
+        return uint256(pip.read());
     }
 
     // total pool value
-    function pie() constant returns (uint128) {
-        return wadd(uint128(ref.balanceOf(this)),
-                    wdiv(wmul(uint128(alt.balanceOf(this)), tag()), tip.par()));
+    function pie() constant returns (uint256) {
+        return add(uint256(ref.balanceOf(this)),
+                    wdiv(wmul(uint256(alt.balanceOf(this)), tag()), tip.par()));
     }
 
     // lps per ref
-    function per() constant returns (uint128) {
+    function per() constant returns (uint256) {
         return lps.totalSupply() == 0
              ? RAY
-             : rdiv(uint128(lps.totalSupply()), pie());
+             : rdiv(uint256(lps.totalSupply()), pie());
     }
 
     // {ref,alt} -> lps
-    function pool(ERC20 gem, uint128 wad) note auth {
+    function pool(ERC20 gem, uint256 wad) note auth {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wad : wdiv(wmul(wad, tag()), tip.par());
@@ -80,7 +80,7 @@ contract SaiLPC is DSThing {
     }
 
     // lps -> {ref,alt}
-    function exit(ERC20 gem, uint128 wad) note auth {
+    function exit(ERC20 gem, uint256 wad) note auth {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wad : wdiv(wmul(wad, tag()), tip.par());
@@ -96,7 +96,7 @@ contract SaiLPC is DSThing {
     // ref <-> alt
     // TODO: meme 'swap'?
     // TODO: mem 'yen' means to desire. pair with 'pay'? or 'ney'
-    function take(ERC20 gem, uint128 wad) note auth {
+    function take(ERC20 gem, uint256 wad) note auth {
         require(gem == alt || gem == ref);
 
         var jam = (gem == ref) ? wmul(wdiv(wad, tag()), tip.par()) : wdiv(wmul(wad, tag()), tip.par());
