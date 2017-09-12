@@ -163,15 +163,15 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function join(uint128 jam) note auth {
+    function join(uint128 wad) note auth {
         assert(!off);
-        jar.join(msg.sender, jam);
+        jar.join(msg.sender, wad);
     }
-    function exit(uint128 ink) note auth {
+    function exit(uint128 wad) note auth {
         var empty = ice() == 0 && skr.balanceOf(pit) == 0;
         var ended = tip.era() > caged + cooldown;
         assert(!off || empty || ended);
-        jar.exit(msg.sender, ink);
+        jar.exit(msg.sender, wad);
     }
 
     //------------------------------------------------------------------
@@ -224,10 +224,10 @@ contract Tub is DSThing, TubEvents {
         jug.mend(pot, wad);
     }
 
-    function give(bytes32 cup, address lad) note auth {
+    function give(bytes32 cup, address guy) note auth {
         assert(msg.sender == cups[cup].lad);
-        assert(lad != 0);
-        cups[cup].lad = lad;
+        assert(guy != 0);
+        cups[cup].lad = guy;
     }
 
     //------------------------------------------------------------------

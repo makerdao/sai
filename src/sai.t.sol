@@ -613,8 +613,8 @@ contract CageTest is SaiTestBase {
         top.cash();
         tub.exit(uint128(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this), 0 ether);
-        var gemBySAI = 5 ether; // Adding 5 gem from 5 sai
-        var gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
+        uint128 gemBySAI = 5 ether; // Adding 5 gem from 5 sai
+        uint128 gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
 
         assertEq(sai.balanceOf(this), 0);
@@ -650,8 +650,8 @@ contract CageTest is SaiTestBase {
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),  20 ether);
 
-        var gemBySAI = wdiv(wmul(5 ether, 4 ether), 3 ether);
-        var gemBySKR = 0;
+        uint128 gemBySAI = wdiv(wmul(5 ether, 4 ether), 3 ether);
+        uint128 gemBySKR = 0;
 
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
         assertEq(gem.balanceOf(jar),  30 ether - gemBySAI - gemBySKR);
@@ -853,7 +853,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(jar), 50 ether); // locked skr
 
-        var price = 1 ether;
+        uint128 price = 1 ether;
         mark(price);
         top.cage();
 
@@ -1450,7 +1450,7 @@ contract TaxTest is SaiTestBase {
         tub.crop(ray(1.000000001547126 ether));
         // log_named_uint('tab', tub.tab(cup));
         // log_named_uint('sin', sin.balanceOf(pot));
-        for (var i=0; i<=50; i++) {
+        for (uint i=0; i<=50; i++) {
             tip.warp(10);
             // log_named_uint('tab', tub.tab(cup));
             // log_named_uint('sin', sin.balanceOf(pot));
