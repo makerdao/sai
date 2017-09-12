@@ -7,11 +7,11 @@ pragma solidity ^0.4.10;
 import "./tub.sol";
 import "./tap.sol";
 
-contract Top is DSThing {
+contract SaiTop is DSThing {
     uint128  public  fix;  // sai kill price (gem per sai)
 
-    Tub      public  tub;
-    Tap      public  tap;
+    SaiTub   public  tub;
+    SaiTap   public  tap;
 
     SaiJar   public  jar;
     DSVault  public  pot;
@@ -24,7 +24,7 @@ contract Top is DSThing {
     DSToken  public  skr;
     ERC20    public  gem;
 
-    function Top(Tub tub_, Tap tap_) {
+    function SaiTop(SaiTub tub_, SaiTap tap_) {
         tub = tub_;
         tap = tap_;
 

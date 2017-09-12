@@ -15,7 +15,7 @@ test -z $SAI_PIP && PIPtx=$(dapp create DSValue)
 SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
 POTtx=$(dapp create DSVault)
 PITtx=$(dapp create DSVault)
-TIPtx=$(dapp create Tip)
+TIPtx=$(dapp create SaiTip)
 
 DADtx=$(dapp create DSGuard)
 test -z $SAI_MOM && MOMtx=$(dapp create DSRoles)
@@ -34,9 +34,9 @@ SAI_POT=$(seth receipt $POTtx contractAddress)
 SAI_PIT=$(seth receipt $PITtx contractAddress)
 SAI_TIP=$(seth receipt $TIPtx contractAddress)
 
-SAI_TUB=$(dapp create Tub $SAI_JAR $SAI_JUG $SAI_POT $SAI_PIT $SAI_TIP)
-SAI_TAP=$(dapp create Tap $SAI_TUB $SAI_PIT)
-SAI_TOP=$(dapp create Top $SAI_TUB $SAI_TAP)
+SAI_TUB=$(dapp create SaiTub $SAI_JAR $SAI_JUG $SAI_POT $SAI_PIT $SAI_TIP)
+SAI_TAP=$(dapp create SaiTap $SAI_TUB $SAI_PIT)
+SAI_TOP=$(dapp create SaiTop $SAI_TUB $SAI_TAP)
 
 SAI_DAD=$(seth receipt $DADtx contractAddress)
 test -z $SAI_MOM && SAI_MOM=$(seth receipt $MOMtx contractAddress) && seth send $SAI_MOM "setRootUser(address,bool)" $ETH_FROM true && seth send $SAI_MOM "setAuthority(address)" $SAI_MOM

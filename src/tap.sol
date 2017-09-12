@@ -6,8 +6,8 @@ pragma solidity ^0.4.10;
 
 import "./tub.sol";
 
-contract Tap is DSThing {
-    Tub      public  tub;
+contract SaiTap is DSThing {
+    SaiTub   public  tub;
     DSVault  public  pit;
 
     DSToken  public  sai;
@@ -18,7 +18,7 @@ contract Tap is DSThing {
 
     uint128  public  gap;  // spread
 
-    function Tap(Tub tub_, DSVault pit_) {
+    function SaiTap(SaiTub tub_, DSVault pit_) {
         tub = tub_;
         pit = pit_;
 

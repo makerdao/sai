@@ -24,12 +24,12 @@ import "./jar.sol";
 // refprice(skr) := ethers per claim * tag
 // risky := refprice(skr):refprice(debt) too high
 
-contract TubEvents {
+contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract Tub is DSThing, TubEvents {
-    Tip      public  tip;  // Target price source
+contract SaiTub is DSThing, SaiTubEvents {
+    SaiTip   public  tip;  // Target price source
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
@@ -75,12 +75,12 @@ contract Tub is DSThing, TubEvents {
 
     //------------------------------------------------------------------
 
-    function Tub(
+    function SaiTub(
         SaiJar   jar_,
         SaiJug   jug_,
         DSVault  pot_,
         DSVault  pit_,
-        Tip      tip_
+        SaiTip      tip_
     ) {
         jar = jar_;
         gem = jar.gem();

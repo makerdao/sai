@@ -8,12 +8,12 @@ import "ds-thing/thing.sol";
 import "ds-value/value.sol";
 import "ds-warp/warp.sol";
 
-contract Tip is DSThing, DSWarp {
+contract SaiTip is DSThing, DSWarp {
     uint128  public  way;  // holder fee / interest rate
     uint64   public  tau;  // time of last prod
     uint128         _par;  // ref per sai
 
-    function Tip() {
+    function SaiTip() {
         way  = RAY;
         _par = WAD;
         tau  = _era;

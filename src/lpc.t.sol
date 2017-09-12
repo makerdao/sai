@@ -31,7 +31,7 @@ contract LPCTest is DSTest, DSMath {
     DSValue pip;
     SaiLPC  lpc;
     DSRoles mom;
-    Tip     tip;
+    SaiTip  tip;
 
     Tester   t1;
     Tester   m1;
@@ -62,7 +62,7 @@ contract LPCTest is DSTest, DSMath {
 
         uint128 gap = 1.04 ether;
 
-        tip = new Tip();
+        tip = new SaiTip();
 
         lpc = new SaiLPC(ref, alt, pip, lps, tip);
         lpc.jump(gap);

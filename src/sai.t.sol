@@ -15,10 +15,10 @@ import './top.sol';
 import './tap.sol';
 
 contract FakePerson {
-    Top     public top;
+    SaiTop  public top;
     DSToken public sai;
 
-    function FakePerson(Top _top) {
+    function FakePerson(SaiTop _top) {
         top = _top;
         sai = top.sai();
     }
@@ -30,10 +30,10 @@ contract FakePerson {
 }
 
 contract SaiTestBase is DSTest, DSMath {
-    Tip      tip;
-    Tub      tub;
-    Top      top;
-    Tap      tap;
+    SaiTip   tip;
+    SaiTub   tub;
+    SaiTop   top;
+    SaiTap   tap;
 
     DSToken  gem;
     DSToken  sai;
@@ -208,14 +208,14 @@ contract SaiTestBase is DSTest, DSMath {
         tmp = new DSVault();  // somewhere to hide tokens for testing
 
         tag = new DSValue();
-        tip = new Tip();
+        tip = new SaiTip();
 
         jar = new SaiJar(skr, gem, tag);
 
-        tub = new Tub(jar, jug, pot, pit, tip);
+        tub = new SaiTub(jar, jug, pot, pit, tip);
 
-        tap = new Tap(tub, pit);
-        top = new Top(tub, tap);
+        tap = new SaiTap(tub, pit);
+        top = new SaiTop(tub, tap);
 
         dad = new DSGuard();
         mom = new DSRoles();
@@ -246,7 +246,7 @@ contract SaiTestBase is DSTest, DSMath {
     }
 }
 
-contract TubTest is SaiTestBase {
+contract SaiTubTest is SaiTestBase {
     function testBasic() {
         assertEq( skr.balanceOf(jar), 0 ether );
         assertEq( skr.balanceOf(this), 0 ether );
@@ -1662,14 +1662,14 @@ contract GapTest is SaiTestBase {
 
         mark(2 ether);  // 2 ref per eth => 2 sai per skr
     }
-    function testGapTapBid() {
+    function testGapSaiTapBid() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
         assertEqWad(tap.bid(), 0.99 ether);
         mark(2 ether);
         assertEqWad(tap.bid(), 1.98 ether);
     }
-    function testGapTapAsk() {
+    function testGapSaiTapAsk() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
         assertEqWad(tap.ask(), 1.01 ether);
