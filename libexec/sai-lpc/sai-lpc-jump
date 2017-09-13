@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-### sai-lpc-jump -- update the spread
-set -e
-wad=$(sai wad -h "$1")
-echo >&2 "Setting gap to $wad..."
-wad=$(sai wad "$1")
-(set -x; seth send "${SAI_LPC?}" "jump(uint256)" "$wad")

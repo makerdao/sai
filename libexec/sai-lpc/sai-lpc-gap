@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-lpc-gap -- get the spread, charged on `take`
-set -e
-wad=$(seth call "${SAI_LPC?}" "gap()")
-sai wad -h "$wad"

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-### sai-lpc-par -- get the accrued holder fee
-set -e
-tip=$(seth call "${SAI_LPC?}" 'tip()')
-tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"
-wad=$(seth call "$tip_address" "par()")
-sai wad -h "$wad"

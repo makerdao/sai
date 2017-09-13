@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-lpc-per -- get the lps per ref ratio
-set -e
-ray=$(seth call "${SAI_LPC?}" "per()")
-sai ray -h "$ray"

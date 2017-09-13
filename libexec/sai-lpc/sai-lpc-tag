@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-lpc-tag -- get the current price (refs per alt)
-set -e
-wad=$(seth call "${SAI_LPC?}" "tag()")
-sai wad -h "$wad"

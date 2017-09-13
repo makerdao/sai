@@ -140,30 +140,6 @@ Commands:
    wipe            repay some portion of your existing sai debt
 ```
 
-### `sai-lpc` glossary (`sai-lpc help`)
-```
-Read commands:
-
-   alt             get the alt token
-   gap             get the spread, charged on `take`
-   lps             get the lps token (liquidity provider shares)
-   par             get the accrued holder fee
-   per             get the lps per ref ratio
-   pie             get the total pool value (in ref)
-   pip             get the price feed (giving refs per alt)
-   ref             get the ref token
-   tag             get the current price (refs per alt)
-   tip             get the target price engine
-
-Commands:
-
-   exit            exit lpc pool, exchange lps for ref or alt
-   help            print help about sai-lpc(1) or one of its subcommands
-   jump            update the spread
-   pool            enter lpc pool, get lps for ref or alt
-   take            perform an exchange
-```
-
 ### Sample interaction using `sai`
 
 ```bash
