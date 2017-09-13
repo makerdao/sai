@@ -1291,61 +1291,6 @@ contract LiquidationTest is SaiTestBase {
         assertEq(tap.woe(), 0 ether);
         assertEq(tap.joy(), 20 ether);
     }
-
-    function testCascade() {
-        // demonstrate liquidation cascade
-        tub.cork(1000 ether);
-        tub.cuff(ray(2 ether));                 // 200% liq limit
-        tub.chop(ray(wdiv(5 ether, 4 ether)));  // 125% penalty
-        mark(10 ether);
-
-        tub.join(40 ether);
-        var cup = tub.open();
-        var mug = tub.open();
-        var tin = tub.open();
-
-        tub.lock(cup, 10 ether);
-        tub.lock(mug, 10 ether);
-        tub.lock(tin, 10 ether);
-
-        tub.draw(cup, 50 ether);  // 200% collat
-        tub.draw(mug, 40 ether);  // 250% collat
-        tub.draw(tin, 19 ether);  // 421% collat
-
-        mark(4 ether);  // cup 80%, mug 100%, tin 200%
-        tub.bite(cup);
-
-        // inflation happens when the confiscated skr can no longer
-        // cover the debt. With axe == 1, this happens as soon as the
-        // price falls. With axe == 1.25, the price has to fall by 20%.
-        // Beyond this price fall, there is inflation.
-        // This is an extra justification for axe (beyond penalising bad
-        // cup holders).
-        assertEq(tap.fog(), 10 ether);
-        assertEq(tap.woe(), 50 ether);
-        tap.bust(tap.fog());
-        assertEq(tap.fog(), 0 ether);
-        assertEq(tap.woe(), 10 ether);
-        // price still 1
-        assertEq(tub.jar().per(), ray(1 ether));
-
-        // now force some minting, which flips the tin to unsafe
-        assert(tub.safe(tin));
-        tap.bust(wdiv(5 ether, 2 ether));
-        assert(!tub.safe(tin));
-
-        assertEq(tap.woe(), 0);
-        assertEq(tub.jar().per(), rdiv(80 ether * WAD, 85 ether * WAD));  // 5.88% less gem/skr
-
-        // mug is now under parity as well
-        tub.bite(mug);
-        tap.bust(tap.fog());
-        tap.bust(wdiv(tap.woe(), wmul(tub.jar().per(), jar.tag())));
-
-        tub.bite(tin);
-
-        // N.B from the initial price markdown the whole system was in deficit
-    }
 }
 
 contract TaxTest is SaiTestBase {
