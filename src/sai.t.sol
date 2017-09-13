@@ -88,14 +88,14 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256)")), true);
 
 
-        dad.permit(tub, jug, bytes4(sha3('lend(address,uint256)')));
-        dad.permit(tub, jug, bytes4(sha3('mend(address,uint256)')));
+        dad.permit(tub, jug, bytes4(sha3('lend(address,address,uint256)')));
+        dad.permit(tub, jug, bytes4(sha3('mend(address,address,uint256)')));
         dad.permit(tub, pot, bytes4(sha3('push(address,address,uint256)')));
-        dad.permit(tub, pot, bytes4(sha3('pull(address,address,uint256)')));
 
         dad.permit(tap, jug, bytes4(sha3('heal(address)')));
         dad.permit(tap, pit, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(tap, pit, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(tap, pit, bytes4(sha3('mint(address,address,uint256)')));
+        dad.permit(tap, pit, bytes4(sha3('burn(address,address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('push(address,address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint256)')));
 
@@ -104,30 +104,23 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(top, pit, bytes4(sha3('push(address,address,uint256)')));
         dad.permit(top, pit, bytes4(sha3('pull(address,address,uint256)')));
 
-        dad.permit(jar, skr, bytes4(sha3('mint(uint256)')));
-        dad.permit(jar, skr, bytes4(sha3('burn(uint256)')));
+        dad.permit(jar, skr, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(jar, skr, bytes4(sha3('burn(address,uint256)')));
 
-        dad.permit(jug, pot, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(jug, pot, bytes4(sha3('burn(address,uint256)')));
-        dad.permit(jug, pit, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(jug, sai, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(jug, sai, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(jug, sin, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(jug, sin, bytes4(sha3('burn(address,uint256)')));
 
-        dad.permit(pot, sai, bytes4(sha3('mint(uint256)')));
-        dad.permit(pot, sai, bytes4(sha3('burn(uint256)')));
-        dad.permit(pot, sin, bytes4(sha3('mint(uint256)')));
-        dad.permit(pot, sin, bytes4(sha3('burn(uint256)')));
-
-        dad.permit(pit, sai, bytes4(sha3('burn(uint256)')));
-        dad.permit(pit, sin, bytes4(sha3('burn(uint256)')));
         dad.permit(pit, skr, bytes4(sha3('mint(uint256)')));
+        dad.permit(pit, skr, bytes4(sha3('mint(address,uint256)')));
         dad.permit(pit, skr, bytes4(sha3('burn(uint256)')));
+        dad.permit(pit, skr, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(pit, skr, bytes4(sha3('burn(address)')));
 
-        // convenience in tests
-        dad.permit(this, sai, bytes4(sha3('mint(uint256)')));
-        dad.permit(this, sai, bytes4(sha3('burn(uint256)')));
-        dad.permit(this, sin, bytes4(sha3('mint(uint256)')));
-        dad.permit(this, sin, bytes4(sha3('burn(uint256)')));
-        dad.permit(this, skr, bytes4(sha3('mint(uint256)')));
-        dad.permit(this, skr, bytes4(sha3('burn(uint256)')));
+        pot.trust(sin, jug, true);  // ice
+        pit.trust(sai, jug, true);  // joy
+        pit.trust(sin, jug, true);  // woe
 
         tip.setOwner(0);
         tub.setOwner(0);
@@ -142,6 +135,16 @@ contract SaiTestBase is DSTest, DSMath {
         sai.setOwner(0);
         sin.setOwner(0);
         skr.setOwner(0);
+
+        // convenience in tests
+        dad.permit(this, sai, bytes4(sha3('mint(uint256)')));
+        dad.permit(this, sai, bytes4(sha3('burn(uint256)')));
+        dad.permit(this, sin, bytes4(sha3('mint(uint256)')));
+        dad.permit(this, sin, bytes4(sha3('burn(uint256)')));
+        dad.permit(this, skr, bytes4(sha3('mint(uint256)')));
+        dad.permit(this, skr, bytes4(sha3('burn(uint256)')));
+
+        dad.setOwner(0);
     }
     function setUserRoles() {
         mom.setRoleCapability(1, tub, bytes4(sha3("join(uint256)")), true);
@@ -223,18 +226,21 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setUserRole(this, 1, true);  // user
         mom.setUserRole(this, 2, true);  // admin
 
-        gem.approve(jar, 100000 ether);
-        skr.approve(jar, 100000 ether);
-        sai.approve(top, 100000 ether);
+        sai.trust(jug, true);
+        sin.trust(jug, true);
 
-        sai.approve(pot, 100000 ether);
-        skr.approve(jar, 100000 ether);
+        gem.trust(jar, true);
+        skr.trust(jar, true);
+        sai.trust(top, true);
 
-        sai.approve(pit, 100000 ether);
-        skr.approve(pit, 100000 ether);
+        sai.trust(pot, true);
+        skr.trust(jar, true);
 
-        sai.approve(tmp, 100000 ether);
-        skr.approve(tmp, 100000 ether);
+        sai.trust(pit, true);
+        skr.trust(pit, true);
+
+        sai.trust(tmp, true);
+        skr.trust(tmp, true);
 
         tag.poke(bytes32(1 ether));
 
@@ -336,6 +342,31 @@ contract SaiTubTest is SaiTestBase {
 
         tub.draw(cup, 11 ether);
     }
+    function testDraw() {
+        tub.cuff(ray(1 ether));
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        assertEq(sai.balanceOf(this),  0 ether);
+        assertEq(sin.balanceOf(pot),   0 ether);
+        tub.draw(cup, 10 ether);
+        assertEq(sai.balanceOf(this), 10 ether);
+        assertEq(sin.balanceOf(pot),  10 ether);
+    }
+    function testWipe() {
+        tub.cuff(ray(1 ether));
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+        tub.draw(cup, 10 ether);
+
+        assertEq(sai.balanceOf(this), 10 ether);
+        assertEq(sin.balanceOf(pot),  10 ether);
+        tub.wipe(cup, 5 ether);
+        assertEq(sai.balanceOf(this),  5 ether);
+        assertEq(sin.balanceOf(pot),   5 ether);
+    }
     function testUnsafe() {
         tub.join(10 ether);
         var cup = tub.open();
@@ -377,6 +408,14 @@ contract SaiTubTest is SaiTestBase {
         var skr_before = skr.balanceOf(this);
         tub.free(cup, 1 ether);
         assertEq(skr.balanceOf(this) - skr_before, 1 ether);
+    }
+    function testLock() {
+        tub.join(10 ether);
+        var cup = tub.open();
+
+        assertEq(skr.balanceOf(jar),  0 ether);
+        tub.lock(cup, 10 ether);
+        assertEq(skr.balanceOf(jar), 10 ether);
     }
     function testFree() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation

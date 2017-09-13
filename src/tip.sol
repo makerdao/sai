@@ -1,5 +1,7 @@
 /// tip.sol -- a source of information
 
+// Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
+// Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
 pragma solidity ^0.4.10;

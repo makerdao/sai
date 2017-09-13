@@ -131,8 +131,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = rpow(tax, age);
         var dew = sub(rmul(ice(), inc), ice());
 
-        jug.lend(pot, dew);
-        pot.push(sai, pit, dew);
+        jug.lend(pot, pit, dew);
 
         _chi = rmul(_chi, inc);
         rho = tip.era();
@@ -205,9 +204,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
-
-        jug.lend(pot, wad);
-        pot.push(sai, msg.sender, wad);
+        jug.lend(pot, cups[cup].lad, wad);
 
         assert(safe(cup));
         assert(sin.totalSupply() <= hat);
@@ -217,9 +214,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-
-        pot.pull(sai, msg.sender, wad);
-        jug.mend(pot, wad);
+        jug.mend(cups[cup].lad, pot, wad);
     }
 
     function give(bytes32 cup, address guy) note auth {

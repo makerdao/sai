@@ -1,5 +1,7 @@
 /// jar.sol -- contains gems, has a tag
 
+// Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
+// Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
 pragma solidity ^0.4.10;
@@ -48,14 +50,12 @@ contract SaiJar is DSThing, DSVault {
 
     function join(address guy, uint256 jam) note auth {
         var ink = rdiv(jam, ask());
-        mint(skr, ink);
-        push(skr, guy, ink);
+        mint(skr, guy, ink);
         pull(gem, guy, jam);
     }
     function exit(address guy, uint256 ink) note auth {
         var jam = rmul(ink, bid());
-        pull(skr, guy, ink);
-        burn(skr, ink);
+        burn(skr, guy, ink);
         push(gem, guy, jam);
     }
 }

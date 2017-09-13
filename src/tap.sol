@@ -1,5 +1,7 @@
 /// tap.sol -- liquidation engine (see also `vow`)
 
+// Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
+// Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
 pragma solidity ^0.4.10;
@@ -76,8 +78,7 @@ contract SaiTap is DSThing {
         var ret = wmul(bid(), wad);
         assert(ret <= joy());
 
-        pit.pull(skr, msg.sender, wad);
-        pit.burn(skr, wad);
+        pit.burn(skr, msg.sender, wad);
         pit.push(sai, msg.sender, ret);
     }
     function bust(uint256 wad) note auth {
