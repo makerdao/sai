@@ -39,38 +39,38 @@ contract SaiTap is DSThing {
     }
 
     // surplus
-    function joy() constant returns (uint256) {
-        return uint256(sai.balanceOf(this));
+    function joy() constant returns (uint) {
+        return sai.balanceOf(this);
     }
     // Bad debt
-    function woe() constant returns (uint256) {
-        return uint256(sin.balanceOf(this));
+    function woe() constant returns (uint) {
+        return sin.balanceOf(this);
     }
     // Collateral pending liquidation
-    function fog() constant returns (uint256) {
-        return uint256(skr.balanceOf(this));
+    function fog() constant returns (uint) {
+        return skr.balanceOf(this);
     }
 
     // sai per skr
-    function s2s() returns (uint256) {
+    function s2s() returns (uint) {
         var tag = jar.tag();    // ref per skr
         var par = tip.par();    // ref per sai
         return wdiv(tag, par);  // sai per skr
     }
 
-    function jump(uint256 wad) note auth {
+    function jump(uint wad) note auth {
         gap = wad;
         require(gap <= 1.05 ether);
         require(gap >= 0.95 ether);
     }
 
     // price of skr in sai for boom
-    function bid() constant returns (uint256) {
-        return wmul(s2s(), sub(2 * WAD, gap));
+    function bid(uint wad) constant returns (uint) {
+        return wmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
     }
     // price of skr in sai for bust
-    function ask() constant returns (uint256) {
-        return wmul(s2s(), gap);
+    function ask(uint wad) constant returns (uint) {
+        return wmul(wad, wmul(s2s(), gap));
     }
 
     function heal() note {
@@ -80,28 +80,24 @@ contract SaiTap is DSThing {
     }
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint256 wad) note {
+    function boom(uint wad) note {
         require(!off);
         heal();
-
-        // price of wad in sai
-        var ret = wmul(bid(), wad);
-        require(ret <= joy());
-
+        require(bid(wad) <= joy());
+        sai.push(msg.sender, bid(wad));
         skr.burn(msg.sender, wad);
-        sai.push(msg.sender, ret);
     }
-    function bust(uint256 wad) note {
+    function bust(uint wad) note {
         require(!off);
         heal();
 
-        uint256 ash;
+        uint ash;
         if (wad > fog()) {
             skr.mint(wad - fog());
-            ash = wmul(ask(), wad);
+            ash = ask(wad);
             require(ash <= woe());
         } else {
-            ash = wmul(ask(), wad);
+            ash = ask(wad);
         }
 
         skr.push(msg.sender, wad);

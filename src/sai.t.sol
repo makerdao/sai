@@ -1302,7 +1302,7 @@ contract LiquidationTest is SaiTestBase {
         assertEq(tap.joy(), 50 ether);
 
         // joy is available through boom
-        assertEq(tap.bid(), 15 ether);
+        assertEq(tap.bid(1 ether), 15 ether);
         tap.boom(2 ether);
         assertEq(sai.balanceOf(this), 30 ether);
         assertEq(skr.balanceOf(this),  8 ether);
@@ -1625,16 +1625,16 @@ contract GapTest is SaiTestBase {
     function testGapSaiTapBid() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
-        assertEq(tap.bid(), 0.99 ether);
+        assertEq(tap.bid(1 ether), 0.99 ether);
         mark(2 ether);
-        assertEq(tap.bid(), 1.98 ether);
+        assertEq(tap.bid(1 ether), 1.98 ether);
     }
     function testGapSaiTapAsk() {
         mark(1 ether);
         tap.jump(1.01 ether);  // 1% spread
-        assertEq(tap.ask(), 1.01 ether);
+        assertEq(tap.ask(1 ether), 1.01 ether);
         mark(2 ether);
-        assertEq(tap.ask(), 2.02 ether);
+        assertEq(tap.ask(1 ether), 2.02 ether);
     }
     function testGapBoom() {
         sai.push(tap, 198 ether);
@@ -1680,20 +1680,20 @@ contract GapTest is SaiTestBase {
     // join and exit have a spread parameter
     function testGapJarBidAsk() {
         assertEq(jar.per(), ray(1 ether));
-        assertEq(jar.bid(), ray(1 ether));
-        assertEq(jar.ask(), ray(1 ether));
+        assertEq(jar.bid(1 ether), 1 ether);
+        assertEq(jar.ask(1 ether), 1 ether);
 
         jar.jump(1.01 ether);
-        assertEq(jar.bid(), ray(0.99 ether));
-        assertEq(jar.ask(), ray(1.01 ether));
+        assertEq(jar.bid(1 ether), 0.99 ether);
+        assertEq(jar.ask(1 ether), 1.01 ether);
 
         assertEq(skr.balanceOf(this), 500 ether);
         assertEq(skr.totalSupply(),   500 ether);
         skr.burn(250 ether);
 
-        assertEq(jar.per(), ray(2    ether));
-        assertEq(jar.bid(), ray(1.98 ether));
-        assertEq(jar.ask(), ray(2.02 ether));
+        assertEq(jar.per(), ray(2 ether));
+        assertEq(jar.bid(1 ether), 1.98 ether);
+        assertEq(jar.ask(1 ether), 2.02 ether);
     }
     function testGapJoin() {
         gem.mint(100 ether);
@@ -1705,9 +1705,8 @@ contract GapTest is SaiTestBase {
         var skr_after = skr.balanceOf(this);
         var gem_after = gem.balanceOf(this);
 
-        var res = wdiv(100 ether, 1.05 ether);
-        assertEq(skr_after - skr_before,  res);
-        assertEq(gem_before - gem_after, 100 ether);
+        assertEq(skr_after - skr_before, 100 ether);
+        assertEq(gem_before - gem_after, 105 ether);
     }
     function testGapExit() {
         gem.mint(100 ether);

@@ -25,11 +25,11 @@ contract SaiJar is DSThing, DSVault {
         gap = WAD;
     }
     // ref per skr
-    function tag() constant returns (uint256 wad) {
-        return rmul(per(), uint256(pip.read()));
+    function tag() constant returns (uint wad) {
+        return rmul(per(), uint(pip.read()));
     }
     // gem per skr
-    function per() constant returns (uint256 ray) {
+    function per() constant returns (uint ray) {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
@@ -40,28 +40,26 @@ contract SaiJar is DSThing, DSVault {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie, ink);
     }
 
-    function jump(uint256 wad) note auth {
+    function jump(uint wad) note auth {
         gap = wad;
     }
-    function bid() constant returns (uint256) {
-        return rmul(per(), sub(2 * WAD, gap) * (RAY / WAD));
+    function ask(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), gap));
     }
-    function ask() constant returns (uint256) {
-        return rmul(per(), gap * (RAY / WAD));
-    }
-
-    function join(uint256 jam) note {
-        require(!off);
-        var ink = rdiv(jam, ask());
-        skr.mint(msg.sender, ink);
-        gem.transferFrom(msg.sender, this, jam);
+    function bid(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
     }
 
-    function exit(uint256 ink) note {
+    function join(uint wad) note {
         require(!off);
-        var jam = rmul(ink, bid());
-        skr.burn(msg.sender, ink);
-        gem.transfer(msg.sender, jam);
+        gem.transferFrom(msg.sender, this, ask(wad));
+        skr.mint(msg.sender, wad);
+    }
+
+    function exit(uint wad) note {
+        require(!off);
+        gem.transfer(msg.sender, bid(wad));
+        skr.burn(msg.sender, wad);
     }
 
     //------------------------------------------------------------------
