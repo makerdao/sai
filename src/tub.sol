@@ -11,7 +11,6 @@ import "ds-token/token.sol";
 import "ds-vault/vault.sol";
 
 import "./tip.sol";
-import "./lib.sol";
 import "./jar.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
@@ -33,7 +32,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
-    SaiJug   public  jug;  // Sai/sin accountant
 
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
@@ -76,8 +74,9 @@ contract SaiTub is DSThing, SaiTubEvents {
     //------------------------------------------------------------------
 
     function SaiTub(
+        DSToken  sai_,
+        DSToken  sin_,
         SaiJar   jar_,
-        SaiJug   jug_,
         DSVault  pot_,
         DSVault  pit_,
         SaiTip      tip_
@@ -86,9 +85,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         gem = jar.gem();
         skr = jar.skr();
 
-        jug = jug_;
-        sai = jug.sai();
-        sin = jug.sin();
+        sai = sai_;
+        sin = sin_;
         pot = pot_;
         pit = pit_;
 
@@ -131,7 +129,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = rpow(tax, age);
         var dew = sub(rmul(ice(), inc), ice());
 
-        jug.lend(pot, pit, dew);
+        lend(pot, pit, dew);
 
         _chi = rmul(_chi, inc);
         rho = tip.era();
@@ -204,7 +202,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
-        jug.lend(pot, cups[cup].lad, wad);
+        lend(pot, cups[cup].lad, wad);
 
         assert(safe(cup));
         assert(sin.totalSupply() <= hat);
@@ -214,7 +212,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-        jug.mend(cups[cup].lad, pot, wad);
+        mend(cups[cup].lad, pot, wad);
     }
 
     function give(bytes32 cup, address guy) note auth {
@@ -262,5 +260,21 @@ contract SaiTub is DSThing, SaiTubEvents {
         off = true;
         fit = fit_;         // ref per skr
         caged = tip.era();
+    }
+
+    //-- anti-corruption wrapper ---------------------------------------
+
+    function lend(address src, address dst, uint wad) internal {
+        sin.mint(src, wad);
+        sai.mint(dst, wad);
+    }
+    function mend(address src, address dst, uint wad) internal {
+        sai.burn(src, wad);
+        sin.burn(dst, wad);
+    }
+    function heal(address guy) note {
+        var joy = sai.balanceOf(guy);
+        var woe = sin.balanceOf(guy);
+        mend(guy, guy, min(joy, woe));
     }
 }

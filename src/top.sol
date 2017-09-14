@@ -19,8 +19,6 @@ contract SaiTop is DSThing {
     DSVault  public  pot;
     DSVault  public  pit;
 
-    SaiJug   public  jug;
-
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
@@ -33,8 +31,6 @@ contract SaiTop is DSThing {
         jar = tub.jar();
         pot = tub.pot();
         pit = tap.pit();
-
-        jug = tub.jug();
 
         sai = tub.sai();
         sin = tub.sin();
@@ -56,7 +52,7 @@ contract SaiTop is DSThing {
         // cast up to ray for precision
         price = price * (RAY / WAD);
 
-        jug.heal(pit);       // absorb any pending fees
+        tub.heal(pit);       // absorb any pending fees
         pit.burn(skr);       // burn pending sale skr
 
         // most gems we can get per sai is the full balance
@@ -81,7 +77,7 @@ contract SaiTop is DSThing {
 
     function vent() note {
         assert(tub.off());
-        jug.heal(pit);
+        tub.heal(pit);
         pit.burn(skr);
     }
 }

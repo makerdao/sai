@@ -16,8 +16,6 @@ contract SaiTap is DSThing {
     DSToken  public  sin;
     DSToken  public  skr;
 
-    SaiJug   public  jug;
-
     uint256  public  gap;  // spread
 
     function SaiTap(SaiTub tub_, DSVault pit_) {
@@ -27,8 +25,6 @@ contract SaiTap is DSThing {
         sai = tub.sai();
         sin = tub.sin();
         skr = tub.skr();
-
-        jug = tub.jug();
 
         gap = WAD;
     }
@@ -72,7 +68,7 @@ contract SaiTap is DSThing {
     function boom(uint256 wad) note auth {
         assert(!tub.off());
         tub.drip();
-        jug.heal(pit);
+        tub.heal(pit);
 
         // price of wad in sai
         var ret = wmul(bid(), wad);
@@ -84,7 +80,7 @@ contract SaiTap is DSThing {
     function bust(uint256 wad) note auth {
         assert(!tub.off());
         tub.drip();
-        jug.heal(pit);
+        tub.heal(pit);
 
         uint256 ash;
         if (wad > fog()) {
@@ -97,6 +93,6 @@ contract SaiTap is DSThing {
 
         pit.push(skr, msg.sender, wad);
         pit.pull(sai, msg.sender, ash);
-        jug.heal(pit);
+        tub.heal(pit);
     }
 }

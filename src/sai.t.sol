@@ -40,8 +40,6 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  sin;
     DSToken  skr;
 
-    SaiJug   jug;
-
     DSVault  pot;
     DSVault  pit;
     SaiJar   jar;
@@ -70,7 +68,6 @@ contract SaiTestBase is DSTest, DSMath {
         // internal, use ds-guard
         pot.setAuthority(dad);
         pit.setAuthority(dad);
-        jug.setAuthority(dad);
 
         sai.setAuthority(dad);
         sin.setAuthority(dad);
@@ -88,18 +85,14 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256)")), true);
 
 
-        dad.permit(tub, jug, bytes4(sha3('lend(address,address,uint256)')));
-        dad.permit(tub, jug, bytes4(sha3('mend(address,address,uint256)')));
         dad.permit(tub, pot, bytes4(sha3('push(address,address,uint256)')));
 
-        dad.permit(tap, jug, bytes4(sha3('heal(address)')));
         dad.permit(tap, pit, bytes4(sha3('mint(address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('mint(address,address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('burn(address,address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('push(address,address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('pull(address,address,uint256)')));
 
-        dad.permit(top, jug, bytes4(sha3('heal(address)')));
         dad.permit(top, pit, bytes4(sha3('burn(address)')));
         dad.permit(top, pit, bytes4(sha3('push(address,address,uint256)')));
         dad.permit(top, pit, bytes4(sha3('pull(address,address,uint256)')));
@@ -107,10 +100,10 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(jar, skr, bytes4(sha3('mint(address,uint256)')));
         dad.permit(jar, skr, bytes4(sha3('burn(address,uint256)')));
 
-        dad.permit(jug, sai, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(jug, sai, bytes4(sha3('burn(address,uint256)')));
-        dad.permit(jug, sin, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(jug, sin, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(tub, sai, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(tub, sai, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(tub, sin, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(tub, sin, bytes4(sha3('burn(address,uint256)')));
 
         dad.permit(pit, skr, bytes4(sha3('mint(uint256)')));
         dad.permit(pit, skr, bytes4(sha3('mint(address,uint256)')));
@@ -118,9 +111,9 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(pit, skr, bytes4(sha3('burn(address,uint256)')));
         dad.permit(pit, skr, bytes4(sha3('burn(address)')));
 
-        pot.trust(sin, jug, true);  // ice
-        pit.trust(sai, jug, true);  // joy
-        pit.trust(sin, jug, true);  // woe
+        pot.trust(sin, tub, true);  // ice
+        pit.trust(sai, tub, true);  // joy
+        pit.trust(sin, tub, true);  // woe
 
         tip.setOwner(0);
         tub.setOwner(0);
@@ -130,7 +123,6 @@ contract SaiTestBase is DSTest, DSMath {
         pot.setOwner(0);
         pit.setOwner(0);
         jar.setOwner(0);
-        jug.setOwner(0);
 
         sai.setOwner(0);
         sin.setOwner(0);
@@ -198,7 +190,6 @@ contract SaiTestBase is DSTest, DSMath {
 
         sai = new DSToken("SAI");
         sin = new DSToken("SIN");
-        jug = new SaiJug (sai, sin);
 
         skr = new DSToken("SKR");
         pot = new DSVault();
@@ -211,7 +202,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         jar = new SaiJar(skr, gem, tag);
 
-        tub = new SaiTub(jar, jug, pot, pit, tip);
+        tub = new SaiTub(sai, sin, jar, pot, pit, tip);
 
         tap = new SaiTap(tub, pit);
         top = new SaiTop(tub, tap);
@@ -226,8 +217,8 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setUserRole(this, 1, true);  // user
         mom.setUserRole(this, 2, true);  // admin
 
-        sai.trust(jug, true);
-        sin.trust(jug, true);
+        sai.trust(tub, true);
+        sin.trust(tub, true);
 
         gem.trust(jar, true);
         skr.trust(jar, true);
