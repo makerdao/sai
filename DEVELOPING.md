@@ -29,7 +29,7 @@ provided for interest. Eventually, this work aims to allow formal
 reasoning about system properties.
 
 [white paper]: https://github.com/makerdao/docs/blob/master/Dai.md
-[purple paper]: https://makerdao.com/purple 
+[purple paper]: https://makerdao.com/purple
 [teal paper]: https://dapphub.github.io/LLsai/sai
 
 ### Note on memes
@@ -74,6 +74,8 @@ TOOD: risk parameters
 The `jar` is a token wrapper. Users `join` to deposit `gem` in return
 for `skr`, and `exit` to claim `gem` with their `skr`.
 
+![Join-Exit](https://user-images.githubusercontent.com/5028/30302214-a5e79350-97b3-11e7-924c-adc2edf1c61d.png)
+
 `skr` is a simple proportional claim on a collateral pool, with the
 initial `gem`<->`skr` exchange ratio being 1:1.  The essential reason
 for this abstraction will be developed later, but for now it is
@@ -117,19 +119,40 @@ compares the reference value of a CDPs debt and collateral.
 The following `tub` acts are not possible if they would transition a CDP
 to unsafe:
 
+---
+
+![Open | Give](https://user-images.githubusercontent.com/5028/30352570-b4c0f6a2-9874-11e7-8ca3-336531da4c0d.png)
+
 - `open`: create a new CDP
 - `give`: transfer ownership (changes `lad`)
+---
+
+![Lock-Free](https://user-images.githubusercontent.com/5028/30302506-9ff08748-97b5-11e7-95bb-f03ae7d92a1b.png)
+
+
 - `lock`: deposit SKR collateral (increases `ink`)
 - `free`: withdraw SKR collateral (decreases `ink`)
+
+---
+
+![Draw | Wipe](https://user-images.githubusercontent.com/5028/30319553-5094c4e4-9804-11e7-9417-c9085a771643.png)
+
 - `draw`: create Sai (increases `art`)
 - `wipe`: return Sai (decreases `art`)
+
+---
+
 - `shut`: clear all CDP debt, unlock all collateral, and delete the record
+
+---
+
+<img src="https://user-images.githubusercontent.com/5028/30306754-383f5304-97ce-11e7-9f2e-dcd077b5f1f9.png" width="600" />
+
+- `bite`: liquidate CDP (zeros `art`, decreases `ink`, transfers `sin` to `pit`)
 
 Unsafe CDPs need to be liquidated. When a `cup` is not `safe`, anyone
 can perform `bite(cup)`, which takes on all CDP debt and confiscates
 sufficient collateral to cover this, plus a buffer.
-
-- `bite`: liquidate CDP (zeros `art`, decreases `ink`, transfers `sin` to `pit`)
 
 This returns the CDP to a safe state (possibly with zero collateral).
 There are other possible implementations of `bite`, e.g. only taking
@@ -138,6 +161,8 @@ described implementation is chosen for simplicity.
 
 `bite` transfers the `sin` associated with the CDP to the `pit` - the
 liquidator vault.
+
+---
 
 
 ### `tap`: The Liquidator
@@ -162,11 +187,15 @@ The `tap` has two acts:
 Given a net Sai balance, sell the Sai in return for SKR, which is
 burned.
 
+<img src="https://user-images.githubusercontent.com/5028/30313253-d17d6386-97f0-11e7-935d-747521bf9478.png" width="500" />
+
 `bust` is really two functions in one: collateral sell off, and
 inflate and sell. When `fog` is non zero it is sold in return for Sai,
 which is used to cancel out the bad debt, `woe`. If `fog` is zero but
 the `tap` has a net Sin balance, then SKR is minted and sold in return
 for Sai, up to the point that the net Sin balance is zero.
+
+![Bust](https://user-images.githubusercontent.com/5028/30313251-cf8596d4-97f0-11e7-9140-ed75c9c335ef.png)
 
 Through `boom` and `bust` we close the feedback loop on the price of
 SKR. When there is surplus Sai, SKR is burned, decreasing the SKR supply
@@ -220,6 +249,7 @@ act, which also collects unprocessed revenue.
 The `chi` abstraction allows us to compute the per CDP debt, and the
 total unprocessed revenue, with varying `tax`, in constant time.
 
+<img src="https://user-images.githubusercontent.com/5028/30360338-dd708204-98a4-11e7-9da7-f016840a120c.png" width="600" />
 
 ## Auth setup
 
@@ -273,8 +303,8 @@ Script output gist
 - `top`: top-level system manager
 
 - `way`: which way the target price is heading
-- `mat`: 
-- `hat`: 
+- `mat`:
+- `hat`:
 - `axe`
 - `tax`
 - `gap`
