@@ -126,7 +126,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = rpow(tax, age);
         var dew = sub(rmul(ice(), inc), ice());
 
-        lend(this, pit, dew);
+        lend(pit, dew);
 
         _chi = rmul(_chi, inc);
         rho = tip.era();
@@ -199,7 +199,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
-        lend(this, cups[cup].lad, wad);
+        lend(cups[cup].lad, wad);
 
         assert(safe(cup));
         assert(sin.totalSupply() <= hat);
@@ -209,7 +209,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-        mend(cups[cup].lad, this, wad);
+        mend(cups[cup].lad, wad);
     }
 
     function give(bytes32 cup, address guy) note auth {
@@ -261,17 +261,17 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //-- anti-corruption wrapper ---------------------------------------
 
-    function lend(address src, address dst, uint wad) internal {
-        sin.mint(src, wad);
+    function lend(address dst, uint wad) internal {
+        sin.mint(wad);
         sai.mint(dst, wad);
     }
-    function mend(address src, address dst, uint wad) internal {
+    function mend(address src, uint wad) internal {
         sai.burn(src, wad);
-        sin.burn(dst, wad);
+        sin.burn(wad);
     }
     function heal(address guy) note {
-        var joy = sai.balanceOf(guy);
-        var woe = sin.balanceOf(guy);
-        mend(guy, guy, min(joy, woe));
+        var wad = min(sai.balanceOf(guy), sin.balanceOf(guy));
+        sai.burn(guy, wad);
+        sin.burn(guy, wad);
     }
 }

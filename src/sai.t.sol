@@ -97,7 +97,9 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad.permit(tub, sai, bytes4(sha3('mint(address,uint256)')));
         dad.permit(tub, sai, bytes4(sha3('burn(address,uint256)')));
-        dad.permit(tub, sin, bytes4(sha3('mint(address,uint256)')));
+
+        dad.permit(tub, sin, bytes4(sha3('mint(uint256)')));
+        dad.permit(tub, sin, bytes4(sha3('burn(uint256)')));
         dad.permit(tub, sin, bytes4(sha3('burn(address,uint256)')));
 
         dad.permit(pit, skr, bytes4(sha3('mint(uint256)')));
