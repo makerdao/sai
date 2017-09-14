@@ -60,8 +60,8 @@ contract SaiTap is DSThing {
 
     function jump(uint256 wad) note auth {
         gap = wad;
-        assert(gap <= 1.05 ether);
-        assert(gap >= 0.95 ether);
+        require(gap <= 1.05 ether);
+        require(gap >= 0.95 ether);
     }
 
     // price of skr in sai for boom
@@ -81,25 +81,25 @@ contract SaiTap is DSThing {
 
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint256 wad) note {
-        assert(!off);
+        require(!off);
         heal();
 
         // price of wad in sai
         var ret = wmul(bid(), wad);
-        assert(ret <= joy());
+        require(ret <= joy());
 
         skr.burn(msg.sender, wad);
         sai.push(msg.sender, ret);
     }
     function bust(uint256 wad) note {
-        assert(!off);
+        require(!off);
         heal();
 
         uint256 ash;
         if (wad > fog()) {
             skr.mint(wad - fog());
             ash = wmul(ask(), wad);
-            assert(ash <= woe());
+            require(ash <= woe());
         } else {
             ash = wmul(ask(), wad);
         }
@@ -116,13 +116,13 @@ contract SaiTap is DSThing {
         fix = fix_;
     }
     function cash() note {
-        assert(off);
+        require(off);
         var wad = sai.balanceOf(msg.sender);
         sai.pull(msg.sender, wad);
         jar.gem().transfer(msg.sender, rmul(wad, fix));
     }
     function vent() note {
-        assert(off);
+        require(off);
         heal();
         skr.burn(fog());
     }

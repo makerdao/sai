@@ -43,7 +43,7 @@ contract SaiTop is DSThing, DSWarp {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint256 price) note auth {
-        assert(!tub.off());
+        require(!tub.off());
         tub.drip();  // collect remaining fees
 
         var fit = rmul(wmul(price, tub.tip().par()), jar.per());  // ref per skr

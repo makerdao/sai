@@ -99,20 +99,20 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     function chop(uint256 ray) note auth {
         axe = ray;
-        assert(axe >= RAY && axe <= mat);
+        require(axe >= RAY && axe <= mat);
     }
     function cork(uint256 wad) note auth {
         hat = wad;
     }
     function cuff(uint256 ray) note auth {
         mat = ray;
-        assert(axe >= RAY && axe <= mat);
+        require(axe >= RAY && axe <= mat);
     }
     function crop(uint256 ray) note auth {
         drip();
         tax = ray;
-        assert(RAY <= tax);
-        assert(tax < 10002 * 10 ** 23);  // ~200% per hour
+        require(RAY <= tax);
+        require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
 
     function chi() returns (uint256) {
@@ -160,52 +160,52 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     //------------------------------------------------------------------
 
     function open() note returns (bytes32 cup) {
-        assert(!off);
+        require(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         LogNewCup(msg.sender, cup);
     }
     function shut(bytes32 cup) note {
-        assert(!off);
+        require(!off);
         wipe(cup, tab(cup));
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
     function lock(bytes32 cup, uint256 wad) note {
-        assert(!off);
-        assert(msg.sender == cups[cup].lad);
+        require(!off);
+        require(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
         jar.pull(skr, msg.sender, wad);
     }
     function free(bytes32 cup, uint256 wad) note {
-        assert(msg.sender == cups[cup].lad);
+        require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         jar.push(skr, msg.sender, wad);
-        assert(safe(cup));
+        require(safe(cup));
     }
 
     function draw(bytes32 cup, uint256 wad) note {
-        assert(!off);
-        assert(msg.sender == cups[cup].lad);
+        require(!off);
+        require(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         lend(cups[cup].lad, wad);
 
-        assert(safe(cup));
-        assert(sin.totalSupply() <= hat);
+        require(safe(cup));
+        require(sin.totalSupply() <= hat);
     }
     function wipe(bytes32 cup, uint256 wad) note {
-        assert(!off);
-        assert(msg.sender == cups[cup].lad);
+        require(!off);
+        require(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         mend(cups[cup].lad, wad);
     }
 
     function give(bytes32 cup, address guy) note {
-        assert(msg.sender == cups[cup].lad);
-        assert(guy != 0);
+        require(msg.sender == cups[cup].lad);
+        require(guy != 0);
         cups[cup].lad = guy;
     }
 
@@ -216,7 +216,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     }
 
     function bite(bytes32 cup) note {
-        assert(!safe(cup) || off);
+        require(!safe(cup) || off);
 
         // Take on all of the debt
         var rue = tab(cup);
@@ -248,7 +248,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     //------------------------------------------------------------------
 
     function cage(uint256 fit_) note auth {
-        assert(!off);
+        require(!off);
         off = true;
         fit = fit_;         // ref per skr
     }

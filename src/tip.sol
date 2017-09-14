@@ -23,8 +23,8 @@ contract SaiTip is DSThing, DSWarp {
 
     function coax(uint256 ray) note auth {
         way = ray;
-        assert(way < 10002 * 10 ** 23);  // ~200% per hour
-        assert(way >  9998 * 10 ** 23);
+        require(way < 10002 * 10 ** 23);  // ~200% per hour
+        require(way >  9998 * 10 ** 23);
     }
 
     // ref per sai
