@@ -37,7 +37,6 @@ contract SaiTub is DSThing, SaiTubEvents {
     ERC20    public  gem;  // Underlying collateral
 
     SaiJar   public  jar;  // Collateral vault
-    DSVault  public  pot;  // Good debt vault
     address  public  pit;  // Liquidator vault
 
     uint256  public  axe;  // Liquidation penalty
@@ -77,7 +76,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sai_,
         DSToken  sin_,
         SaiJar   jar_,
-        DSVault  pot_,
         DSVault  pit_,
         SaiTip      tip_
     ) {
@@ -87,7 +85,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         sai = sai_;
         sin = sin_;
-        pot = pot_;
         pit = pit_;
 
         axe = RAY;
@@ -129,7 +126,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = rpow(tax, age);
         var dew = sub(rmul(ice(), inc), ice());
 
-        lend(pot, pit, dew);
+        lend(this, pit, dew);
 
         _chi = rmul(_chi, inc);
         rho = tip.era();
@@ -137,7 +134,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     // Good debt
     function ice() constant returns (uint256) {
-        return uint256(sin.balanceOf(pot));
+        return uint256(sin.balanceOf(this));
     }
     // Raw collateral
     function pie() constant returns (uint256) {
@@ -202,7 +199,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
-        lend(pot, cups[cup].lad, wad);
+        lend(this, cups[cup].lad, wad);
 
         assert(safe(cup));
         assert(sin.totalSupply() <= hat);
@@ -212,7 +209,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-        mend(cups[cup].lad, pot, wad);
+        mend(cups[cup].lad, this, wad);
     }
 
     function give(bytes32 cup, address guy) note auth {
@@ -232,7 +229,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         // Take on all of the debt
         var rue = tab(cup);
-        pot.push(sin, pit, rue);
+        sin.push(pit, rue);
         cups[cup].art = 0;
 
         // Amount owed in SKR, including liquidation penalty

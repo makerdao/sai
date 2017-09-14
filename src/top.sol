@@ -16,7 +16,6 @@ contract SaiTop is DSThing {
     SaiTap   public  tap;
 
     SaiJar   public  jar;
-    DSVault  public  pot;
     DSVault  public  pit;
 
     DSToken  public  sai;
@@ -29,7 +28,6 @@ contract SaiTop is DSThing {
         tap = tap_;
 
         jar = tub.jar();
-        pot = tub.pot();
         pit = tap.pit();
 
         sai = tub.sai();

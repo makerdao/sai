@@ -40,7 +40,6 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  sin;
     DSToken  skr;
 
-    DSVault  pot;
     DSVault  pit;
     SaiJar   jar;
     DSVault  tmp;
@@ -66,7 +65,6 @@ contract SaiTestBase is DSTest, DSMath {
         jar.setAuthority(mom);
 
         // internal, use ds-guard
-        pot.setAuthority(dad);
         pit.setAuthority(dad);
 
         sai.setAuthority(dad);
@@ -83,9 +81,6 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setUserRole(top, 254, true);
         mom.setRoleCapability(254, jar, bytes4(sha3("push(address,address,uint256)")), true);
         mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256)")), true);
-
-
-        dad.permit(tub, pot, bytes4(sha3('push(address,address,uint256)')));
 
         dad.permit(tap, pit, bytes4(sha3('mint(address,uint256)')));
         dad.permit(tap, pit, bytes4(sha3('mint(address,address,uint256)')));
@@ -111,7 +106,6 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(pit, skr, bytes4(sha3('burn(address,uint256)')));
         dad.permit(pit, skr, bytes4(sha3('burn(address)')));
 
-        pot.trust(sin, tub, true);  // ice
         pit.trust(sai, tub, true);  // joy
         pit.trust(sin, tub, true);  // woe
 
@@ -120,7 +114,6 @@ contract SaiTestBase is DSTest, DSMath {
         tap.setOwner(0);
         top.setOwner(0);
 
-        pot.setOwner(0);
         pit.setOwner(0);
         jar.setOwner(0);
 
@@ -192,7 +185,6 @@ contract SaiTestBase is DSTest, DSMath {
         sin = new DSToken("SIN");
 
         skr = new DSToken("SKR");
-        pot = new DSVault();
         pit = new DSVault();
 
         tmp = new DSVault();  // somewhere to hide tokens for testing
@@ -202,7 +194,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         jar = new SaiJar(skr, gem, tag);
 
-        tub = new SaiTub(sai, sin, jar, pot, pit, tip);
+        tub = new SaiTub(sai, sin, jar, pit, tip);
 
         tap = new SaiTap(tub, pit);
         top = new SaiTop(tub, tap);
@@ -224,7 +216,6 @@ contract SaiTestBase is DSTest, DSMath {
         skr.trust(jar, true);
         sai.trust(top, true);
 
-        sai.trust(pot, true);
         skr.trust(jar, true);
 
         sai.trust(pit, true);
@@ -349,10 +340,10 @@ contract SaiTubTest is SaiTestBase {
         tub.lock(cup, 10 ether);
 
         assertEq(sai.balanceOf(this),  0 ether);
-        assertEq(sin.balanceOf(pot),   0 ether);
+        assertEq(sin.balanceOf(tub),   0 ether);
         tub.draw(cup, 10 ether);
         assertEq(sai.balanceOf(this), 10 ether);
-        assertEq(sin.balanceOf(pot),  10 ether);
+        assertEq(sin.balanceOf(tub),  10 ether);
     }
     function testWipe() {
         tub.cuff(ray(1 ether));
@@ -362,10 +353,10 @@ contract SaiTubTest is SaiTestBase {
         tub.draw(cup, 10 ether);
 
         assertEq(sai.balanceOf(this), 10 ether);
-        assertEq(sin.balanceOf(pot),  10 ether);
+        assertEq(sin.balanceOf(tub),  10 ether);
         tub.wipe(cup, 5 ether);
         assertEq(sai.balanceOf(this),  5 ether);
-        assertEq(sin.balanceOf(pot),   5 ether);
+        assertEq(sin.balanceOf(tub),   5 ether);
     }
     function testUnsafe() {
         tub.join(10 ether);
@@ -492,10 +483,10 @@ contract CageTest is SaiTestBase {
         mark(1 ether);
         top.cage();
 
-        var woe = sin.balanceOf(pot);
+        var woe = sin.balanceOf(tub);
         assertEq(woe, 5 ether);       // all good debt now bad debt
         assertEq(top.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEq(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to tub
 
         assertEq(gem.balanceOf(pit),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(jar), 25 ether);  // saved for skr
@@ -513,7 +504,7 @@ contract CageTest is SaiTestBase {
         top.cage();        // 150% collat
 
         assertEq(top.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEq(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to tub
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -547,7 +538,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEq(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to pot
+        assertEq(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to tub
     }
     function testCageUnderCollat() {
         cageSetup();
@@ -1000,7 +991,7 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(jar), 80 ether);
 
         tub.bite(cup);
-        tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+        tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from tub
 
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(jar), 40 ether); // locked skr
@@ -1052,7 +1043,7 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(jar), 0 ether);
 
         tub.bite(cup);
-        tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from pot
+        tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from tub
 
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(jar), 40 ether); // locked skr
@@ -1429,11 +1420,11 @@ contract TaxTest is SaiTestBase {
         tub.chop(ray(1.4 ether));
         tub.crop(ray(1.000000001547126 ether));
         // log_named_uint('tab', tub.tab(cup));
-        // log_named_uint('sin', sin.balanceOf(pot));
+        // log_named_uint('sin', sin.balanceOf(tub));
         for (uint i=0; i<=50; i++) {
             tip.warp(10);
             // log_named_uint('tab', tub.tab(cup));
-            // log_named_uint('sin', sin.balanceOf(pot));
+            // log_named_uint('sin', sin.balanceOf(tub));
         }
         uint256 debtAfterWarp = rmul(100 ether, rpow(tub.tax(), 510));
         assertEq(tub.tab(cup), debtAfterWarp);
@@ -1467,7 +1458,7 @@ contract TaxTest is SaiTestBase {
     function testTaxCage() {
         // after cage, un-distributed tax revenue remains as joy - sai
         // surplus in the pit. The remaining joy, plus all outstanding
-        // sai, balances the sin debt in the pot, plus any debt (woe) in
+        // sai, balances the sin debt in the tub, plus any debt (woe) in
         // the pit.
 
         // The effect of this is that joy remaining in tap is
