@@ -155,19 +155,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function join(uint256 wad) note {
-        assert(!off);
-        jar.join(msg.sender, wad);
-    }
-    function exit(uint256 wad) note {
-        var empty = ice() == 0 && skr.balanceOf(tap) == 0;
-        var ended = tip.era() > caged + cooldown;
-        assert(!off || empty || ended);
-        jar.exit(msg.sender, wad);
-    }
-
-    //------------------------------------------------------------------
-
     function open() note returns (bytes32 cup) {
         assert(!off);
         cup = bytes32(++cupi);
@@ -243,22 +230,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].ink = sub(cups[cup].ink, owe);
     }
 
-    //------------------------------------------------------------------
-
-    uint64 public caged;
-    uint64 public cooldown = 6 hours;
-
-    function setCooldown(uint64 cooldown_) note auth {
-        cooldown = cooldown_;
-    }
-
-    function cage(uint256 fit_) note auth {
-        assert(!off);
-        off = true;
-        fit = fit_;         // ref per skr
-        caged = tip.era();
-    }
-
     //-- anti-corruption wrapper ---------------------------------------
 
     function lend(address dst, uint wad) internal {
@@ -269,4 +240,13 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.burn(src, wad);
         sin.burn(wad);
     }
+
+    //------------------------------------------------------------------
+
+    function cage(uint256 fit_) note auth {
+        assert(!off);
+        off = true;
+        fit = fit_;         // ref per skr
+    }
+
 }

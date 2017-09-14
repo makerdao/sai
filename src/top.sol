@@ -10,8 +10,7 @@ import "./tub.sol";
 import "./tap.sol";
 
 contract SaiTop is DSThing {
-    uint256  public  fix;  // sai kill price (gem per sai)
-
+    SaiTip   public  tip;
     SaiTub   public  tub;
     SaiTap   public  tap;
 
@@ -22,10 +21,15 @@ contract SaiTop is DSThing {
     DSToken  public  skr;
     ERC20    public  gem;
 
+    uint256  public  fix;  // sai kill price (gem per sai)
+    uint64   public  caged;
+    uint64   public  cooldown = 6 hours;
+
     function SaiTop(SaiTub tub_, SaiTap tap_) {
         tub = tub_;
         tap = tap_;
 
+        tip = tub.tip();
         jar = tub.jar();
 
         sai = tub.sai();
@@ -58,10 +62,24 @@ contract SaiTop is DSThing {
         tap.vent();    // burn pending sale skr
 
         // put the gems backing sai in a safe place
-        jar.push(gem, tap, rmul(fix, woe));
+        jar.cage(tap, rmul(fix, woe));
+
+        caged = tip.era();
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(wdiv(uint256(tub.jar().pip().read()), tub.tip().par()));
+        cage(wdiv(uint256(jar.pip().read()), tip.par()));
+    }
+
+    function flow() note {
+        require(jar.off());
+        var empty = tub.ice() == 0 && tap.fog() == 0;
+        var ended = tip.era() > caged + cooldown;
+        require(empty || ended);
+        jar.flow(); 
+    }
+
+    function setCooldown(uint64 cooldown_) auth {
+        cooldown = cooldown_;
     }
 }

@@ -13,7 +13,9 @@ contract SaiJar is DSThing, DSVault {
     DSToken  public  skr;
     ERC20    public  gem;
     DSValue  public  pip;
-    uint256  public  gap;
+
+    uint256  public  gap;  // Spread
+    bool     public  off;  // Cage flag
 
     function SaiJar(DSToken skr_, ERC20 gem_, DSValue pip_) {
         skr = skr_;
@@ -48,14 +50,28 @@ contract SaiJar is DSThing, DSVault {
         return rmul(per(), gap * (RAY / WAD));
     }
 
-    function join(address guy, uint256 jam) note auth {
+    function join(uint256 jam) note {
+        require(!off);
         var ink = rdiv(jam, ask());
-        mint(skr, guy, ink);
-        pull(gem, guy, jam);
+        skr.mint(msg.sender, ink);
+        gem.transferFrom(msg.sender, this, jam);
     }
-    function exit(address guy, uint256 ink) note auth {
+
+    function exit(uint256 ink) note {
+        require(!off);
         var jam = rmul(ink, bid());
-        burn(skr, guy, ink);
-        push(gem, guy, jam);
+        skr.burn(msg.sender, ink);
+        gem.transfer(msg.sender, jam);
+    }
+
+    //------------------------------------------------------------------
+
+    function cage(address tap, uint jam) note auth {
+        off = true;
+        gem.transfer(tap, jam);
+    }
+    function flow() note auth {
+        require(off);
+        off = false;
     }
 }
