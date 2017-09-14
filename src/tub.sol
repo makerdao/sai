@@ -27,7 +27,7 @@ contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract SaiTub is DSThing, SaiTubEvents {
+contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     SaiTip   public  tip;  // Target price source
 
     DSToken  public  sai;  // Stablecoin
@@ -94,7 +94,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         _chi = RAY;
 
         tip = tip_;
-        rho = tip.era();
+        rho = era();
     }
 
     function chop(uint256 ray) note auth {
@@ -122,14 +122,18 @@ contract SaiTub is DSThing, SaiTubEvents {
     function drip() note {
         if (off) return;
 
-        var age = tip.era() - rho;
+        var rho_ = era();
+        var age = rho_ - rho;
+        if (age == 0) return;    // optimised
+        rho = rho_;
+
+        if (tax == RAY) return;  // optimised
         var inc = rpow(tax, age);
+
+        if (inc == RAY) return;  // optimised
         var dew = sub(rmul(ice(), inc), ice());
-
         lend(tap, dew);
-
         _chi = rmul(_chi, inc);
-        rho = tip.era();
     }
 
     // Good debt

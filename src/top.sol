@@ -9,7 +9,7 @@ pragma solidity ^0.4.10;
 import "./tub.sol";
 import "./tap.sol";
 
-contract SaiTop is DSThing {
+contract SaiTop is DSThing, DSWarp {
     SaiTip   public  tip;
     SaiTub   public  tub;
     SaiTap   public  tap;
@@ -64,7 +64,7 @@ contract SaiTop is DSThing {
         // put the gems backing sai in a safe place
         jar.cage(tap, rmul(fix, woe));
 
-        caged = tip.era();
+        caged = era();
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
@@ -74,7 +74,7 @@ contract SaiTop is DSThing {
     function flow() note {
         require(jar.off());
         var empty = tub.ice() == 0 && tap.fog() == 0;
-        var ended = tip.era() > caged + cooldown;
+        var ended = era() > caged + cooldown;
         require(empty || ended);
         jar.flow(); 
     }

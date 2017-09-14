@@ -54,6 +54,11 @@ contract SaiTestBase is DSTest, DSMath {
     function mark(uint256 price) {
         tag.poke(bytes32(price));
     }
+    function warp(uint64 age) {
+        tip.warp(age);
+        tub.warp(age);
+        top.warp(age);
+    }
 
     function configureAuth() {
         // user facing, use ds-roles
@@ -1099,10 +1104,10 @@ contract CageTest is SaiTestBase {
         assert(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
         top.setCooldown(1 days);
-        tip.warp(1 days);
+        warp(1 days);
         assert(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
-        tip.warp(1 seconds);
+        warp(1 seconds);
         top.flow();
         assertEq(skr.balanceOf(this), 5 ether);
         assertEq(gem.balanceOf(this), 90 ether);
@@ -1312,7 +1317,7 @@ contract TaxTest is SaiTestBase {
         assertEq(uint(tip.era()), now);
     }
     function testEraWarp() {
-        tip.warp(20);
+        warp(20);
         assertEq(uint(tip.era()), now + 20);
     }
     function taxSetup() returns (bytes32 cup) {
@@ -1329,9 +1334,9 @@ contract TaxTest is SaiTestBase {
     function testTaxEra() {
         var cup = taxSetup();
         assertEq(tub.tab(cup), 100 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 110.25 ether);
     }
     // Tax accumulates as sai surplus
@@ -1339,32 +1344,32 @@ contract TaxTest is SaiTestBase {
         var cup = taxSetup();
         assertEq(tap.joy(),      0 ether);
         assertEq(tub.tab(cup), 100 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
         assertEq(tap.joy(),      5 ether);
     }
     function testTaxDraw() {
         var cup = taxSetup();
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
         tub.draw(cup, 100 ether);
         assertEq(tub.tab(cup), 205 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 215.25 ether);
     }
     function testTaxWipe() {
         var cup = taxSetup();
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
         tub.wipe(cup, 50 ether);
         assertEq(tub.tab(cup), 55 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 57.75 ether);
     }
     // collected fees are available through boom
     function testTaxBoom() {
         taxSetup();
-        tip.warp(1 days);
+        warp(1 days);
         // should have 5 sai available == 0.5 skr
         jar.join(0.5 ether);  // get some unlocked skr
 
@@ -1385,13 +1390,13 @@ contract TaxTest is SaiTestBase {
         var cup = taxSetup();
         mark(1 ether);
         assert(tub.safe(cup));
-        tip.warp(1 days);
+        warp(1 days);
         assert(!tub.safe(cup));
     }
     function testTaxBite() {
         var cup = taxSetup();
         mark(1 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
         tub.bite(cup);
         assertEq(tub.tab(cup),   0 ether);
@@ -1406,7 +1411,7 @@ contract TaxTest is SaiTestBase {
         // log_named_uint('tab', tub.tab(cup));
         // log_named_uint('sin', sin.balanceOf(tub));
         for (uint i=0; i<=50; i++) {
-            tip.warp(10);
+            warp(10);
             // log_named_uint('tab', tub.tab(cup));
             // log_named_uint('sin', sin.balanceOf(tub));
         }
@@ -1418,12 +1423,12 @@ contract TaxTest is SaiTestBase {
     }
     function testTaxBail() {
         var cup = taxSetup();
-        tip.warp(1 days);
+        warp(1 days);
         tub.drip();
         mark(10 ether);
         top.cage();
 
-        tip.warp(1 days);  // should have no effect
+        warp(1 days);  // should have no effect
         tub.drip();
 
         assertEq(skr.balanceOf(this),  0 ether);
@@ -1448,13 +1453,13 @@ contract TaxTest is SaiTestBase {
         // The effect of this is that joy remaining in tap is
         // effectively distributed to all skr holders.
         var cup = taxSetup();
-        tip.warp(1 days);
+        warp(1 days);
         mark(10 ether);
 
         assertEq(tap.joy(), 0 ether);
         top.cage();                // should drip up to date
         assertEq(tap.joy(), 5 ether);
-        tip.warp(1 days);  tub.drip();  // should have no effect
+        warp(1 days);  tub.drip();  // should have no effect
         assertEq(tap.joy(), 5 ether);
 
         var owe = tub.tab(cup);
@@ -1504,11 +1509,11 @@ contract WayTest is SaiTestBase {
         tip.coax(999999406327787478619865402);  // -5% / day
 
         assertEq(tip.par(), 1.00 ether);
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tip.par(), 0.95 ether);
 
         tip.coax(1000008022568992670911001251);  // 200% / day
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tip.par(), 1.90 ether);
     }
     function testWayDecreasingPrincipal() {
@@ -1517,7 +1522,7 @@ contract WayTest is SaiTestBase {
         assert(!tub.safe(cup));
 
         tip.coax(999999406327787478619865402);  // -5% / day
-        tip.warp(1 days);
+        warp(1 days);
         assert(tub.safe(cup));
     }
     // `cage` is slightly affected: the cage price is
@@ -1528,7 +1533,7 @@ contract WayTest is SaiTestBase {
         waySetup();
 
         tip.coax(1000008022568992670911001251);  // 200% / day
-        tip.warp(1 days);  // par now 2
+        warp(1 days);  // par now 2
 
         // we have 100 sai
         // gem is worth 10 ref
@@ -1565,7 +1570,7 @@ contract WayTest is SaiTestBase {
         assertEq(sai.balanceOf(this), 75 ether);
 
         tip.coax(999991977495368425989823173);  // -50% / day
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tip.par(), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
@@ -1583,7 +1588,7 @@ contract WayTest is SaiTestBase {
 
         mark(2 ether);
         tip.coax(1000008022568992670911001251);  // 200% / day
-        tip.warp(1 days);
+        warp(1 days);
         assertEq(tip.par(), 2 ether);
         tap.boom(100 ether);
         assertEq(tap.joy(),   0 ether);
@@ -1597,7 +1602,7 @@ contract WayTest is SaiTestBase {
         assertEq(tap.joy(), 100 ether);
         mark(2 ether);
         tip.coax(999991977495368425989823173);  // -50% / day
-        tip.warp(2 days);
+        warp(2 days);
         assertEq(tip.par(), 0.5 ether);
         tap.boom(12.5 ether);
         assertEq(tap.joy(),   0 ether);
@@ -1741,27 +1746,32 @@ contract GasTest is SaiTestBase {
     function doDraw(uint256 wad) logs_gas {
         tub.draw(cup, wad);
     }
+    function doWipe(uint256 wad) logs_gas {
+        tub.wipe(cup, wad);
+    }
     function doDrip() logs_gas {
         tub.drip();
     }
     function doBoom(uint256 wad) logs_gas {
         tap.boom(wad);
     }
+
+    uint64 tic = 15 seconds;
+
     function testGasLock() {
+        warp(tic);
         doLock(100 ether);
     }
     function testGasDraw() {
+        warp(tic);
         doDraw(100 ether);
     }
-    function testGasDrip() {
-        tip.warp(1);
-        doDrip();
-    }
-    function testGasDripNoop() {
-        tub.drip();
-        doDrip();
+    function testGasWipe() {
+        warp(tic);
+        doWipe(100 ether);
     }
     function testGasBoom() {
+        warp(tic);
         jar.join(10 ether);
         sai.mint(100 ether);
         sai.push(tap, 100 ether);
@@ -1769,6 +1779,7 @@ contract GasTest is SaiTestBase {
         doBoom(1 ether);
     }
     function testGasBoomHeal() {
+        warp(tic);
         jar.join(10 ether);
         sai.mint(100 ether);
         sin.mint(100 ether);
@@ -1776,5 +1787,25 @@ contract GasTest is SaiTestBase {
         sin.push(tap,  50 ether);
         skr.approve(tap, uint(-1));
         doBoom(1 ether);
+    }
+    function testGasDripNoop() {
+        tub.drip();
+        doDrip();
+    }
+    function testGasDrip1s() {
+        warp(1 seconds);
+        doDrip();
+    }
+    function testGasDrip1m() {
+        warp(1 minutes);
+        doDrip();
+    }
+    function testGasDrip1h() {
+        warp(1 hours);
+        doDrip();
+    }
+    function testGasDrip1d() {
+        warp(1 days);
+        doDrip();
     }
 }
