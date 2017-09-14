@@ -255,13 +255,13 @@ contract SaiTubTest is SaiTestBase {
         var cork = bytes4(sha3('cork(uint256)'));
         var cuff = bytes4(sha3('cuff(uint256)'));
 
-        assert(tub.call(cork, 0 ether));
-        assert(tub.call(cork, 5 ether));
+        assertTrue(tub.call(cork, 0 ether));
+        assertTrue(tub.call(cork, 5 ether));
 
-        assert(!tub.call(chop, ray(2 ether)));
-        assert(tub.call(cuff, ray(2 ether)));
-        assert(tub.call(chop, ray(2 ether)));
-        assert(!tub.call(cuff, ray(1 ether)));
+        assertTrue(!tub.call(chop, ray(2 ether)));
+        assertTrue(tub.call(cuff, ray(2 ether)));
+        assertTrue(tub.call(chop, ray(2 ether)));
+        assertTrue(!tub.call(cuff, ray(1 ether)));
     }
     function testJoinInitial() {
         assertEq(skr.totalSupply(),     0 ether);
@@ -342,9 +342,9 @@ contract SaiTubTest is SaiTestBase {
         tub.lock(cup, 10 ether);
         tub.draw(cup, 9 ether);
 
-        assert(tub.safe(cup));
+        assertTrue(tub.safe(cup));
         tag.poke(bytes32(1 ether / 2));
-        assert(!tub.safe(cup));
+        assertTrue(!tub.safe(cup));
     }
     function testBiteUnderParity() {
         assertEq(uint(tub.axe()), uint(ray(1 ether)));  // 100% collateralisation limit
@@ -365,9 +365,9 @@ contract SaiTubTest is SaiTestBase {
         tub.lock(cup, 10 ether);
 
         tub.draw(cup, 4 ether);  // 250% collateralisation
-        assert(tub.safe(cup));
+        assertTrue(tub.safe(cup));
         tag.poke(bytes32(1 ether / 2));   // 125% collateralisation
-        assert(!tub.safe(cup));
+        assertTrue(!tub.safe(cup));
 
         assertEq(tap.fog(), uint(0));
         tub.bite(cup);
@@ -1101,17 +1101,17 @@ contract CageTest is SaiTestBase {
         assertEq(uint(top.caged()), tip.era());
 
         // exit fails because ice != 0 && fog !=0 and not enough time passed
-        assert(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
+        assertTrue(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
         top.setCooldown(1 days);
         warp(1 days);
-        assert(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
+        assertTrue(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
         warp(1 seconds);
         top.flow();
         assertEq(skr.balanceOf(this), 5 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        assert(jar.call(bytes4(sha3('exit(uint256)')), 4 ether));
+        assertTrue(jar.call(bytes4(sha3('exit(uint256)')), 4 ether));
         assertEq(skr.balanceOf(this), 1 ether);
         // n.b. we don't get back 4 as there is still skr in the cup
         assertEq(gem.balanceOf(this), 92 ether);
@@ -1229,7 +1229,7 @@ contract LiquidationTest is SaiTestBase {
         tub.draw(cup, 16 ether);  // 125% collat
         mark(2 ether);
 
-        assert(!tub.safe(cup));
+        assertTrue(!tub.safe(cup));
         tub.bite(cup);
         // 20 ref of gem on 16 ref of sai
         // 125%
@@ -1389,9 +1389,9 @@ contract TaxTest is SaiTestBase {
     function testTaxSafe() {
         var cup = taxSetup();
         mark(1 ether);
-        assert(tub.safe(cup));
+        assertTrue(tub.safe(cup));
         warp(1 days);
-        assert(!tub.safe(cup));
+        assertTrue(!tub.safe(cup));
     }
     function testTaxBite() {
         var cup = taxSetup();
@@ -1519,11 +1519,11 @@ contract WayTest is SaiTestBase {
     function testWayDecreasingPrincipal() {
         var cup = waySetup();
         mark(0.98 ether);
-        assert(!tub.safe(cup));
+        assertTrue(!tub.safe(cup));
 
         tip.coax(999999406327787478619865402);  // -5% / day
         warp(1 days);
-        assert(tub.safe(cup));
+        assertTrue(tub.safe(cup));
     }
     // `cage` is slightly affected: the cage price is
     // now in *sai per gem*, where before ref per gem
@@ -1670,10 +1670,10 @@ contract GapTest is SaiTestBase {
         uint256 legal   = 1.04 ether;
         uint256 illegal = 1.06 ether;
 
-        assert(tap.call(bytes4(sha3("jump(uint256)")), legal));
+        assertTrue(tap.call(bytes4(sha3("jump(uint256)")), legal));
         assertEq(tap.gap(), legal);
 
-        assert(!tap.call(bytes4(sha3("jump(uint256)")), illegal));
+        assertTrue(!tap.call(bytes4(sha3("jump(uint256)")), illegal));
         assertEq(tap.gap(), legal);
     }
 

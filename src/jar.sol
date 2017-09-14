@@ -25,11 +25,11 @@ contract SaiJar is DSThing, DSVault {
         gap = WAD;
     }
     // ref per skr
-    function tag() constant returns (uint256) {
+    function tag() constant returns (uint256 wad) {
         return rmul(per(), uint256(pip.read()));
     }
     // gem per skr
-    function per() constant returns (uint256) {
+    function per() constant returns (uint256 ray) {
         // this avoids 0 edge case / rounding errors TODO delete me
         // TODO delegate edge case via fee built into conversion formula
         // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
