@@ -152,8 +152,8 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(2, tub, bytes4(sha3("crop(uint256)")), true);
         mom.setRoleCapability(2, tip, bytes4(sha3("coax(uint256)")), true);
 
-        mom.setRoleCapability(2, tap, bytes4(sha3("jump(uint256)")), true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("jump(uint256)")), true);
+        mom.setRoleCapability(2, tap, bytes4(sha3("calk(uint256)")), true);
+        mom.setRoleCapability(2, jar, bytes4(sha3("calk(uint256)")), true);
 
         mom.setRoleCapability(2, top, bytes4(sha3("cage(uint256)")), true);
         mom.setRoleCapability(2, top, bytes4(sha3("cage()")), true);
@@ -1624,14 +1624,14 @@ contract GapTest is SaiTestBase {
     }
     function testGapSaiTapBid() {
         mark(1 ether);
-        tap.jump(1.01 ether);  // 1% spread
+        tap.calk(1.01 ether);  // 1% spread
         assertEq(tap.bid(1 ether), 0.99 ether);
         mark(2 ether);
         assertEq(tap.bid(1 ether), 1.98 ether);
     }
     function testGapSaiTapAsk() {
         mark(1 ether);
-        tap.jump(1.01 ether);  // 1% spread
+        tap.calk(1.01 ether);  // 1% spread
         assertEq(tap.ask(1 ether), 1.01 ether);
         mark(2 ether);
         assertEq(tap.ask(1 ether), 2.02 ether);
@@ -1640,7 +1640,7 @@ contract GapTest is SaiTestBase {
         sai.push(tap, 198 ether);
         assertEq(tap.joy(), 198 ether);
 
-        tap.jump(1.01 ether);  // 1% spread
+        tap.calk(1.01 ether);  // 1% spread
 
         var sai_before = sai.balanceOf(this);
         var skr_before = skr.balanceOf(this);
@@ -1656,7 +1656,7 @@ contract GapTest is SaiTestBase {
         assertEq(tap.fog(), 100 ether);
         assertEq(tap.woe(), 200 ether);
 
-        tap.jump(1.01 ether);
+        tap.calk(1.01 ether);
 
         var sai_before = sai.balanceOf(this);
         var skr_before = skr.balanceOf(this);
@@ -1670,10 +1670,10 @@ contract GapTest is SaiTestBase {
         uint256 legal   = 1.04 ether;
         uint256 illegal = 1.06 ether;
 
-        assertTrue(tap.call(bytes4(sha3("jump(uint256)")), legal));
+        assertTrue(tap.call(bytes4(sha3("calk(uint256)")), legal));
         assertEq(tap.gap(), legal);
 
-        assertTrue(!tap.call(bytes4(sha3("jump(uint256)")), illegal));
+        assertTrue(!tap.call(bytes4(sha3("calk(uint256)")), illegal));
         assertEq(tap.gap(), legal);
     }
 
@@ -1683,7 +1683,7 @@ contract GapTest is SaiTestBase {
         assertEq(jar.bid(1 ether), 1 ether);
         assertEq(jar.ask(1 ether), 1 ether);
 
-        jar.jump(1.01 ether);
+        jar.calk(1.01 ether);
         assertEq(jar.bid(1 ether), 0.99 ether);
         assertEq(jar.ask(1 ether), 1.01 ether);
 
@@ -1698,7 +1698,7 @@ contract GapTest is SaiTestBase {
     function testGapJoin() {
         gem.mint(100 ether);
 
-        jar.jump(1.05 ether);
+        jar.calk(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
         jar.join(100 ether);
@@ -1712,7 +1712,7 @@ contract GapTest is SaiTestBase {
         gem.mint(100 ether);
         jar.join(100 ether);
 
-        jar.jump(1.05 ether);
+        jar.calk(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
         jar.exit(100 ether);

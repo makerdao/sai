@@ -40,7 +40,7 @@ contract SaiJar is DSThing, DSVault {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie, ink);
     }
 
-    function jump(uint wad) note auth {
+    function calk(uint wad) note auth {
         gap = wad;
     }
     function ask(uint wad) constant returns (uint) {

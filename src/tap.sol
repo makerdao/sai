@@ -58,7 +58,7 @@ contract SaiTap is DSThing {
         return wdiv(tag, par);  // sai per skr
     }
 
-    function jump(uint wad) note auth {
+    function calk(uint wad) note auth {
         gap = wad;
         require(gap <= 1.05 ether);
         require(gap >= 0.95 ether);

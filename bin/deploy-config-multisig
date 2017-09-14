@@ -13,8 +13,8 @@ else
     exit
 fi
 
-# pass cage(), cage(price), tap.jump ctrl to multisig
+# pass cage(), cage(price), tap.calk ctrl to multisig
 seth send $SAI_MOM "setUserRole(address,uint8,bool)" $SAI_MULTISIG 2 true
 seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TOP $(seth calldata 'cage(uint256)') true
 seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TOP $(seth calldata 'cage()') true
-seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TAP $(seth calldata 'jump(uint256)') true
+seth send $SAI_MOM "setRoleCapability(uint8,address,bytes4,bool)" 2 $SAI_TAP $(seth calldata 'calk(uint256)') true

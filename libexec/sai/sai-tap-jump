@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-### sai-tap-jump -- update the spread on `boom` and `bust`
-### Usage: sai tap jump <new-gap>
+### sai-tap-calk -- update the spread on `boom` and `bust`
+### Usage: sai tap calk <new-gap>
 set -e
-[ $# = 1 ] || sai tap jump --usage
+[ $# = 1 ] || sai tap calk --usage
 wad=$(sai wad -h "$1")
 echo >&2 "Setting gap to $wad..."
 wad=$(sai wad "$1")
-(set -x; seth send "${SAI_TAP?}" "jump(uint256)" "$wad")
+(set -x; seth send "${SAI_TAP?}" "calk(uint256)" "$wad")
