@@ -155,11 +155,11 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function join(uint256 wad) note auth {
+    function join(uint256 wad) note {
         assert(!off);
         jar.join(msg.sender, wad);
     }
-    function exit(uint256 wad) note auth {
+    function exit(uint256 wad) note {
         var empty = ice() == 0 && skr.balanceOf(tap) == 0;
         var ended = tip.era() > caged + cooldown;
         assert(!off || empty || ended);
@@ -168,33 +168,33 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function open() note auth returns (bytes32 cup) {
+    function open() note returns (bytes32 cup) {
         assert(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         LogNewCup(msg.sender, cup);
     }
-    function shut(bytes32 cup) note auth {
+    function shut(bytes32 cup) note {
         assert(!off);
         wipe(cup, tab(cup));
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
-    function lock(bytes32 cup, uint256 wad) note auth {
+    function lock(bytes32 cup, uint256 wad) note {
         assert(!off);
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
         jar.pull(skr, msg.sender, wad);
     }
-    function free(bytes32 cup, uint256 wad) note auth {
+    function free(bytes32 cup, uint256 wad) note {
         assert(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         jar.push(skr, msg.sender, wad);
         assert(safe(cup));
     }
 
-    function draw(bytes32 cup, uint256 wad) note auth {
+    function draw(bytes32 cup, uint256 wad) note {
         assert(!off);
         assert(msg.sender == cups[cup].lad);
 
@@ -204,7 +204,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         assert(safe(cup));
         assert(sin.totalSupply() <= hat);
     }
-    function wipe(bytes32 cup, uint256 wad) note auth {
+    function wipe(bytes32 cup, uint256 wad) note {
         assert(!off);
         assert(msg.sender == cups[cup].lad);
 
@@ -212,7 +212,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         mend(cups[cup].lad, wad);
     }
 
-    function give(bytes32 cup, address guy) note auth {
+    function give(bytes32 cup, address guy) note {
         assert(msg.sender == cups[cup].lad);
         assert(guy != 0);
         cups[cup].lad = guy;
@@ -224,7 +224,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         return off ? fit : jar.tag();
     }
 
-    function bite(bytes32 cup) note auth {
+    function bite(bytes32 cup) note {
         assert(!safe(cup) || off);
 
         // Take on all of the debt

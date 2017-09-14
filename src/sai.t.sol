@@ -138,21 +138,6 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(1, tap, bytes4(sha3("bust(uint256)")), true);
         mom.setRoleCapability(1, top, bytes4(sha3("cash()")), true);
     }
-    function setPublicRoles() {
-        mom.setPublicCapability(tub, bytes4(sha3("join(uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("exit(uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("open()")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("shut(bytes32)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("lock(bytes32,uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("free(bytes32,uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("draw(bytes32,uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("wipe(bytes32,uint256)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("give(bytes32,address)")), true);
-        mom.setPublicCapability(tub, bytes4(sha3("bite(bytes32)")), true);
-        mom.setPublicCapability(tap, bytes4(sha3("boom(uint256)")), true);
-        mom.setPublicCapability(tap, bytes4(sha3("bust(uint256)")), true);
-        mom.setPublicCapability(top, bytes4(sha3("cash()")), true);
-    }
     function setAdminRoles() {
         mom.setRoleCapability(2, tub, bytes4(sha3("chop(uint256)")), true);
         mom.setRoleCapability(2, tub, bytes4(sha3("cork(uint256)")), true);
