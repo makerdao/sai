@@ -303,6 +303,15 @@ contract SaiTubTest is SaiTestBase {
         assert(tub.call(chop, ray(2 ether)));
         assert(!tub.call(cuff, ray(1 ether)));
     }
+    function testJoinInitial() {
+        assertEq(skr.totalSupply(),     0 ether);
+        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(gem.balanceOf(this), 100 ether);
+        tub.join(10 ether);
+        assertEq(skr.balanceOf(this), 10 ether);
+        assertEq(gem.balanceOf(this), 90 ether);
+        assertEq(gem.balanceOf(jar),  10 ether);
+    }
     function testJoinExit() {
         assertEq(skr.balanceOf(this), 0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
