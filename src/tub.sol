@@ -37,7 +37,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     ERC20    public  gem;  // Underlying collateral
 
     SaiJar   public  jar;  // Collateral vault
-    address  public  pit;  // Liquidator vault
+    address  public  tap;  // Liquidator
 
     uint256  public  axe;  // Liquidation penalty
     uint256  public  hat;  // Debt ceiling
@@ -76,8 +76,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sai_,
         DSToken  sin_,
         SaiJar   jar_,
-        DSVault  pit_,
-        SaiTip      tip_
+        SaiTip   tip_,
+        address  tap_
     ) {
         jar = jar_;
         gem = jar.gem();
@@ -85,7 +85,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         sai = sai_;
         sin = sin_;
-        pit = pit_;
+        tap = tap_;
 
         axe = RAY;
         mat = RAY;
@@ -126,7 +126,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = rpow(tax, age);
         var dew = sub(rmul(ice(), inc), ice());
 
-        lend(pit, dew);
+        lend(tap, dew);
 
         _chi = rmul(_chi, inc);
         rho = tip.era();
@@ -160,7 +160,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         jar.join(msg.sender, wad);
     }
     function exit(uint256 wad) note auth {
-        var empty = ice() == 0 && skr.balanceOf(pit) == 0;
+        var empty = ice() == 0 && skr.balanceOf(tap) == 0;
         var ended = tip.era() > caged + cooldown;
         assert(!off || empty || ended);
         jar.exit(msg.sender, wad);
@@ -229,7 +229,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         // Take on all of the debt
         var rue = tab(cup);
-        sin.push(pit, rue);
+        sin.push(tap, rue);
         cups[cup].art = 0;
 
         // Amount owed in SKR, including liquidation penalty
@@ -239,7 +239,7 @@ contract SaiTub is DSThing, SaiTubEvents {
             owe = cups[cup].ink;
         }
 
-        jar.push(skr, pit, owe);
+        jar.push(skr, tap, owe);
         cups[cup].ink = sub(cups[cup].ink, owe);
     }
 
@@ -268,10 +268,5 @@ contract SaiTub is DSThing, SaiTubEvents {
     function mend(address src, uint wad) internal {
         sai.burn(src, wad);
         sin.burn(wad);
-    }
-    function heal(address guy) note {
-        var wad = min(sai.balanceOf(guy), sin.balanceOf(guy));
-        sai.burn(guy, wad);
-        sin.burn(guy, wad);
     }
 }

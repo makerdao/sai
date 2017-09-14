@@ -16,7 +16,6 @@ contract SaiTop is DSThing {
     SaiTap   public  tap;
 
     SaiJar   public  jar;
-    DSVault  public  pit;
 
     DSToken  public  sai;
     DSToken  public  sin;
@@ -28,7 +27,6 @@ contract SaiTop is DSThing {
         tap = tap_;
 
         jar = tub.jar();
-        pit = tap.pit();
 
         sai = tub.sai();
         sin = tub.sin();
@@ -50,32 +48,20 @@ contract SaiTop is DSThing {
         // cast up to ray for precision
         price = price * (RAY / WAD);
 
-        tub.heal(pit);       // absorb any pending fees
-        pit.burn(skr);       // burn pending sale skr
+        tap.heal();       // absorb any pending fees
 
         // most gems we can get per sai is the full balance
         var woe = sin.totalSupply();
 
         fix = min(rdiv(RAY, price), rdiv(tub.pie(), woe));
+        tap.cage(fix);
+        tap.vent();    // burn pending sale skr
 
         // put the gems backing sai in a safe place
-        jar.push(gem, pit, rmul(fix, woe));
+        jar.push(gem, tap, rmul(fix, woe));
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
         cage(wdiv(uint256(tub.jar().pip().read()), tub.tip().par()));
-    }
-    // exchange free sai for gems after kill
-    function cash() note auth {
-        assert(tub.off());
-        var wad = sai.balanceOf(msg.sender);
-        pit.pull(sai, msg.sender, wad);
-        pit.push(gem, msg.sender, rmul(wad, fix));
-    }
-
-    function vent() note {
-        assert(tub.off());
-        tub.heal(pit);
-        pit.burn(skr);
     }
 }

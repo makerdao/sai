@@ -6,47 +6,56 @@
 
 pragma solidity ^0.4.10;
 
-import "./tub.sol";
+import "./jar.sol";
+import "./tip.sol";
 
 contract SaiTap is DSThing {
-    SaiTub   public  tub;
-    DSVault  public  pit;
-
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
 
-    uint256  public  gap;  // spread
+    SaiJar   public  jar;
+    SaiTip   public  tip;
 
-    function SaiTap(SaiTub tub_, DSVault pit_) {
-        tub = tub_;
-        pit = pit_;
+    uint256  public  gap;  // Spread
+    bool     public  off;  // Cage flag
+    uint256  public  fix;  // Cage price
 
-        sai = tub.sai();
-        sin = tub.sin();
-        skr = tub.skr();
+    function SaiTap(
+        DSToken sai_,
+        DSToken sin_,
+        SaiJar  jar_,
+        SaiTip  tip_
+
+    ) {
+        sai = sai_;
+        sin = sin_;
+        skr = jar_.skr();
+
+        tip = tip_;
+        jar = jar_;
 
         gap = WAD;
     }
 
     // surplus
     function joy() constant returns (uint256) {
-        return uint256(sai.balanceOf(pit));
+        return uint256(sai.balanceOf(this));
     }
     // Bad debt
     function woe() constant returns (uint256) {
-        return uint256(sin.balanceOf(pit));
+        return uint256(sin.balanceOf(this));
     }
     // Collateral pending liquidation
     function fog() constant returns (uint256) {
-        return uint256(skr.balanceOf(pit));
+        return uint256(skr.balanceOf(this));
     }
 
     // sai per skr
     function s2s() returns (uint256) {
-        var tag = tub.jar().tag();  // ref per skr
-        var par = tub.tip().par();  // ref per sai
-        return wdiv(tag, par);      // sai per skr
+        var tag = jar.tag();    // ref per skr
+        var par = tip.par();    // ref per sai
+        return wdiv(tag, par);  // sai per skr
     }
 
     function jump(uint256 wad) note auth {
@@ -64,35 +73,57 @@ contract SaiTap is DSThing {
         return wmul(s2s(), gap);
     }
 
+    function heal() note {
+        var wad = min(joy(), woe());
+        sai.burn(wad);
+        sin.burn(wad);
+    }
+
     // constant skr/sai mint/sell/buy/burn to process joy/woe
-    function boom(uint256 wad) note auth {
-        assert(!tub.off());
-        tub.drip();
-        tub.heal(pit);
+    function boom(uint256 wad) note {
+        assert(!off);
+        heal();
 
         // price of wad in sai
         var ret = wmul(bid(), wad);
         assert(ret <= joy());
 
-        pit.burn(skr, msg.sender, wad);
-        pit.push(sai, msg.sender, ret);
+        skr.burn(msg.sender, wad);
+        sai.push(msg.sender, ret);
     }
-    function bust(uint256 wad) note auth {
-        assert(!tub.off());
-        tub.drip();
-        tub.heal(pit);
+    function bust(uint256 wad) note {
+        assert(!off);
+        heal();
 
         uint256 ash;
         if (wad > fog()) {
-            pit.mint(skr, wad - fog());
+            skr.mint(wad - fog());
             ash = wmul(ask(), wad);
             assert(ash <= woe());
         } else {
             ash = wmul(ask(), wad);
         }
 
-        pit.push(skr, msg.sender, wad);
-        pit.pull(sai, msg.sender, ash);
-        tub.heal(pit);
+        skr.push(msg.sender, wad);
+        sai.pull(msg.sender, ash);
+        heal();
+    }
+
+    //------------------------------------------------------------------
+
+    function cage(uint fix_) note auth {
+        off = true;
+        fix = fix_;
+    }
+    function cash() note {
+        assert(off);
+        var wad = sai.balanceOf(msg.sender);
+        sai.pull(msg.sender, wad);
+        jar.gem().transfer(msg.sender, rmul(wad, fix));
+    }
+    function vent() note {
+        assert(off);
+        heal();
+        skr.burn(fog());
     }
 }
