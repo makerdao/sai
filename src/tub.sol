@@ -56,14 +56,14 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     struct Cup {
         address  lad;      // CDP owner
-        uint256  art;      // Outstanding debt (in internal debt units)
-        uint256  ink;      // Locked collateral (in SKR)
+        uint  art;      // Outstanding debt (in internal debt units)
+        uint  ink;      // Locked collateral (in SKR)
     }
 
-    function tab(bytes32 cup) constant returns (uint256) {
+    function tab(bytes32 cup) constant returns (uint) {
         return rmul(cups[cup].art, chi());
     }
-    function ink(bytes32 cup) constant returns (uint256) {
+    function ink(bytes32 cup) constant returns (uint) {
         return cups[cup].ink;
     }
     function lad(bytes32 cup) constant returns (address) {
@@ -97,25 +97,25 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         rho = era();
     }
 
-    function chop(uint256 ray) note auth {
+    function chop(uint ray) note auth {
         axe = ray;
         require(axe >= RAY && axe <= mat);
     }
-    function cork(uint256 wad) note auth {
+    function cork(uint wad) note auth {
         hat = wad;
     }
-    function cuff(uint256 ray) note auth {
+    function cuff(uint ray) note auth {
         mat = ray;
         require(axe >= RAY && axe <= mat);
     }
-    function crop(uint256 ray) note auth {
+    function crop(uint ray) note auth {
         drip();
         tax = ray;
         require(RAY <= tax);
         require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
 
-    function chi() returns (uint256) {
+    function chi() returns (uint) {
         drip();
         return _chi;
     }
@@ -137,16 +137,16 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     }
 
     // Good debt
-    function ice() constant returns (uint256) {
-        return uint256(sin.balanceOf(this));
+    function ice() constant returns (uint) {
+        return sin.balanceOf(this);
     }
     // Raw collateral
-    function pie() constant returns (uint256) {
-        return uint256(gem.balanceOf(jar));
+    function pie() constant returns (uint) {
+        return gem.balanceOf(jar);
     }
     // Backing collateral
-    function air() constant returns (uint256) {
-        return uint256(skr.balanceOf(jar));
+    function air() constant returns (uint) {
+        return skr.balanceOf(jar);
     }
 
     // Returns true if cup is well-collateralized
@@ -172,20 +172,20 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         delete cups[cup];
     }
 
-    function lock(bytes32 cup, uint256 wad) note {
+    function lock(bytes32 cup, uint wad) note {
         require(!off);
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
         jar.pull(skr, msg.sender, wad);
     }
-    function free(bytes32 cup, uint256 wad) note {
+    function free(bytes32 cup, uint wad) note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         jar.push(skr, msg.sender, wad);
         require(safe(cup));
     }
 
-    function draw(bytes32 cup, uint256 wad) note {
+    function draw(bytes32 cup, uint wad) note {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
@@ -195,7 +195,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         require(safe(cup));
         require(sin.totalSupply() <= hat);
     }
-    function wipe(bytes32 cup, uint256 wad) note {
+    function wipe(bytes32 cup, uint wad) note {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
@@ -211,7 +211,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function tag() returns (uint256) {
+    function tag() returns (uint) {
         return off ? fit : jar.tag();
     }
 
@@ -247,10 +247,9 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function cage(uint256 fit_) note auth {
+    function cage(uint fit_) note auth {
         require(!off);
         off = true;
         fit = fit_;         // ref per skr
     }
-
 }

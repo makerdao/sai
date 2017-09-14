@@ -42,7 +42,7 @@ contract SaiTop is DSThing, DSWarp {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint256 price) note auth {
+    function cage(uint price) note auth {
         require(!tub.off());
         tub.drip();  // collect remaining fees
 
@@ -68,7 +68,7 @@ contract SaiTop is DSThing, DSWarp {
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(wdiv(uint256(jar.pip().read()), tip.par()));
+        cage(wdiv(uint(jar.pip().read()), tip.par()));
     }
 
     function flow() note {
