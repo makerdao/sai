@@ -50,6 +50,9 @@ contract SaiTestBase is DSTest, DSMath {
     function ray(uint256 wad) returns (uint256) {
         return wad * 10 ** 9;
     }
+    function wad(uint256 ray_) returns (uint256) {
+        return wdiv(ray_, RAY);
+    }
 
     function mark(uint256 price) {
         tag.poke(bytes32(price));
@@ -447,9 +450,9 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         var woe = sin.balanceOf(tub);
-        assertEq(woe, 5 ether);       // all good debt now bad debt
-        assertEq(top.fix(), ray(1 ether));       // sai redeems 1:1 with gem
-        assertEq(tub.fit(), 1 ether);       // skr redeems 1:1 with gem just before pushing gem to tub
+        assertEq(woe, 5 ether);             // all good debt now bad debt
+        assertEq(wad(top.fix()), 1 ether);  // sai redeems 1:1 with gem
+        assertEq(wad(tub.fit()), 1 ether);  // skr redeems 1:1 with gem just before pushing gem to tub
 
         assertEq(gem.balanceOf(tap),  5 ether);  // saved for sai
         assertEq(gem.balanceOf(jar), 25 ether);  // saved for skr
@@ -467,7 +470,7 @@ contract CageTest is SaiTestBase {
         top.cage();        // 150% collat
 
         assertEq(top.fix(), rdiv(1 ether, price));  // sai redeems 4:3 with gem
-        assertEq(tub.fit(), price);                 // skr redeems 1:1 with gem just before pushing gem to tub
+        assertEq(tub.fit(), ray(price));                 // skr redeems 1:1 with gem just before pushing gem to tub
 
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
@@ -501,7 +504,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEq(tub.fit(), price);       // skr redeems 1:1 with gem just before pushing gem to tub
+        assertEq(tub.fit(), ray(price));       // skr redeems 1:1 with gem just before pushing gem to tub
     }
     function testCageUnderCollat() {
         cageSetup();
@@ -1136,7 +1139,7 @@ contract LiquidationTest is SaiTestBase {
     function liq(bytes32 cup) returns (uint256) {
         // compute the liquidation price of a cup
         var jam = rmul(tub.ink(cup), tub.jar().per());  // this many eth
-        var con = wmul(tub.tab(cup), tub.tip().par());  // this much ref debt
+        var con = rmul(tub.tab(cup), tub.tip().par());  // this much ref debt
         var min = rmul(con, tub.mat());        // minimum ref debt
         return wdiv(min, jam);
     }
@@ -1169,8 +1172,8 @@ contract LiquidationTest is SaiTestBase {
     }
     function collat(bytes32 cup) returns (uint256) {
         // compute the collateralised fraction of a cup
-        var pro = wmul(tub.ink(cup), tub.jar().tag());
-        var con = wmul(tub.tab(cup), tub.tip().par());
+        var pro = rmul(tub.ink(cup), tub.jar().tag());
+        var con = rmul(tub.tab(cup), tub.tip().par());
         return wdiv(pro, con);
     }
     function testCollat() {
@@ -1744,13 +1747,13 @@ contract WayTest is SaiTestBase {
     function testWayPar() {
         tip.coax(999999406327787478619865402);  // -5% / day
 
-        assertEq(tip.par(), 1.00 ether);
+        assertEq(wad(tip.par()), 1.00 ether);
         warp(1 days);
-        assertEq(tip.par(), 0.95 ether);
+        assertEq(wad(tip.par()), 0.95 ether);
 
         tip.coax(1000008022568992670911001251);  // 200% / day
         warp(1 days);
-        assertEq(tip.par(), 1.90 ether);
+        assertEq(wad(tip.par()), 1.90 ether);
     }
     function testWayDecreasingPrincipal() {
         var cup = waySetup();
@@ -1807,7 +1810,7 @@ contract WayTest is SaiTestBase {
 
         tip.coax(999991977495368425989823173);  // -50% / day
         warp(1 days);
-        assertEq(tip.par(), 0.5 ether);
+        assertEq(wad(tip.par()), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
         tap.bust(50 ether);
@@ -1825,7 +1828,7 @@ contract WayTest is SaiTestBase {
         mark(2 ether);
         tip.coax(1000008022568992670911001251);  // 200% / day
         warp(1 days);
-        assertEq(tip.par(), 2 ether);
+        assertEq(wad(tip.par()), 2 ether);
         tap.boom(100 ether);
         assertEq(tap.joy(),   0 ether);
         assertEq(tub.jar().per(), ray(2 ether));
@@ -1839,7 +1842,7 @@ contract WayTest is SaiTestBase {
         mark(2 ether);
         tip.coax(999991977495368425989823173);  // -50% / day
         warp(2 days);
-        assertEq(tip.par(), 0.5 ether);
+        assertEq(wad(tip.par()), 0.5 ether);
         tap.boom(12.5 ether);
         assertEq(tap.joy(),   0 ether);
     }

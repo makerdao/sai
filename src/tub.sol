@@ -151,8 +151,8 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var pro = wmul(jar.tag(), ink(cup));
-        var con = wmul(tip.par(), tab(cup));
+        var pro = rmul(jar.tag(), ink(cup));
+        var con = rmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
         return pro >= min;
     }
@@ -224,7 +224,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         cups[cup].art = 0;
 
         // Amount owed in SKR, including liquidation penalty
-        var owe = wdiv(wmul(rmul(rue, axe), tip.par()), tag());
+        var owe = rdiv(rmul(rmul(rue, axe), tip.par()), tag());
 
         if (owe > cups[cup].ink) {
             owe = cups[cup].ink;

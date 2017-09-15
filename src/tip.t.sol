@@ -6,11 +6,16 @@ import './tip.sol';
 
 contract TipTest is DSTest, DSMath {
     SaiTip tip;
+
+    function wad(uint256 ray_) returns (uint256) {
+        return wdiv(ray_, RAY);
+    }
+
     function setUp() {
         tip = new SaiTip();
     }
     function testTipDefaultPar() {
-        assertEq(tip.par(), WAD);
+        assertEq(tip.par(), RAY);
     }
     function testTipDefaultWay() {
         assertEq(tip.way(), RAY);
@@ -31,11 +36,11 @@ contract TipTest is DSTest, DSMath {
     function testTipParAfterWarp1day() {
         tip.coax(999999406327787478619865402);  // -5% / day
         tip.warp(1 days);
-        assertEq(tip.par(), 0.95 ether);
+        assertEq(wad(tip.par()), 0.95 ether);
     }
     function testTipProdAfterWarp2day() {
         tip.coax(999991977495368425989823173);  // -50% / day
         tip.warp(2 days);
-        assertEq(tip.par(), 0.25 ether);
+        assertEq(wad(tip.par()), 0.25 ether);
     }
 }

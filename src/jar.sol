@@ -26,7 +26,7 @@ contract SaiJar is DSThing, DSVault {
     }
     // ref per skr
     function tag() constant returns (uint wad) {
-        return rmul(per(), uint(pip.read()));
+        return wmul(per(), uint(pip.read()));
     }
     // gem per skr
     function per() constant returns (uint ray) {

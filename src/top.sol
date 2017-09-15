@@ -64,7 +64,7 @@ contract SaiTop is DSThing, DSWarp {
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(wdiv(uint(jar.pip().read()), tip.par()));
+        cage(rdiv(uint(jar.pip().read()), tip.par()));
     }
 
     function flow() note {

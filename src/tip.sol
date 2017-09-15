@@ -17,7 +17,7 @@ contract SaiTip is DSThing, DSWarp {
 
     function SaiTip() {
         way  = RAY;
-        _par = WAD;
+        _par = RAY;
         tau  = _era;
     }
 
