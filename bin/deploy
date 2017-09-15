@@ -3,7 +3,7 @@ set -ex
 
 export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
 export ETH_GAS=${ETH_GAS:-"3900000"}
-export ETH_FROM=$(seth rpc eth_coinbase)
+export ETH_FROM=$(ETH_FROM:-$(seth rpc eth_coinbase))
 
 dapp build
 
