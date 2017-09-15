@@ -86,10 +86,6 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(254, jar, bytes4(sha3("cage(address,uint256)")), true);
         mom.setRoleCapability(254, jar, bytes4(sha3("flow()")), true);
 
-        dad.permit(top, tap, bytes4(sha3('burn(address)')));
-        dad.permit(top, tap, bytes4(sha3('push(address,address,uint256)')));
-        dad.permit(top, tap, bytes4(sha3('pull(address,address,uint256)')));
-
         dad.permit(jar, skr, bytes4(sha3('mint(address,uint256)')));
         dad.permit(jar, skr, bytes4(sha3('burn(address,uint256)')));
 
@@ -130,34 +126,19 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad.setOwner(0);
     }
-    function setUserRoles() {
-        mom.setRoleCapability(1, tub, bytes4(sha3("join(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("exit(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("open()")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("shut(bytes32)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("lock(bytes32,uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("free(bytes32,uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("draw(bytes32,uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("wipe(bytes32,uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("give(bytes32,address)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("bite(bytes32)")), true);
-        mom.setRoleCapability(1, tap, bytes4(sha3("boom(uint256)")), true);
-        mom.setRoleCapability(1, tap, bytes4(sha3("bust(uint256)")), true);
-        mom.setRoleCapability(1, top, bytes4(sha3("cash()")), true);
-    }
     function setAdminRoles() {
-        mom.setRoleCapability(2, tub, bytes4(sha3("chop(uint256)")), true);
-        mom.setRoleCapability(2, tub, bytes4(sha3("cork(uint256)")), true);
-        mom.setRoleCapability(2, tub, bytes4(sha3("cuff(uint256)")), true);
-        mom.setRoleCapability(2, tub, bytes4(sha3("crop(uint256)")), true);
-        mom.setRoleCapability(2, tip, bytes4(sha3("coax(uint256)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("chop(uint256)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("cork(uint256)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("cuff(uint256)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("crop(uint256)")), true);
+        mom.setRoleCapability(1, tip, bytes4(sha3("coax(uint256)")), true);
 
-        mom.setRoleCapability(2, tap, bytes4(sha3("calk(uint256)")), true);
-        mom.setRoleCapability(2, jar, bytes4(sha3("calk(uint256)")), true);
+        mom.setRoleCapability(1, tap, bytes4(sha3("calk(uint256)")), true);
+        mom.setRoleCapability(1, jar, bytes4(sha3("calk(uint256)")), true);
 
-        mom.setRoleCapability(2, top, bytes4(sha3("cage(uint256)")), true);
-        mom.setRoleCapability(2, top, bytes4(sha3("cage()")), true);
-        mom.setRoleCapability(2, top, bytes4(sha3("setCooldown(uint64)")), true);
+        mom.setRoleCapability(1, top, bytes4(sha3("cage(uint256)")), true);
+        mom.setRoleCapability(1, top, bytes4(sha3("cage()")), true);
+        mom.setRoleCapability(1, top, bytes4(sha3("setCooldown(uint64)")), true);
     }
 
     function setUp() {
@@ -184,11 +165,9 @@ contract SaiTestBase is DSTest, DSMath {
         mom = new DSRoles();
 
         configureAuth();
-        setUserRoles();
         setAdminRoles();
 
-        mom.setUserRole(this, 1, true);  // user
-        mom.setUserRole(this, 2, true);  // admin
+        mom.setUserRole(this, 1, true);  // admin
 
         sai.trust(tub, true);
         skr.trust(tub, true);
