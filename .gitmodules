@@ -19,3 +19,6 @@
 [submodule "lib/ds-guard"]
 	path = lib/ds-guard
 	url = https://github.com/dapphub/ds-guard
+[submodule "lib/ds-vault"]
+	path = lib/ds-vault
+	url = https://github.com/dapphub/ds-vault
