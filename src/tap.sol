@@ -55,7 +55,7 @@ contract SaiTap is DSThing {
     function s2s() returns (uint) {
         var tag = jar.tag();    // ref per skr
         var par = tip.par();    // ref per sai
-        return wdiv(tag, par);  // sai per skr
+        return rdiv(tag, par);  // sai per skr
     }
 
     function calk(uint wad) note auth {
@@ -66,11 +66,11 @@ contract SaiTap is DSThing {
 
     // price of skr in sai for boom
     function bid(uint wad) constant returns (uint) {
-        return wmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
+        return rmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
     }
     // price of skr in sai for bust
     function ask(uint wad) constant returns (uint) {
-        return wmul(wad, wmul(s2s(), gap));
+        return rmul(wad, wmul(s2s(), gap));
     }
 
     function heal() note {

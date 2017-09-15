@@ -1498,6 +1498,21 @@ contract TapTest is SaiTestBase {
 
         skr.burn(175 ether);
         assertEq(tap.ask(50 ether), 100 ether);
+
+        skr.mint(25 ether);
+        assertEq(tap.ask(50 ether), 50 ether);
+
+        skr.mint(10 ether);
+        // per = 5 / 6
+        assertEq(tap.ask(60 ether), 50 ether);
+
+        skr.mint(30 ether);
+        // per = 5 / 9
+        assertEq(tap.ask(90 ether), 50 ether);
+
+        skr.mint(10 ether);
+        // per = 1 / 2
+        assertEq(tap.ask(100 ether), 50 ether);
     }
     // flipflop is debt sale when collateral present
     function testTapBustFlipFlopRounding() {
@@ -1514,20 +1529,19 @@ contract TapTest is SaiTestBase {
         assertEq(skr.totalSupply(),    50 ether);
 
         assertEq(jar.per(), ray(1 ether));
-        assertEq(tap.s2s(), 1 ether);
+        assertEq(tap.s2s(), ray(1 ether));
+        assertEq(tub.tag(), ray(1 ether));
         assertEq(tap.ask(60 ether), 60 ether);
         tap.bust(60 ether);
         assertEq(jar.per(), rdiv(5, 6));
-        assertEq(tap.s2s(), wdiv(5, 6));
-        // small rounding error because wad math
-        assertEq(tap.ask(60 ether), 50 ether - 20);
-        // TODO: why exactly 20?
-        // TODO: should all prices be rays?
-
+        assertEq(tap.s2s(), rdiv(5, 6));
+        assertEq(jar.tag(), rdiv(5, 6));
+        // non ray prices would give small rounding error because wad math
+        assertEq(tap.ask(60 ether), 50 ether);
         assertEq(skr.totalSupply(),    60 ether);
         assertEq(tap.fog(),             0 ether);
         assertEq(skr.balanceOf(this),  60 ether);
-        assertEq(sai.balanceOf(this),  50 ether + 20);  // expect 50 exact
+        assertEq(sai.balanceOf(this),  50 ether);
     }
     function testTapBustFlipFlop() {
         jar.join(50 ether);  // avoid per=1 init case
