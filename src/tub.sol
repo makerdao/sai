@@ -8,7 +8,6 @@ pragma solidity ^0.4.10;
 
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
-import "ds-vault/vault.sol";
 
 import "./tip.sol";
 import "./jar.sol";

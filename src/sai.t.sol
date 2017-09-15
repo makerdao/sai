@@ -5,7 +5,6 @@ import "ds-test/test.sol";
 import "ds-math/math.sol";
 
 import 'ds-token/token.sol';
-import 'ds-vault/vault.sol';
 import 'ds-guard/guard.sol';
 import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
@@ -41,7 +40,6 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  skr;
 
     SaiJar   jar;
-    DSVault  tmp;
 
     DSValue  tag;
     DSRoles  mom;
@@ -159,8 +157,6 @@ contract SaiTestBase is DSTest, DSMath {
 
         skr = new DSToken("SKR");
 
-        tmp = new DSVault();  // somewhere to hide tokens for testing
-
         tag = new DSValue();
         tip = new SaiTip();
 
@@ -186,9 +182,6 @@ contract SaiTestBase is DSTest, DSMath {
 
         sai.trust(tap, true);
         skr.trust(tap, true);
-
-        sai.trust(tmp, true);
-        skr.trust(tmp, true);
 
         tag.poke(bytes32(1 ether));
 
@@ -808,8 +801,6 @@ contract CageTest is SaiTestBase {
         mark(price);
         top.cage();
 
-        tmp.pull(skr, this);  // stash skr
-
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(gem.balanceOf(this), 70 ether);
         tap.cash();
@@ -818,7 +809,6 @@ contract CageTest is SaiTestBase {
         // sai is made whole
         assertEq(gem.balanceOf(this), 90 ether);
 
-        tmp.push(skr, this);  // unstash skr
         assertEq(skr.balanceOf(this),  20 ether);
         tub.bite(cup);
         tub.free(cup, tub.ink(cup));
