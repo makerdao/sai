@@ -83,7 +83,6 @@ contract SaiTap is DSThing {
     function boom(uint wad) note {
         require(!off);
         heal();
-        require(bid(wad) <= joy());
         sai.push(msg.sender, bid(wad));
         skr.burn(msg.sender, wad);
     }

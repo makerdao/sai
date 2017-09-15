@@ -119,10 +119,16 @@ contract SaiTestBase is DSTest, DSMath {
         // convenience in tests
         dad.permit(this, sai, bytes4(sha3('mint(uint256)')));
         dad.permit(this, sai, bytes4(sha3('burn(uint256)')));
+        dad.permit(this, sai, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(this, sai, bytes4(sha3('burn(address,uint256)')));
         dad.permit(this, sin, bytes4(sha3('mint(uint256)')));
         dad.permit(this, sin, bytes4(sha3('burn(uint256)')));
+        dad.permit(this, sin, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(this, sin, bytes4(sha3('burn(address,uint256)')));
         dad.permit(this, skr, bytes4(sha3('mint(uint256)')));
         dad.permit(this, skr, bytes4(sha3('burn(uint256)')));
+        dad.permit(this, skr, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(this, skr, bytes4(sha3('burn(address,uint256)')));
 
         dad.setOwner(0);
     }
@@ -1288,6 +1294,87 @@ contract LiquidationTest is SaiTestBase {
         assertEq(tap.fog(), 0 ether);
         assertEq(tap.woe(), 0 ether);
         assertEq(tap.joy(), 20 ether);
+    }
+}
+
+contract TapTest is SaiTestBase {
+    function testTapSetup() {
+        assertEq(sai.balanceOf(tap), tap.joy());
+        assertEq(sin.balanceOf(tap), tap.woe());
+        assertEq(skr.balanceOf(tap), tap.fog());
+
+        assertEq(tap.joy(), 0);
+        assertEq(tap.woe(), 0);
+        assertEq(tap.fog(), 0);
+
+        sai.mint(tap, 3);
+        sin.mint(tap, 4);
+        skr.mint(tap, 5);
+
+        assertEq(tap.joy(), 3);
+        assertEq(tap.woe(), 4);
+        assertEq(tap.fog(), 5);
+    }
+    function testTapBoom() {
+        sai.mint(tap, 50 ether);
+        jar.join(60 ether);
+
+        assertEq(sai.balanceOf(this),  0 ether);
+        assertEq(skr.balanceOf(this), 60 ether);
+        tap.boom(50 ether);
+        assertEq(sai.balanceOf(this), 50 ether);
+        assertEq(skr.balanceOf(this), 10 ether);
+        assertEq(tap.joy(), 0);
+    }
+    function testFailTapBoomOverJoy() {
+        sai.mint(tap, 50 ether);
+        jar.join(60 ether);
+        tap.boom(51 ether);
+    }
+    function testTapBoomHeals() {
+        sai.mint(tap, 60 ether);
+        sin.mint(tap, 50 ether);
+        jar.join(10 ether);
+
+        tap.boom(0 ether);
+        assertEq(tap.joy(), 10 ether);
+    }
+    function testFailTapBoomNetWoe() {
+        sai.mint(tap, 50 ether);
+        sin.mint(tap, 60 ether);
+        jar.join(10 ether);
+        tap.boom(1 ether);
+    }
+    function testTapBoomIncreasesPer() {
+        sai.mint(tap, 50 ether);
+        jar.join(60 ether);
+
+        assertEq(jar.per(), ray(1 ether));
+        tap.boom(30 ether);
+        assertEq(jar.per(), ray(2 ether));
+    }
+    function testTapBoomMarkDep() {
+        sai.mint(tap, 50 ether);
+        jar.join(50 ether);
+
+        mark(2 ether);
+        tap.boom(10 ether);
+        assertEq(sai.balanceOf(this), 20 ether);
+        assertEq(sai.balanceOf(tap),  30 ether);
+        assertEq(skr.balanceOf(this), 40 ether);
+    }
+    function testTapBoomPerDep() {
+        sai.mint(tap, 50 ether);
+        jar.join(50 ether);
+
+        assertEq(jar.per(), ray(1 ether));
+        skr.mint(50 ether);  // halves per
+        assertEq(jar.per(), ray(.5 ether));
+
+        tap.boom(10 ether);
+        assertEq(sai.balanceOf(this),  5 ether);
+        assertEq(sai.balanceOf(tap),  45 ether);
+        assertEq(skr.balanceOf(this), 90 ether);
     }
 }
 
