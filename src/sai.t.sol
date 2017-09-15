@@ -39,8 +39,6 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  sin;
     DSToken  skr;
 
-    SaiJar   jar;
-
     DSValue  tag;
     DSRoles  mom;
     DSGuard  dad;
@@ -67,28 +65,19 @@ contract SaiTestBase is DSTest, DSMath {
         tub.setAuthority(mom);
         tap.setAuthority(mom);
         top.setAuthority(mom);
-        jar.setAuthority(mom);
 
         // internal, use ds-guard
         sai.setAuthority(dad);
         sin.setAuthority(dad);
         skr.setAuthority(dad);
 
-        mom.setUserRole(tub, 255, true);
-        mom.setRoleCapability(255, jar, bytes4(sha3("join(address,uint256)")), true);
-        mom.setRoleCapability(255, jar, bytes4(sha3("exit(address,uint256)")), true);
-        mom.setRoleCapability(255, jar, bytes4(sha3("push(address,address,uint256)")), true);
-        mom.setRoleCapability(255, jar, bytes4(sha3("pull(address,address,uint256)")), true);
-
         mom.setUserRole(top, 254, true);
-        mom.setRoleCapability(254, jar, bytes4(sha3("push(address,address,uint256)")), true);
-        mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256)")), true);
+        mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256,uint256)")), true);
+        mom.setRoleCapability(254, tub, bytes4(sha3("flow()")), true);
         mom.setRoleCapability(254, tap, bytes4(sha3("cage(uint256)")), true);
-        mom.setRoleCapability(254, jar, bytes4(sha3("cage(address,uint256)")), true);
-        mom.setRoleCapability(254, jar, bytes4(sha3("flow()")), true);
 
-        dad.permit(jar, skr, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(jar, skr, bytes4(sha3('burn(address,uint256)')));
+        dad.permit(tub, skr, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(tub, skr, bytes4(sha3('burn(address,uint256)')));
 
         dad.permit(tub, sai, bytes4(sha3('mint(address,uint256)')));
         dad.permit(tub, sai, bytes4(sha3('burn(address,uint256)')));
@@ -110,8 +99,6 @@ contract SaiTestBase is DSTest, DSMath {
         tub.setOwner(0);
         tap.setOwner(0);
         top.setOwner(0);
-
-        jar.setOwner(0);
 
         sai.setOwner(0);
         sin.setOwner(0);
@@ -141,7 +128,7 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(1, tip, bytes4(sha3("coax(uint256)")), true);
 
         mom.setRoleCapability(1, tap, bytes4(sha3("calk(uint256)")), true);
-        mom.setRoleCapability(1, jar, bytes4(sha3("calk(uint256)")), true);
+        mom.setRoleCapability(1, tub, bytes4(sha3("calk(uint256)")), true);
 
         mom.setRoleCapability(1, top, bytes4(sha3("cage(uint256)")), true);
         mom.setRoleCapability(1, top, bytes4(sha3("cage()")), true);
@@ -160,11 +147,10 @@ contract SaiTestBase is DSTest, DSMath {
         tag = new DSValue();
         tip = new SaiTip();
 
-        jar = new SaiJar(skr, gem, tag);
-
-        tap = new SaiTap(sai, sin, jar, tip);
-        tub = new SaiTub(sai, sin, jar, tip, tap);
+        tap = new SaiTap();
+        tub = new SaiTub(sai, sin, skr, gem, tag, tip, tap);
         top = new SaiTop(tub, tap);
+        tap.turn(tub);
 
         dad = new DSGuard();
         mom = new DSRoles();
@@ -176,9 +162,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         sai.trust(tub, true);
         skr.trust(tub, true);
-
-        gem.trust(jar, true);
-        skr.trust(jar, true);
+        gem.trust(tub, true);
 
         sai.trust(tap, true);
         skr.trust(tap, true);
@@ -193,20 +177,20 @@ contract SaiTubTest is SaiTestBase {
     function testBasic() {
         assertEq( skr.balanceOf(tub), 0 ether );
         assertEq( skr.balanceOf(this), 0 ether );
-        assertEq( gem.balanceOf(jar), 0 ether );
+        assertEq( gem.balanceOf(tub), 0 ether );
 
         // edge case
-        assertEq( uint256(tub.jar().per()), ray(1 ether) );
-        jar.join(10 ether);
-        assertEq( uint256(tub.jar().per()), ray(1 ether) );
+        assertEq( uint256(tub.per()), ray(1 ether) );
+        tub.join(10 ether);
+        assertEq( uint256(tub.per()), ray(1 ether) );
 
         assertEq( skr.balanceOf(this), 10 ether );
-        assertEq( gem.balanceOf(jar), 10 ether );
+        assertEq( gem.balanceOf(tub), 10 ether );
         // price formula
-        jar.join(10 ether);
-        assertEq( uint256(tub.jar().per()), ray(1 ether) );
+        tub.join(10 ether);
+        assertEq( uint256(tub.per()), ray(1 ether) );
         assertEq( skr.balanceOf(this), 20 ether );
-        assertEq( gem.balanceOf(jar), 20 ether );
+        assertEq( gem.balanceOf(tub), 20 ether );
 
         var cup = tub.open();
 
@@ -248,37 +232,37 @@ contract SaiTubTest is SaiTestBase {
         assertEq(skr.totalSupply(),     0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
-        jar.join(10 ether);
+        tub.join(10 ether);
         assertEq(skr.balanceOf(this), 10 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        assertEq(gem.balanceOf(jar),  10 ether);
+        assertEq(gem.balanceOf(tub),  10 ether);
     }
     function testJoinExit() {
         assertEq(skr.balanceOf(this), 0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
-        jar.join(10 ether);
+        tub.join(10 ether);
         assertEq(skr.balanceOf(this), 10 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        assertEq(gem.balanceOf(jar),  10 ether);
+        assertEq(gem.balanceOf(tub),  10 ether);
 
-        jar.exit(5 ether);
+        tub.exit(5 ether);
         assertEq(skr.balanceOf(this),  5 ether);
         assertEq(gem.balanceOf(this), 95 ether);
-        assertEq(gem.balanceOf(jar),   5 ether);
+        assertEq(gem.balanceOf(tub),   5 ether);
 
-        jar.join(2 ether);
+        tub.join(2 ether);
         assertEq(skr.balanceOf(this),  7 ether);
         assertEq(gem.balanceOf(this), 93 ether);
-        assertEq(gem.balanceOf(jar),   7 ether);
+        assertEq(gem.balanceOf(tub),   7 ether);
 
-        jar.exit(1 ether);
+        tub.exit(1 ether);
         assertEq(skr.balanceOf(this),  6 ether);
         assertEq(gem.balanceOf(this), 94 ether);
-        assertEq(gem.balanceOf(jar),   6 ether);
+        assertEq(gem.balanceOf(tub),   6 ether);
     }
     function testFailOverDraw() {
         tub.cuff(ray(1 ether));
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -286,7 +270,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testFailOverDrawExcess() {
         tub.cuff(ray(1 ether));
-        jar.join(20 ether);
+        tub.join(20 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -294,7 +278,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testDraw() {
         tub.cuff(ray(1 ether));
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -306,7 +290,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testWipe() {
         tub.cuff(ray(1 ether));
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 10 ether);
@@ -318,7 +302,7 @@ contract SaiTubTest is SaiTestBase {
         assertEq(sin.balanceOf(tub),   5 ether);
     }
     function testUnsafe() {
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 9 ether);
@@ -329,7 +313,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testBiteUnderParity() {
         assertEq(uint(tub.axe()), uint(ray(1 ether)));  // 100% collateralisation limit
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);           // 200% collateralisation
@@ -341,7 +325,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testBiteOverParity() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -360,7 +344,7 @@ contract SaiTubTest is SaiTestBase {
         assertEq(skr.balanceOf(this) - skr_before, 1 ether);
     }
     function testLock() {
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
 
         assertEq(skr.balanceOf(tub),  0 ether);
@@ -369,7 +353,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testFree() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 4 ether);  // 250% collateralisation
@@ -380,7 +364,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testFailFreeToUnderCollat() {
         tub.cuff(ray(2 ether));  // require 200% collateralisation
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 4 ether);  // 250% collateralisation
@@ -389,7 +373,7 @@ contract SaiTubTest is SaiTestBase {
     }
     function testFailDrawOverDebtCeiling() {
         tub.cork(4 ether);
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -398,7 +382,7 @@ contract SaiTubTest is SaiTestBase {
     function testDebtCeiling() {
         tub.cork(5 ether);
         tub.cuff(ray(2 ether));  // require 200% collat
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -411,7 +395,7 @@ contract SaiTubTest is SaiTestBase {
         assertEq(tub.air(), uint(0 ether));
         assertEq(tap.fog(), uint(10 ether));
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         // skr hasn't been diluted yet so still 1:1 skr:gem
         assertEq(skr.balanceOf(this), 10 ether);
     }
@@ -423,7 +407,7 @@ contract CageTest is SaiTestBase {
         tub.cork(5 ether);            // 5 sai debt ceiling
         tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
         tub.cuff(ray(2 ether));       // require 200% collat
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);       // 200% collateralisation
@@ -438,7 +422,7 @@ contract CageTest is SaiTestBase {
         assertEq(tap.woe(), 0);         // no bad debt
         assertEq(tub.pie(), 10 ether);
 
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         mark(1 ether);
         top.cage();
 
@@ -448,16 +432,16 @@ contract CageTest is SaiTestBase {
         assertEq(wad(tub.fit()), 1 ether);  // skr redeems 1:1 with gem just before pushing gem to tub
 
         assertEq(gem.balanceOf(tap),  5 ether);  // saved for sai
-        assertEq(gem.balanceOf(jar), 25 ether);  // saved for skr
+        assertEq(gem.balanceOf(tub), 25 ether);  // saved for skr
     }
     function testCageUnsafeOverCollat() {
         cageSetup();
 
         assertEq(top.fix(), 0);
         assertEq(tub.fit(), 0);
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
         mark(price);
         top.cage();        // 150% collat
@@ -468,30 +452,30 @@ contract CageTest is SaiTestBase {
         // gem needed for sai is 5 * 4 / 3
         var saved = rmul(5 ether, rdiv(WAD, price));
         assertEq(gem.balanceOf(tap),  saved);             // saved for sai
-        assertEq(gem.balanceOf(jar),  30 ether - saved);  // saved for skr
+        assertEq(gem.balanceOf(tub),  30 ether - saved);  // saved for skr
     }
     function testCageAtCollat() {
         cageSetup();
 
         assertEq(top.fix(), 0);
         assertEq(tub.fit(), 0);
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
 
         assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 1:1 with ref
-        assertEq(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
+        assertEq(tub.per(), 0);       // skr redeems 1:0 with gem after cage
     }
     function testCageAtCollatFreeSkr() {
         cageSetup();
 
         assertEq(top.fix(), 0);
         assertEq(tub.fit(), 0);
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
@@ -504,7 +488,7 @@ contract CageTest is SaiTestBase {
 
         assertEq(top.fix(), 0);
         assertEq(tub.fit(), 0);
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         mark(price);
@@ -512,16 +496,16 @@ contract CageTest is SaiTestBase {
 
         assertEq(2 * sai.totalSupply(), gem.balanceOf(tap));
         assertEq(top.fix(), ray(2 ether));  // sai redeems 1:2 with gem, 2:1 with ref
-        assertEq(tub.jar().per(), 0);       // skr redeems 1:0 with gem after cage
+        assertEq(tub.per(), 0);       // skr redeems 1:0 with gem after cage
     }
     function testCageUnderCollatFreeSkr() {
         cageSetup();
 
         assertEq(top.fix(), 0);
         assertEq(tub.fit(), 0);
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         mark(price);
         top.cage();
@@ -539,14 +523,14 @@ contract CageTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        assertEq(gem.balanceOf(jar),   5 ether);
+        assertEq(gem.balanceOf(tub),   5 ether);
         assertEq(gem.balanceOf(tap),   5 ether);
 
         tap.cash();
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this),  95 ether);
-        assertEq(gem.balanceOf(jar),    5 ether);
+        assertEq(gem.balanceOf(tub),    5 ether);
 
         assertEq(tub.ink(cup), 10 ether);
         tub.bite(cup);
@@ -555,22 +539,22 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this),   5 ether);
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(skr.totalSupply(), 0);
     }
     function testCashSafeOverCollatWithFreeSkr() {
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         mark(1 ether);
         top.cage();
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        assertEq(gem.balanceOf(jar),  25 ether);
+        assertEq(gem.balanceOf(tub),  25 ether);
         assertEq(gem.balanceOf(tap),   5 ether);
 
         tub.bite(cup);
@@ -579,10 +563,10 @@ contract CageTest is SaiTestBase {
         top.flow();
         assertEq(skr.balanceOf(this), 25 ether);
         tap.cash();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         tap.vent();
         assertEq(sai.totalSupply(), 0);
@@ -593,12 +577,12 @@ contract CageTest is SaiTestBase {
     function testFailCashSafeOverCollatWithFreeSkrExitBeforeBail() {
         // fails because exit is before bail
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         mark(1 ether);
         top.cage();
 
         tap.cash();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this), 0 ether);
         uint256 gemBySAI = 5 ether; // Adding 5 gem from 5 sai
         uint256 gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
@@ -614,10 +598,10 @@ contract CageTest is SaiTestBase {
         top.flow();
         assertEq(skr.balanceOf(this), 5 ether); // skr retrieved by bail(cup)
 
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
 
@@ -625,7 +609,7 @@ contract CageTest is SaiTestBase {
     }
     function testCashUnsafeOverCollat() {
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(3 ether, 4 ether);
         mark(price);
         top.cage();        // 150% collat
@@ -642,7 +626,7 @@ contract CageTest is SaiTestBase {
         uint256 gemBySKR = 0;
 
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
-        assertEq(gem.balanceOf(jar),  30 ether - gemBySAI - gemBySKR);
+        assertEq(gem.balanceOf(tub),  30 ether - gemBySAI - gemBySKR);
 
         // how much gem should be returned?
         // there were 10 gems initially, of which 5 were 100% collat
@@ -660,9 +644,9 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         tap.vent();
         assertEq(skr.totalSupply(), 0);
@@ -685,16 +669,16 @@ contract CageTest is SaiTestBase {
         var saved = rmul(5 ether, rdiv(WAD, price));
 
         assertEq(gem.balanceOf(this),  90 ether + saved);
-        assertEq(gem.balanceOf(jar),   10 ether - saved);
+        assertEq(gem.balanceOf(tub),   10 ether - saved);
 
         // how much gem should be returned?
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
         tub.bite(cup);
         tub.free(cup, tub.ink(cup));
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         tap.vent();
         assertEq(skr.totalSupply(), 0);
@@ -703,7 +687,7 @@ contract CageTest is SaiTestBase {
     }
     function testCashAtCollatFreeSkr() {
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
@@ -719,15 +703,15 @@ contract CageTest is SaiTestBase {
         tub.free(cup, tub.ink(cup));
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(skr.totalSupply(), 0);
     }
     function testFailCashAtCollatFreeSkrExitBeforeBail() {
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 2 ether);  // 100% collat
         mark(price);
         top.cage();
@@ -738,7 +722,7 @@ contract CageTest is SaiTestBase {
 
         tap.cash();
         assertEq(sai.balanceOf(this),   0 ether);
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this),   0 ether);
 
 
@@ -746,7 +730,7 @@ contract CageTest is SaiTestBase {
         var gemBySKR = wdiv(wmul(20 ether, 30 ether - gemBySAI), 30 ether);
 
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
-        assertEq(gem.balanceOf(jar),  30 ether - gemBySAI - gemBySKR);
+        assertEq(gem.balanceOf(tub),  30 ether - gemBySAI - gemBySKR);
 
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
@@ -754,11 +738,11 @@ contract CageTest is SaiTestBase {
         tub.bite(cup);
         tub.free(cup, tub.ink(cup));
         tap.vent();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
 
         // Cup did not have skr to free, then the ramaining gem in tub can not be shared as there is not more skr to exit
         assertEq(gem.balanceOf(this), 70 ether + gemBySAI + gemBySKR);
-        assertEq(gem.balanceOf(jar),  30 ether - gemBySAI - gemBySKR);
+        assertEq(gem.balanceOf(tub),  30 ether - gemBySAI - gemBySKR);
 
         assertEq(skr.totalSupply(), 0);
     }
@@ -778,16 +762,16 @@ contract CageTest is SaiTestBase {
         // get back all 10 gems, which are now only worth 2.5 ref
         // so you've lost 50% on you sai
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         // how much gem should be returned?
         // none :D
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
         tub.bite(cup);
         tub.free(cup, tub.ink(cup));
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         tap.vent();
         assertEq(skr.totalSupply(), 0);
@@ -796,7 +780,7 @@ contract CageTest is SaiTestBase {
     }
     function testCashUnderCollatFreeSkr() {
         var cup = cageSetup();
-        jar.join(20 ether);   // give us some more skr
+        tub.join(20 ether);   // give us some more skr
         var price = wdiv(1 ether, 4 ether);   // 50% collat
         mark(price);
         top.cage();
@@ -815,11 +799,11 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this)));
+        tub.exit(uint256(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this),   0 ether);
         // the skr has taken a 50% loss - 10 gems returned from 20 put in
         assertEq(gem.balanceOf(this), 100 ether);
-        assertEq(gem.balanceOf(jar),    0 ether);
+        assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(sai.totalSupply(), 0);
         assertEq(sin.totalSupply(), 0);
@@ -829,14 +813,14 @@ contract CageTest is SaiTestBase {
 
     function testThreeCupsOverCollat() {
         var cup = cageSetup();
-        jar.join(90 ether);   // give us some more skr
+        tub.join(90 ether);   // give us some more skr
         var cup2 = tub.open(); // open a new cup
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
 
         assertEq(gem.balanceOf(tap), 0);
-        assertEq(gem.balanceOf(jar), 100 ether);
+        assertEq(gem.balanceOf(tub), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(tub), 50 ether); // locked skr
@@ -846,7 +830,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(gem.balanceOf(tap), 5 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(jar), 95 ether);
+        assertEq(gem.balanceOf(tub), 95 ether);
 
         tub.bite(cup);
         tub.free(cup, tub.ink(cup)); // 5 skr recovered, and 5 skr burnt
@@ -873,23 +857,23 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this))); // exit 95 skr at price 95/95
+        tub.exit(uint256(skr.balanceOf(this))); // exit 95 skr at price 95/95
 
-        assertEq(gem.balanceOf(jar), 0);
+        assertEq(gem.balanceOf(tub), 0);
         assertEq(gem.balanceOf(tap), 0);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(), 0);
     }
     function testThreeCupsAtCollat() {
         var cup = cageSetup();
-        jar.join(90 ether);   // give us some more skr
+        tub.join(90 ether);   // give us some more skr
         var cup2 = tub.open(); // open a new cup
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
 
         assertEq(gem.balanceOf(tap), 0);
-        assertEq(gem.balanceOf(jar), 100 ether);
+        assertEq(gem.balanceOf(tub), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(tub), 50 ether); // locked skr
@@ -899,7 +883,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(gem.balanceOf(tap), 10 ether); // Needed to payout 10 sai
-        assertEq(gem.balanceOf(jar), 90 ether);
+        assertEq(gem.balanceOf(tub), 90 ether);
 
         tub.bite(cup);
         tub.free(cup, tub.ink(cup)); // 10 skr burnt
@@ -926,23 +910,23 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 90/90
+        tub.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 90/90
 
-        assertEq(gem.balanceOf(jar), 0);
+        assertEq(gem.balanceOf(tub), 0);
         assertEq(gem.balanceOf(tap), 0);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(), 0);
     }
     function testThreeCupsUnderCollat() {
         var cup = cageSetup();
-        jar.join(90 ether);   // give us some more skr
+        tub.join(90 ether);   // give us some more skr
         var cup2 = tub.open(); // open a new cup
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
 
         assertEq(gem.balanceOf(tap), 0);
-        assertEq(gem.balanceOf(jar), 100 ether);
+        assertEq(gem.balanceOf(tub), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(tub), 50 ether); // locked skr
@@ -952,7 +936,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(gem.balanceOf(tap), 20 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(jar), 80 ether);
+        assertEq(gem.balanceOf(tub), 80 ether);
 
         tub.bite(cup);
         tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from tub
@@ -979,23 +963,23 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 80/90
+        tub.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 80/90
 
-        assertEq(gem.balanceOf(jar), 0);
+        assertEq(gem.balanceOf(tub), 0);
         assertEq(gem.balanceOf(tap), 0);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(), 0);
     }
     function testThreeCupsSKRZeroValue() {
         var cup = cageSetup();
-        jar.join(90 ether);   // give us some more skr
+        tub.join(90 ether);   // give us some more skr
         var cup2 = tub.open(); // open a new cup
         tub.lock(cup2, 20 ether); // lock collateral but not draw DAI
         var cup3 = tub.open(); // open a new cup
         tub.lock(cup3, 20 ether); // lock collateral but not draw DAI
 
         assertEq(gem.balanceOf(tap), 0);
-        assertEq(gem.balanceOf(jar), 100 ether);
+        assertEq(gem.balanceOf(tub), 100 ether);
         assertEq(gem.balanceOf(this), 0);
         assertEq(skr.balanceOf(this), 50 ether); // free skr
         assertEq(skr.balanceOf(tub), 50 ether); // locked skr
@@ -1005,7 +989,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(gem.balanceOf(tap), 100 ether); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(jar), 0 ether);
+        assertEq(gem.balanceOf(tub), 0 ether);
 
         tub.bite(cup);
         tub.free(cup, tub.ink(cup)); // No skr is retrieved as the cup doesn't even cover the debt. 10 locked skr in cup are burnt from tub
@@ -1032,9 +1016,9 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         top.flow();
-        jar.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 0/90
+        tub.exit(uint256(skr.balanceOf(this))); // exit 90 skr at price 0/90
 
-        assertEq(gem.balanceOf(jar), 0);
+        assertEq(gem.balanceOf(tub), 0);
         assertEq(gem.balanceOf(tap), 0);
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(), 0);
@@ -1044,7 +1028,7 @@ contract CageTest is SaiTestBase {
         cageSetup();
 
         assertEq(gem.balanceOf(tap), 0);
-        assertEq(gem.balanceOf(jar), 10 ether);
+        assertEq(gem.balanceOf(tub), 10 ether);
         assertEq(gem.balanceOf(this), 90 ether);
         assertEq(skr.balanceOf(this), 0 ether); // free skr
         assertEq(skr.balanceOf(tub), 10 ether); // locked skr
@@ -1058,7 +1042,7 @@ contract CageTest is SaiTestBase {
         top.cage();
 
         assertEq(gem.balanceOf(tap), rmul(5 ether, top.fix())); // Needed to payout 5 sai
-        assertEq(gem.balanceOf(jar), sub(10 ether, rmul(5 ether, top.fix())));
+        assertEq(gem.balanceOf(tub), sub(10 ether, rmul(5 ether, top.fix())));
 
         tap.cash();
 
@@ -1079,17 +1063,17 @@ contract CageTest is SaiTestBase {
         assertEq(uint(top.caged()), tip.era());
 
         // exit fails because ice != 0 && fog !=0 and not enough time passed
-        assertTrue(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
+        assertTrue(!tub.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
         top.setCooldown(1 days);
         warp(1 days);
-        assertTrue(!jar.call(bytes4(sha3('exit(uint256)')), 5 ether));
+        assertTrue(!tub.call(bytes4(sha3('exit(uint256)')), 5 ether));
 
         warp(1 seconds);
         top.flow();
         assertEq(skr.balanceOf(this), 5 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        assertTrue(jar.call(bytes4(sha3('exit(uint256)')), 4 ether));
+        assertTrue(tub.call(bytes4(sha3('exit(uint256)')), 4 ether));
         assertEq(skr.balanceOf(this), 1 ether);
         // n.b. we don't get back 4 as there is still skr in the cup
         assertEq(gem.balanceOf(this), 92 ether);
@@ -1118,8 +1102,8 @@ contract CageTest is SaiTestBase {
         // now this remaining 1 skr will claim all the remaining 3 ether.
         // this is why exiting early is bad if you want to maximise returns.
         // if we had exited with all the skr earlier, there would be 2.5 gem
-        // trapped in the jar.
-        jar.exit(1 ether);
+        // trapped in the tub.
+        tub.exit(1 ether);
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
     }
@@ -1128,8 +1112,8 @@ contract CageTest is SaiTestBase {
 contract LiquidationTest is SaiTestBase {
     function liq(bytes32 cup) returns (uint256) {
         // compute the liquidation price of a cup
-        var jam = rmul(tub.ink(cup), tub.jar().per());  // this many eth
-        var con = rmul(tub.tab(cup), tub.tip().par());  // this much ref debt
+        var jam = rmul(tub.ink(cup), tub.per());  // this many eth
+        var con = rmul(tub.tab(cup), tip.par());  // this much ref debt
         var min = rmul(con, tub.mat());        // minimum ref debt
         return wdiv(min, jam);
     }
@@ -1137,7 +1121,7 @@ contract LiquidationTest is SaiTestBase {
         tub.cork(100 ether);
         mark(2 ether);
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 10 ether);        // 200% collateralisation
@@ -1154,7 +1138,7 @@ contract LiquidationTest is SaiTestBase {
         tub.draw(cup, 30 ether);
         assertEq(liq(cup), 6 ether);
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         assertEq(liq(cup), 6 ether);
 
         tub.lock(cup, 10 ether);  // now 40 drawn on 20 gem == 120 ref
@@ -1162,15 +1146,15 @@ contract LiquidationTest is SaiTestBase {
     }
     function collat(bytes32 cup) returns (uint256) {
         // compute the collateralised fraction of a cup
-        var pro = rmul(tub.ink(cup), tub.jar().tag());
-        var con = rmul(tub.tab(cup), tub.tip().par());
+        var pro = rmul(tub.ink(cup), tub.tag());
+        var con = rmul(tub.tab(cup), tip.par());
         return wdiv(pro, con);
     }
     function testCollat() {
         tub.cork(100 ether);
         mark(2 ether);
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 10 ether);
@@ -1199,7 +1183,7 @@ contract LiquidationTest is SaiTestBase {
         tub.cuff(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
         mark(2 ether);
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
 
@@ -1215,7 +1199,7 @@ contract LiquidationTest is SaiTestBase {
         assertEq(tap.fog(), 8 ether);
 
         // 8 skr for sale
-        assertEq(tub.jar().per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
 
         // get 2 skr, pay 4 sai (25% of the debt)
         var sai_before = sai.balanceOf(this);
@@ -1247,7 +1231,7 @@ contract LiquidationTest is SaiTestBase {
         tub.chop(ray(1.5 ether));  // 150% liq penalty
         mark(20 ether);
 
-        jar.join(10 ether);
+        tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 100 ether);  // 200 % collat
@@ -1267,7 +1251,7 @@ contract LiquidationTest is SaiTestBase {
         // If all the fog is sold, there will be a sai surplus.
 
         // get some more sai to buy with
-        jar.join(10 ether);
+        tub.join(10 ether);
         var mug = tub.open();
         tub.lock(mug, 10 ether);
         tub.draw(mug, 50 ether);
@@ -1311,7 +1295,7 @@ contract TapTest is SaiTestBase {
     // boom (flap) is surplus sale (sai for skr->burn)
     function testTapBoom() {
         sai.mint(tap, 50 ether);
-        jar.join(60 ether);
+        tub.join(60 ether);
 
         assertEq(sai.balanceOf(this),  0 ether);
         assertEq(skr.balanceOf(this), 60 ether);
@@ -1322,13 +1306,13 @@ contract TapTest is SaiTestBase {
     }
     function testFailTapBoomOverJoy() {
         sai.mint(tap, 50 ether);
-        jar.join(60 ether);
+        tub.join(60 ether);
         tap.boom(51 ether);
     }
     function testTapBoomHeals() {
         sai.mint(tap, 60 ether);
         sin.mint(tap, 50 ether);
-        jar.join(10 ether);
+        tub.join(10 ether);
 
         tap.boom(0 ether);
         assertEq(tap.joy(), 10 ether);
@@ -1336,12 +1320,12 @@ contract TapTest is SaiTestBase {
     function testFailTapBoomNetWoe() {
         sai.mint(tap, 50 ether);
         sin.mint(tap, 60 ether);
-        jar.join(10 ether);
+        tub.join(10 ether);
         tap.boom(1 ether);
     }
     function testTapBoomBurnsSkr() {
         sai.mint(tap, 50 ether);
-        jar.join(60 ether);
+        tub.join(60 ether);
 
         assertEq(skr.totalSupply(), 60 ether);
         tap.boom(20 ether);
@@ -1349,15 +1333,15 @@ contract TapTest is SaiTestBase {
     }
     function testTapBoomIncreasesPer() {
         sai.mint(tap, 50 ether);
-        jar.join(60 ether);
+        tub.join(60 ether);
 
-        assertEq(jar.per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
         tap.boom(30 ether);
-        assertEq(jar.per(), ray(2 ether));
+        assertEq(tub.per(), ray(2 ether));
     }
     function testTapBoomMarkDep() {
         sai.mint(tap, 50 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
 
         mark(2 ether);
         tap.boom(10 ether);
@@ -1367,11 +1351,11 @@ contract TapTest is SaiTestBase {
     }
     function testTapBoomPerDep() {
         sai.mint(tap, 50 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
 
-        assertEq(jar.per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
         skr.mint(50 ether);  // halves per
-        assertEq(jar.per(), ray(.5 ether));
+        assertEq(tub.per(), ray(.5 ether));
 
         tap.boom(10 ether);
         assertEq(sai.balanceOf(this),  5 ether);
@@ -1381,7 +1365,7 @@ contract TapTest is SaiTestBase {
     // flip is collateral sale (skr for sai)
     function testTapBustFlip() {
         sai.mint(50 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
         skr.push(tap, 50 ether);
         assertEq(tap.fog(), 50 ether);
 
@@ -1393,7 +1377,7 @@ contract TapTest is SaiTestBase {
     }
     function testFailTapBustFlipOverFog() { // FAIL
         sai.mint(50 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
         skr.push(tap, 50 ether);
 
         tap.bust(51 ether);
@@ -1417,7 +1401,7 @@ contract TapTest is SaiTestBase {
     function testTapBustFlipHealsNetJoy() {
         sai.mint(tap, 10 ether);
         sin.mint(tap, 20 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
         skr.push(tap, 50 ether);
 
         sai.mint(15 ether);
@@ -1428,7 +1412,7 @@ contract TapTest is SaiTestBase {
     function testTapBustFlipHealsNetWoe() {
         sai.mint(tap, 10 ether);
         sin.mint(tap, 20 ether);
-        jar.join(50 ether);
+        tub.join(50 ether);
         skr.push(tap, 50 ether);
 
         sai.mint(5 ether);
@@ -1438,7 +1422,7 @@ contract TapTest is SaiTestBase {
     }
     // flop is debt sale (woe->skr for sai)
     function testTapBustFlop() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 50 ether);
         assertEq(tap.woe(), 50 ether);
@@ -1450,7 +1434,7 @@ contract TapTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  75 ether);
     }
     function testFailTapBustFlopNetJoy() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 50 ether);
         sai.mint(tap, 100 ether);
@@ -1458,7 +1442,7 @@ contract TapTest is SaiTestBase {
         tap.bust(1);  // anything but zero should fail
     }
     function testTapBustFlopMintsSkr() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 50 ether);
 
@@ -1467,17 +1451,17 @@ contract TapTest is SaiTestBase {
         assertEq(skr.totalSupply(),  70 ether);
     }
     function testTapBustFlopDecreasesPer() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 50 ether);
 
-        assertEq(jar.per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
         tap.bust(50 ether);
-        assertEq(jar.per(), ray(.5 ether));
+        assertEq(tub.per(), ray(.5 ether));
     }
 
     function testTapBustAsk() {
-        jar.join(50 ether);
+        tub.join(50 ether);
         assertEq(tap.ask(50 ether), 50 ether);
 
         skr.mint(50 ether);
@@ -1506,7 +1490,7 @@ contract TapTest is SaiTestBase {
     }
     // flipflop is debt sale when collateral present
     function testTapBustFlipFlopRounding() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 100 ether);
         skr.push(tap,  50 ether);
@@ -1518,14 +1502,14 @@ contract TapTest is SaiTestBase {
         assertEq(sai.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(),    50 ether);
 
-        assertEq(jar.per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
         assertEq(tap.s2s(), ray(1 ether));
         assertEq(tub.tag(), ray(1 ether));
         assertEq(tap.ask(60 ether), 60 ether);
         tap.bust(60 ether);
-        assertEq(jar.per(), rdiv(5, 6));
+        assertEq(tub.per(), rdiv(5, 6));
         assertEq(tap.s2s(), rdiv(5, 6));
-        assertEq(jar.tag(), rdiv(5, 6));
+        assertEq(tub.tag(), rdiv(5, 6));
         // non ray prices would give small rounding error because wad math
         assertEq(tap.ask(60 ether), 50 ether);
         assertEq(skr.totalSupply(),    60 ether);
@@ -1534,7 +1518,7 @@ contract TapTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  50 ether);
     }
     function testTapBustFlipFlop() {
-        jar.join(50 ether);  // avoid per=1 init case
+        tub.join(50 ether);  // avoid per=1 init case
         sai.mint(100 ether);
         sin.mint(tap, 100 ether);
         skr.push(tap,  50 ether);
@@ -1545,9 +1529,9 @@ contract TapTest is SaiTestBase {
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(sai.balanceOf(this), 100 ether);
         assertEq(skr.totalSupply(),    50 ether);
-        assertEq(jar.per(), ray(1 ether));
+        assertEq(tub.per(), ray(1 ether));
         tap.bust(80 ether);
-        assertEq(jar.per(), rdiv(5, 8));
+        assertEq(tub.per(), rdiv(5, 8));
         assertEq(skr.totalSupply(),    80 ether);
         assertEq(tap.fog(),             0 ether);
         assertEq(skr.balanceOf(this),  80 ether);
@@ -1570,7 +1554,7 @@ contract TaxTest is SaiTestBase {
         tub.cork(1000 ether);
         tub.crop(1000000564701133626865910626);  // 5% / day
         cup = tub.open();
-        jar.join(100 ether);
+        tub.join(100 ether);
         tub.lock(cup, 100 ether);
         tub.draw(cup, 100 ether);
     }
@@ -1614,7 +1598,7 @@ contract TaxTest is SaiTestBase {
         taxSetup();
         warp(1 days);
         // should have 5 sai available == 0.5 skr
-        jar.join(0.5 ether);  // get some unlocked skr
+        tub.join(0.5 ether);  // get some unlocked skr
 
         assertEq(skr.totalSupply(),   100.5 ether);
         assertEq(sai.balanceOf(tap),    0 ether);
@@ -1728,7 +1712,7 @@ contract WayTest is SaiTestBase {
         tub.cork(1000 ether);
 
         cup = tub.open();
-        jar.join(100 ether);
+        tub.join(100 ether);
         tub.lock(cup, 100 ether);
         tub.draw(cup, 100 ether);
     }
@@ -1825,7 +1809,7 @@ contract WayTest is SaiTestBase {
     }
     function testWayBoom() {
         var cup = waySetup();
-        jar.join(100 ether);       // give us some spare skr
+        tub.join(100 ether);       // give us some spare skr
         sai.push(tap, 100 ether);  // force some joy into the tap
         assertEq(tap.joy(), 100 ether);
 
@@ -1835,9 +1819,9 @@ contract WayTest is SaiTestBase {
         assertEq(wad(tip.par()), 2 ether);
         tap.boom(100 ether);
         assertEq(tap.joy(),   0 ether);
-        assertEq(tub.jar().per(), ray(2 ether));
+        assertEq(tub.per(), ray(2 ether));
 
-        jar.join(100 ether);
+        tub.join(100 ether);
         tub.draw(cup, 100 ether);
         sai.push(tap, 100 ether);  // force some joy into the tap
 
@@ -1858,7 +1842,7 @@ contract GapTest is SaiTestBase {
         super.setUp();
 
         gem.mint(500 ether);
-        jar.join(500 ether);
+        tub.join(500 ether);
 
         sai.mint(500 ether);
         sin.mint(500 ether);
@@ -1922,29 +1906,29 @@ contract GapTest is SaiTestBase {
 
     // join and exit have a spread parameter
     function testGapJarBidAsk() {
-        assertEq(jar.per(), ray(1 ether));
-        assertEq(jar.bid(1 ether), 1 ether);
-        assertEq(jar.ask(1 ether), 1 ether);
+        assertEq(tub.per(), ray(1 ether));
+        assertEq(tub.bid(1 ether), 1 ether);
+        assertEq(tub.ask(1 ether), 1 ether);
 
-        jar.calk(1.01 ether);
-        assertEq(jar.bid(1 ether), 0.99 ether);
-        assertEq(jar.ask(1 ether), 1.01 ether);
+        tub.calk(1.01 ether);
+        assertEq(tub.bid(1 ether), 0.99 ether);
+        assertEq(tub.ask(1 ether), 1.01 ether);
 
         assertEq(skr.balanceOf(this), 500 ether);
         assertEq(skr.totalSupply(),   500 ether);
         skr.burn(250 ether);
 
-        assertEq(jar.per(), ray(2 ether));
-        assertEq(jar.bid(1 ether), 1.98 ether);
-        assertEq(jar.ask(1 ether), 2.02 ether);
+        assertEq(tub.per(), ray(2 ether));
+        assertEq(tub.bid(1 ether), 1.98 ether);
+        assertEq(tub.ask(1 ether), 2.02 ether);
     }
     function testGapJoin() {
         gem.mint(100 ether);
 
-        jar.calk(1.05 ether);
+        tub.calk(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
-        jar.join(100 ether);
+        tub.join(100 ether);
         var skr_after = skr.balanceOf(this);
         var gem_after = gem.balanceOf(this);
 
@@ -1953,12 +1937,12 @@ contract GapTest is SaiTestBase {
     }
     function testGapExit() {
         gem.mint(100 ether);
-        jar.join(100 ether);
+        tub.join(100 ether);
 
-        jar.calk(1.05 ether);
+        tub.calk(1.05 ether);
         var skr_before = skr.balanceOf(this);
         var gem_before = gem.balanceOf(this);
-        jar.exit(100 ether);
+        tub.exit(100 ether);
         var skr_after = skr.balanceOf(this);
         var gem_after = gem.balanceOf(this);
 
@@ -1978,7 +1962,7 @@ contract GasTest is SaiTestBase {
         tub.cork(1000 ether);
 
         cup = tub.open();
-        jar.join(1000 ether);
+        tub.join(1000 ether);
         tub.lock(cup, 500 ether);
         tub.draw(cup, 100 ether);
     }
@@ -2025,7 +2009,7 @@ contract GasTest is SaiTestBase {
     }
     function testGasBoom() {
         warp(tic);
-        jar.join(10 ether);
+        tub.join(10 ether);
         sai.mint(100 ether);
         sai.push(tap, 100 ether);
         skr.approve(tap, uint(-1));
@@ -2034,7 +2018,7 @@ contract GasTest is SaiTestBase {
     }
     function testGasBoomHeal() {
         warp(tic);
-        jar.join(10 ether);
+        tub.join(10 ether);
         sai.mint(100 ether);
         sin.mint(100 ether);
         sai.push(tap, 100 ether);

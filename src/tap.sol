@@ -6,36 +6,33 @@
 
 pragma solidity ^0.4.10;
 
-import "./jar.sol";
 import "./tip.sol";
+import "./tub.sol";
 
 contract SaiTap is DSThing {
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
 
-    SaiJar   public  jar;
     SaiTip   public  tip;
+    SaiTub   public  tub;
 
     uint256  public  gap;  // Spread
     bool     public  off;  // Cage flag
     uint256  public  fix;  // Cage price
 
-    function SaiTap(
-        DSToken sai_,
-        DSToken sin_,
-        SaiJar  jar_,
-        SaiTip  tip_
-
-    ) {
-        sai = sai_;
-        sin = sin_;
-        skr = jar_.skr();
-
-        tip = tip_;
-        jar = jar_;
-
+    function SaiTap() {
         gap = WAD;
+    }
+
+    function turn(SaiTub tub_) {
+        tub = tub_;
+
+        sai = tub.sai();
+        sin = tub.sin();
+        skr = tub.skr();
+
+        tip = tub.tip();
     }
 
     // surplus
@@ -53,7 +50,7 @@ contract SaiTap is DSThing {
 
     // sai per skr
     function s2s() returns (uint) {
-        var tag = jar.tag();    // ref per skr
+        var tag = tub.tag();    // ref per skr
         var par = tip.par();    // ref per sai
         return rdiv(tag, par);  // sai per skr
     }
@@ -114,7 +111,7 @@ contract SaiTap is DSThing {
         require(off);
         var wad = sai.balanceOf(msg.sender);
         sai.pull(msg.sender, wad);
-        jar.gem().transfer(msg.sender, rmul(wad, fix));
+        tub.gem().transfer(msg.sender, rmul(wad, fix));
     }
     function vent() note {
         require(off);

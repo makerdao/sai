@@ -10,7 +10,6 @@ import "ds-thing/thing.sol";
 import "ds-token/token.sol";
 
 import "./tip.sol";
-import "./jar.sol";
 
 // ref/gem is the only piece external data  (e.g. USD/ETH)
 //    so there is a strong separation between "data feeds" and "policy"
@@ -35,13 +34,15 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    SaiJar   public  jar;  // Collateral vault
+    DSValue  public  pip;
+
     address  public  tap;  // Liquidator
 
     uint256  public  axe;  // Liquidation penalty
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
     uint256  public  tax;  // Stability fee
+    uint256  public  gap;  // Spread
 
     bool     public  off;  // Cage flag
 
@@ -74,25 +75,29 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     function SaiTub(
         DSToken  sai_,
         DSToken  sin_,
-        SaiJar   jar_,
+        DSToken  skr_,
+        ERC20    gem_,
+        DSValue  pip_,
         SaiTip   tip_,
         address  tap_
     ) {
-        jar = jar_;
-        gem = jar.gem();
-        skr = jar.skr();
+        gem = gem_;
+        skr = skr_;
 
         sai = sai_;
         sin = sin_;
+
+        pip = pip_;
+        tip = tip_;
         tap = tap_;
 
         axe = RAY;
         mat = RAY;
         tax = RAY;
+        gap = WAD;
 
         _chi = RAY;
 
-        tip = tip_;
         rho = era();
     }
 
@@ -141,16 +146,54 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     }
     // Raw collateral
     function pie() constant returns (uint) {
-        return gem.balanceOf(jar);
+        return gem.balanceOf(this);
     }
     // Backing collateral
     function air() constant returns (uint) {
         return skr.balanceOf(this);
     }
 
+    // ref per skr
+    function tag() constant returns (uint wad) {
+        return off ? fit : wmul(per(), uint(pip.read()));
+    }
+
+    // gem per skr
+    function per() constant returns (uint ray) {
+        // this avoids 0 edge case / rounding errors TODO delete me
+        // TODO delegate edge case via fee built into conversion formula
+        // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
+
+        // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
+        var fat = skr.totalSupply();
+        return skr.totalSupply() == 0 ? RAY : rdiv(pie(), fat);
+    }
+
+    function calk(uint wad) note auth {
+        gap = wad;
+    }
+    function ask(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), gap));
+    }
+    function bid(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
+    }
+
+    function join(uint wad) note {
+        require(!off);
+        gem.transferFrom(msg.sender, this, ask(wad));
+        skr.mint(msg.sender, wad);
+    }
+
+    function exit(uint wad) note {
+        require(!off);
+        gem.transfer(msg.sender, bid(wad));
+        skr.burn(msg.sender, wad);
+    }
+
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) constant returns (bool) {
-        var pro = rmul(jar.tag(), ink(cup));
+        var pro = rmul(tag(), ink(cup));
         var con = rmul(tip.par(), tab(cup));
         var min = rmul(con, mat);
         return pro >= min;
@@ -210,10 +253,6 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function tag() returns (uint) {
-        return off ? fit : jar.tag();
-    }
-
     function bite(bytes32 cup) note {
         require(!safe(cup) || off);
 
@@ -246,9 +285,14 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function cage(uint fit_) note auth {
+    function cage(uint fit_, uint jam) note auth {
         require(!off);
         off = true;
         fit = fit_;         // ref per skr
+        gem.transfer(tap, jam);
+    }
+    function flow() note auth {
+        require(off);
+        off = false;
     }
 }

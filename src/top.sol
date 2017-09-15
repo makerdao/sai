@@ -14,8 +14,6 @@ contract SaiTop is DSThing, DSWarp {
     SaiTub   public  tub;
     SaiTap   public  tap;
 
-    SaiJar   public  jar;
-
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
@@ -31,7 +29,6 @@ contract SaiTop is DSThing, DSWarp {
         tap = tap_;
 
         tip = tub.tip();
-        jar = tub.jar();
 
         sai = tub.sai();
         sin = tub.sin();
@@ -50,29 +47,26 @@ contract SaiTop is DSThing, DSWarp {
         tub.drip();  // collect remaining fees
         tap.heal();  // absorb any pending fees
 
-        fit = rmul(wmul(price, tub.tip().par()), jar.per());
-        tub.cage(fit);
-
+        fit = rmul(wmul(price, tub.tip().par()), tub.per());
         // most gems we can get per sai is the full balance
         fix = min(rdiv(WAD, price), rdiv(tub.pie(), sin.totalSupply()));
-        tap.cage(fix);
 
-        // put the gems backing sai in the tap
-        jar.cage(tap, rmul(fix, sin.totalSupply()));
+        tub.cage(fit, rmul(fix, sin.totalSupply()));
+        tap.cage(fix);
 
         tap.vent();    // burn pending sale skr
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(rdiv(uint(jar.pip().read()), tip.par()));
+        cage(rdiv(uint(tub.pip().read()), tip.par()));
     }
 
     function flow() note {
-        require(jar.off());
+        require(tub.off());
         var empty = tub.ice() == 0 && tap.fog() == 0;
         var ended = era() > caged + cooldown;
         require(empty || ended);
-        jar.flow();
+        tub.flow();
     }
 
     function setCooldown(uint64 cooldown_) auth {
