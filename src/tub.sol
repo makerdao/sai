@@ -146,7 +146,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     }
     // Backing collateral
     function air() constant returns (uint) {
-        return skr.balanceOf(jar);
+        return skr.balanceOf(this);
     }
 
     // Returns true if cup is well-collateralized
@@ -176,12 +176,12 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         require(!off);
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
-        jar.pull(skr, msg.sender, wad);
+        skr.pull(msg.sender, wad);
     }
     function free(bytes32 cup, uint wad) note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
-        jar.push(skr, msg.sender, wad);
+        skr.push(msg.sender, wad);
         require(safe(cup));
     }
 
@@ -230,7 +230,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
             owe = cups[cup].ink;
         }
 
-        jar.push(skr, tap, owe);
+        skr.push(tap, owe);
         cups[cup].ink = sub(cups[cup].ink, owe);
     }
 

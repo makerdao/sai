@@ -6,10 +6,10 @@
 
 pragma solidity ^0.4.10;
 
-import "ds-vault/vault.sol";
+import "ds-token/token.sol";
 import "ds-value/value.sol";
 
-contract SaiJar is DSThing, DSVault {
+contract SaiJar is DSThing {
     DSToken  public  skr;
     ERC20    public  gem;
     DSValue  public  pip;
