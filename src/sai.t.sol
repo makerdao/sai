@@ -1315,6 +1315,7 @@ contract TapTest is SaiTestBase {
         assertEq(tap.woe(), 4);
         assertEq(tap.fog(), 5);
     }
+    // boom (flap) is surplus sale (sai for skr->burn)
     function testTapBoom() {
         sai.mint(tap, 50 ether);
         jar.join(60 ether);
@@ -1344,6 +1345,14 @@ contract TapTest is SaiTestBase {
         sin.mint(tap, 60 ether);
         jar.join(10 ether);
         tap.boom(1 ether);
+    }
+    function testTapBoomBurnsSkr() {
+        sai.mint(tap, 50 ether);
+        jar.join(60 ether);
+
+        assertEq(skr.totalSupply(), 60 ether);
+        tap.boom(20 ether);
+        assertEq(skr.totalSupply(), 40 ether);
     }
     function testTapBoomIncreasesPer() {
         sai.mint(tap, 50 ether);
@@ -1375,6 +1384,103 @@ contract TapTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(sai.balanceOf(tap),  45 ether);
         assertEq(skr.balanceOf(this), 90 ether);
+    }
+    // flip is collateral sale (skr for sai)
+    function testTapBustFlip() {
+        sai.mint(50 ether);
+        jar.join(50 ether);
+        skr.push(tap, 50 ether);
+        assertEq(tap.fog(), 50 ether);
+
+        assertEq(skr.balanceOf(this),  0 ether);
+        assertEq(sai.balanceOf(this), 50 ether);
+        tap.bust(30 ether);
+        assertEq(skr.balanceOf(this), 30 ether);
+        assertEq(sai.balanceOf(this), 20 ether);
+    }
+    function testFailTapBustFlipOverFog() { // FAIL
+        sai.mint(50 ether);
+        jar.join(50 ether);
+        skr.push(tap, 50 ether);
+
+        tap.bust(51 ether);
+    }
+    function testTapBustHealsNetJoy() {
+        sai.mint(tap, 20 ether);
+        sin.mint(tap, 10 ether);
+
+        tap.bust(0 ether);
+        assertEq(tap.joy(), 10 ether);
+        assertEq(tap.woe(),  0 ether);
+    }
+    function testTapBustHealsNetWoe() {
+        sai.mint(tap, 10 ether);
+        sin.mint(tap, 20 ether);
+
+        tap.bust(0 ether);
+        assertEq(tap.joy(),  0 ether);
+        assertEq(tap.woe(), 10 ether);
+    }
+    function testTapBustFlipHealsNetJoy() {
+        sai.mint(tap, 10 ether);
+        sin.mint(tap, 20 ether);
+        jar.join(50 ether);
+        skr.push(tap, 50 ether);
+
+        sai.mint(15 ether);
+        tap.bust(15 ether);
+        assertEq(tap.joy(), 5 ether);
+        assertEq(tap.woe(), 0 ether);
+    }
+    function testTapBustFlipHealsNetWoe() {
+        sai.mint(tap, 10 ether);
+        sin.mint(tap, 20 ether);
+        jar.join(50 ether);
+        skr.push(tap, 50 ether);
+
+        sai.mint(5 ether);
+        tap.bust(5 ether);
+        assertEq(tap.joy(), 0 ether);
+        assertEq(tap.woe(), 5 ether);
+    }
+    // flop is debt sale (woe->skr for sai)
+    function testTapBustFlop() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 50 ether);
+        assertEq(tap.woe(), 50 ether);
+
+        assertEq(skr.balanceOf(this),  50 ether);
+        assertEq(sai.balanceOf(this), 100 ether);
+        tap.bust(50 ether);
+        assertEq(skr.balanceOf(this), 100 ether);
+        assertEq(sai.balanceOf(this),  75 ether);
+    }
+    function testFailTapBustFlopNetJoy() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 50 ether);
+        sai.mint(tap, 100 ether);
+
+        tap.bust(1);  // anything but zero should fail
+    }
+    function testTapBustFlopMintsSkr() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 50 ether);
+
+        assertEq(skr.totalSupply(),  50 ether);
+        tap.bust(20 ether);
+        assertEq(skr.totalSupply(),  70 ether);
+    }
+    function testTapBustFlopDecreasesPer() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 50 ether);
+
+        assertEq(jar.per(), ray(1 ether));
+        tap.bust(50 ether);
+        assertEq(jar.per(), ray(.5 ether));
     }
 }
 
