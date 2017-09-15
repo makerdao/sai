@@ -1482,6 +1482,70 @@ contract TapTest is SaiTestBase {
         tap.bust(50 ether);
         assertEq(jar.per(), ray(.5 ether));
     }
+
+    function testTapBustAsk() {
+        jar.join(50 ether);
+        assertEq(tap.ask(50 ether), 50 ether);
+
+        skr.mint(50 ether);
+        assertEq(tap.ask(50 ether), 25 ether);
+
+        skr.mint(100 ether);
+        assertEq(tap.ask(50 ether), 12.5 ether);
+
+        skr.burn(175 ether);
+        assertEq(tap.ask(50 ether), 100 ether);
+    }
+    // flipflop is debt sale when collateral present
+    function testTapBustFlipFlopRounding() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 100 ether);
+        skr.push(tap,  50 ether);
+        assertEq(tap.joy(),   0 ether);
+        assertEq(tap.woe(), 100 ether);
+        assertEq(tap.fog(),  50 ether);
+
+        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(sai.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(),    50 ether);
+
+        assertEq(jar.per(), ray(1 ether));
+        assertEq(tap.s2s(), 1 ether);
+        assertEq(tap.ask(60 ether), 60 ether);
+        tap.bust(60 ether);
+        assertEq(jar.per(), rdiv(5, 6));
+        assertEq(tap.s2s(), wdiv(5, 6));
+        // small rounding error because wad math
+        assertEq(tap.ask(60 ether), 50 ether - 20);
+        // TODO: why exactly 20?
+        // TODO: should all prices be rays?
+
+        assertEq(skr.totalSupply(),    60 ether);
+        assertEq(tap.fog(),             0 ether);
+        assertEq(skr.balanceOf(this),  60 ether);
+        assertEq(sai.balanceOf(this),  50 ether + 20);  // expect 50 exact
+    }
+    function testTapBustFlipFlop() {
+        jar.join(50 ether);  // avoid per=1 init case
+        sai.mint(100 ether);
+        sin.mint(tap, 100 ether);
+        skr.push(tap,  50 ether);
+        assertEq(tap.joy(),   0 ether);
+        assertEq(tap.woe(), 100 ether);
+        assertEq(tap.fog(),  50 ether);
+
+        assertEq(skr.balanceOf(this),   0 ether);
+        assertEq(sai.balanceOf(this), 100 ether);
+        assertEq(skr.totalSupply(),    50 ether);
+        assertEq(jar.per(), ray(1 ether));
+        tap.bust(80 ether);
+        assertEq(jar.per(), rdiv(5, 8));
+        assertEq(skr.totalSupply(),    80 ether);
+        assertEq(tap.fog(),             0 ether);
+        assertEq(skr.balanceOf(this),  80 ether);
+        assertEq(sai.balanceOf(this),  50 ether);  // expected 50, actual 50 ether + 2???!!!
+    }
 }
 
 contract TaxTest is SaiTestBase {
