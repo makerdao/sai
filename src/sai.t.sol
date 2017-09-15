@@ -1995,6 +1995,9 @@ contract GasTest is SaiTestBase {
     function doLock(uint256 wad) logs_gas {
         tub.lock(cup, wad);
     }
+    function doFree(uint256 wad) logs_gas {
+        tub.free(cup, wad);
+    }
     function doDraw(uint256 wad) logs_gas {
         tub.draw(cup, wad);
     }
@@ -2013,14 +2016,22 @@ contract GasTest is SaiTestBase {
     function testGasLock() {
         warp(tic);
         doLock(100 ether);
+        // assertTrue(false);
+    }
+    function testGasFree() {
+        warp(tic);
+        doFree(100 ether);
+        // assertTrue(false);
     }
     function testGasDraw() {
         warp(tic);
         doDraw(100 ether);
+        // assertTrue(false);
     }
     function testGasWipe() {
         warp(tic);
         doWipe(100 ether);
+        // assertTrue(false);
     }
     function testGasBoom() {
         warp(tic);
@@ -2029,6 +2040,7 @@ contract GasTest is SaiTestBase {
         sai.push(tap, 100 ether);
         skr.approve(tap, uint(-1));
         doBoom(1 ether);
+        // assertTrue(false);
     }
     function testGasBoomHeal() {
         warp(tic);
@@ -2039,6 +2051,7 @@ contract GasTest is SaiTestBase {
         sin.push(tap,  50 ether);
         skr.approve(tap, uint(-1));
         doBoom(1 ether);
+        // assertTrue(false);
     }
     function testGasDripNoop() {
         tub.drip();
