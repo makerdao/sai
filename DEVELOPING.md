@@ -290,6 +290,7 @@ The auth setup looks as follows: sai-auth.jpeg [XXX: do this in graphviz]
 
 - `auth` only on admin functions
 - updated to latest dappsys
+- simplified contract layout
 
 
 ## Deployment
