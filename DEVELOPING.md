@@ -21,16 +21,8 @@ the [white paper], a high level overview of Dai.  A reading of the
 [purple paper], the (in progress) detailed Dai technical specification
 and reference implementation is useful but not required.
 
-XXX: include LL link?
-
-There is ongoing work to specify Sai (and Dai) using Linear Logic,
-forming the [teal paper]. This is at a very early draft stage and is
-provided for interest. Eventually, this work aims to allow formal
-reasoning about system properties.
-
 [white paper]: https://github.com/makerdao/docs/blob/master/Dai.md
 [purple paper]: https://makerdao.com/purple
-[teal paper]: https://dapphub.github.io/LLsai/sai
 
 ### Note on memes
 
@@ -58,20 +50,17 @@ Sai uses the following tokens:
 
 Sai has the following core components:
 
-- `jar`: A token wrapper
 - `tub`: CDP record store
 - `tip`: target price feed
 - `tap`: liquidation mechanism
 - `top`: global settlement facilitator
 
-TODO: jar, `pot` and `pit` vault info
-
 TOOD: risk parameters
 
 
-### `jar`: A Token Wrapper
+### `skr`: A Token Wrapper
 
-The `jar` is a token wrapper.
+`skr` is a token wrapper.
 
 - `join`: deposit `gem` in return for `skr`
 - `exit`: claim `gem` with their `skr`.
@@ -115,7 +104,7 @@ The `tub` is the CDP record system.  An individual CDP is called a `cup`
 It is crucial to know whether a CDP is well collateralised or not:
 `safe(cup)` returns a boolean indicating this.
 
-`safe` aggregates price information from the `tip` and the `jar` and
+`safe` aggregates price information from the `tip` and the `tub` and
 compares the reference value of a CDPs debt and collateral.
 
 The following `tub` acts are not possible if they would transition a CDP
@@ -205,8 +194,8 @@ and increasing `per`, giving SKR holders more GEM per SKR. When there is
 surplus Woe, SKR is inflated, increasing the SKR supply and decreasing
 `per`, giving SKR holders less GEM per SKR.
 
-The reason for wrapping GEM in the `jar` is now apparent: *it provides a
-way to socialise losses and gains incurred in the operation of the system.*
+The reason for wrapping GEM in SKR is now apparent: *it provides a way
+to socialise losses and gains incurred in the operation of the system.*
 
 Two features of this mechanism:
 
@@ -255,7 +244,7 @@ total unprocessed revenue, with varying `tax`, in constant time.
 
 ## Auth setup
 
-ds-auth is used, with no owners (XXX: check) and two authorities:
+ds-auth is used, with no owners and two authorities:
 
 1. `dad`: ds-guard, used for internal authority
 
@@ -289,15 +278,12 @@ Script output gist
 - `par`: ref per sai
 - `tag`: ref per skr
 - `pip`: ref per gem
-- `price`: sai per gem
 - `fix`: gem per sai after `cage`
-- `fit`: gem per skr after `cage`
-
+- `fit`: ref per skr after `cage`
 
 ### Meme Mnemonics
 
 - `pip`: trading pips
-- `jar`: where collateral is kept
 - `tip`: target price tip-off
 - `cup`: small container for CDP info
 - `tub`: larger container for cups
@@ -305,16 +291,15 @@ Script output gist
 - `top`: top-level system manager
 
 - `way`: which way the target price is heading
-- `mat`:
-- `hat`:
-- `axe`
-- `tax`
-- `gap`
+- `hat`: upper limit of Sai issuance
+- `mat`: lower limit of collateralisation
+- `tax`: continually paid by CDP holders
+- `axe`: penalty applied to bad CDP holders
+- `gap`: gap between buy and sell
 
-- `air`
-- `fog`
-- `joy`: SKR holders are happy about this
-- `woe`: SKR holders are sad about this
-
-- `pot`:
-- `pit`: where to put unwanted things
+- `pie`: Real collateral that SKR holders share
+- `air`: Abstracted Collateral backing CDPs
+- `ice`: Debt that is locked up with CDPs
+- `fog`: Murky liquidated `air`that we want to get rid of
+- `joy`: SKR holders are happy about this Sai surplus
+- `woe`: SKR holders are sad about this Sin debt

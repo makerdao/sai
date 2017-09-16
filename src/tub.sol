@@ -36,7 +36,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     bool     public  off;  // Cage flag
     bool     public  out;  // Post cage exit
 
-    uint256  public  fit;  // Gem per SKR (just before settlement)
+    uint256  public  fit;  // REF per SKR (just before settlement)
 
     uint64   public  rho;  // Time of last drip
     uint256         _chi;  // Price of internal debt unit

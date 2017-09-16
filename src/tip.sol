@@ -1,4 +1,4 @@
-/// tip.sol -- target price feed
+/// tip.sol -- target price feed (see `vox`)
 
 // Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
