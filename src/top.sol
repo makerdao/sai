@@ -10,7 +10,7 @@ import "./tub.sol";
 import "./tap.sol";
 
 contract SaiTop is DSThing, DSWarp {
-    SaiTip   public  tip;
+    SaiVox   public  vox;
     SaiTub   public  tub;
     SaiTap   public  tap;
 
@@ -28,7 +28,7 @@ contract SaiTop is DSThing, DSWarp {
         tub = tub_;
         tap = tap_;
 
-        tip = tub.tip();
+        vox = tub.vox();
 
         sai = tub.sai();
         sin = tub.sin();
@@ -47,7 +47,7 @@ contract SaiTop is DSThing, DSWarp {
         tub.drip();  // collect remaining fees
         tap.heal();  // absorb any pending fees
 
-        fit = rmul(wmul(price, tub.tip().par()), tub.per());
+        fit = rmul(wmul(price, tub.vox().par()), tub.per());
         // most gems we can get per sai is the full balance
         fix = min(rdiv(WAD, price), rdiv(tub.pie(), sin.totalSupply()));
 
@@ -58,7 +58,7 @@ contract SaiTop is DSThing, DSWarp {
     }
     // cage by reading the last value from the feed for the price
     function cage() note auth {
-        cage(rdiv(uint(tub.pip().read()), tip.par()));
+        cage(rdiv(uint(tub.pip().read()), vox.par()));
     }
 
     function flow() note {

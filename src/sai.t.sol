@@ -29,7 +29,7 @@ contract FakePerson {
 }
 
 contract SaiTestBase is DSTest, DSMath {
-    SaiTip   tip;
+    SaiVox   vox;
     SaiTub   tub;
     SaiTop   top;
     SaiTap   tap;
@@ -54,14 +54,14 @@ contract SaiTestBase is DSTest, DSMath {
         tag.poke(bytes32(price));
     }
     function warp(uint64 age) {
-        tip.warp(age);
+        vox.warp(age);
         tub.warp(age);
         top.warp(age);
     }
 
     function configureAuth() {
         // user facing, use ds-roles
-        tip.setAuthority(mom);
+        vox.setAuthority(mom);
         tub.setAuthority(mom);
         tap.setAuthority(mom);
         top.setAuthority(mom);
@@ -95,7 +95,7 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(tap, skr, bytes4(sha3('burn(address,uint256)')));
         dad.permit(tap, skr, bytes4(sha3('burn(address)')));
 
-        tip.setOwner(0);
+        vox.setOwner(0);
         tub.setOwner(0);
         tap.setOwner(0);
         top.setOwner(0);
@@ -125,7 +125,7 @@ contract SaiTestBase is DSTest, DSMath {
         mom.setRoleCapability(1, tub, bytes4(sha3("cork(uint256)")), true);
         mom.setRoleCapability(1, tub, bytes4(sha3("cuff(uint256)")), true);
         mom.setRoleCapability(1, tub, bytes4(sha3("crop(uint256)")), true);
-        mom.setRoleCapability(1, tip, bytes4(sha3("coax(uint256)")), true);
+        mom.setRoleCapability(1, vox, bytes4(sha3("coax(uint256)")), true);
 
         mom.setRoleCapability(1, tap, bytes4(sha3("calk(uint256)")), true);
         mom.setRoleCapability(1, tub, bytes4(sha3("calk(uint256)")), true);
@@ -145,10 +145,10 @@ contract SaiTestBase is DSTest, DSMath {
         skr = new DSToken("SKR");
 
         tag = new DSValue();
-        tip = new SaiTip();
+        vox = new SaiVox();
 
         tap = new SaiTap();
-        tub = new SaiTub(sai, sin, skr, gem, tag, tip, tap);
+        tub = new SaiTub(sai, sin, skr, gem, tag, vox, tap);
         top = new SaiTop(tub, tap);
         tap.turn(tub);
 
@@ -1060,7 +1060,7 @@ contract CageTest is SaiTestBase {
 
         assertEq(uint(top.caged()), 0);
         top.cage();
-        assertEq(uint(top.caged()), tip.era());
+        assertEq(uint(top.caged()), vox.era());
 
         // exit fails because ice != 0 && fog !=0 and not enough time passed
         assertTrue(!tub.call(bytes4(sha3('exit(uint256)')), 5 ether));
@@ -1113,7 +1113,7 @@ contract LiquidationTest is SaiTestBase {
     function liq(bytes32 cup) returns (uint256) {
         // compute the liquidation price of a cup
         var jam = rmul(tub.ink(cup), tub.per());  // this many eth
-        var con = rmul(tub.tab(cup), tip.par());  // this much ref debt
+        var con = rmul(tub.tab(cup), vox.par());  // this much ref debt
         var min = rmul(con, tub.mat());        // minimum ref debt
         return wdiv(min, jam);
     }
@@ -1147,7 +1147,7 @@ contract LiquidationTest is SaiTestBase {
     function collat(bytes32 cup) returns (uint256) {
         // compute the collateralised fraction of a cup
         var pro = rmul(tub.ink(cup), tub.tag());
-        var con = rmul(tub.tab(cup), tip.par());
+        var con = rmul(tub.tab(cup), vox.par());
         return wdiv(pro, con);
     }
     function testCollat() {
@@ -1541,11 +1541,11 @@ contract TapTest is SaiTestBase {
 
 contract TaxTest is SaiTestBase {
     function testEraInit() {
-        assertEq(uint(tip.era()), now);
+        assertEq(uint(vox.era()), now);
     }
     function testEraWarp() {
         warp(20);
-        assertEq(uint(tip.era()), now + 20);
+        assertEq(uint(vox.era()), now + 20);
     }
     function taxSetup() returns (bytes32 cup) {
         mark(10 ether);
@@ -1729,26 +1729,26 @@ contract WayTest is SaiTestBase {
     // less ref to wipe (but the same sai)
     // This makes cups *more* collateralised with time.
     function testTau() {
-        assertEq(uint(tip.era()), now);
-        assertEq(uint(tip.tau()), now);
+        assertEq(uint(vox.era()), now);
+        assertEq(uint(vox.tau()), now);
     }
     function testWayPar() {
-        tip.coax(999999406327787478619865402);  // -5% / day
+        vox.coax(999999406327787478619865402);  // -5% / day
 
-        assertEq(wad(tip.par()), 1.00 ether);
+        assertEq(wad(vox.par()), 1.00 ether);
         warp(1 days);
-        assertEq(wad(tip.par()), 0.95 ether);
+        assertEq(wad(vox.par()), 0.95 ether);
 
-        tip.coax(1000008022568992670911001251);  // 200% / day
+        vox.coax(1000008022568992670911001251);  // 200% / day
         warp(1 days);
-        assertEq(wad(tip.par()), 1.90 ether);
+        assertEq(wad(vox.par()), 1.90 ether);
     }
     function testWayDecreasingPrincipal() {
         var cup = waySetup();
         mark(0.98 ether);
         assertTrue(!tub.safe(cup));
 
-        tip.coax(999999406327787478619865402);  // -5% / day
+        vox.coax(999999406327787478619865402);  // -5% / day
         warp(1 days);
         assertTrue(tub.safe(cup));
     }
@@ -1759,7 +1759,7 @@ contract WayTest is SaiTestBase {
     function testWayCage() {
         waySetup();
 
-        tip.coax(1000008022568992670911001251);  // 200% / day
+        vox.coax(1000008022568992670911001251);  // 200% / day
         warp(1 days);  // par now 2
 
         // we have 100 sai
@@ -1796,9 +1796,9 @@ contract WayTest is SaiTestBase {
         assertEq(tap.woe(),  75 ether);
         assertEq(sai.balanceOf(this), 75 ether);
 
-        tip.coax(999991977495368425989823173);  // -50% / day
+        vox.coax(999991977495368425989823173);  // -50% / day
         warp(1 days);
-        assertEq(wad(tip.par()), 0.5 ether);
+        assertEq(wad(vox.par()), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
         tap.bust(50 ether);
@@ -1814,9 +1814,9 @@ contract WayTest is SaiTestBase {
         assertEq(tap.joy(), 100 ether);
 
         mark(2 ether);
-        tip.coax(1000008022568992670911001251);  // 200% / day
+        vox.coax(1000008022568992670911001251);  // 200% / day
         warp(1 days);
-        assertEq(wad(tip.par()), 2 ether);
+        assertEq(wad(vox.par()), 2 ether);
         tap.boom(100 ether);
         assertEq(tap.joy(),   0 ether);
         assertEq(tub.per(), ray(2 ether));
@@ -1828,9 +1828,9 @@ contract WayTest is SaiTestBase {
         // n.b. per is now 2
         assertEq(tap.joy(), 100 ether);
         mark(2 ether);
-        tip.coax(999991977495368425989823173);  // -50% / day
+        vox.coax(999991977495368425989823173);  // -50% / day
         warp(2 days);
-        assertEq(wad(tip.par()), 0.5 ether);
+        assertEq(wad(vox.par()), 0.5 ether);
         tap.boom(12.5 ether);
         assertEq(tap.joy(),   0 ether);
     }

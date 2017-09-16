@@ -10,7 +10,7 @@ import "ds-thing/thing.sol";
 import "ds-token/token.sol";
 import "ds-value/value.sol";
 
-import "./tip.sol";
+import "./vox.sol";
 
 contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
@@ -23,7 +23,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    SaiTip   public  tip;  // Target price feed
+    SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
 
     address  public  tap;  // Liquidator
@@ -82,7 +82,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         DSToken  skr_,
         ERC20    gem_,
         DSValue  pip_,
-        SaiTip   tip_,
+        SaiVox   vox_,
         address  tap_
     ) {
         gem = gem_;
@@ -92,7 +92,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         sin = sin_;
 
         pip = pip_;
-        tip = tip_;
+        vox = vox_;
         tap = tap_;
 
         axe = RAY;
@@ -191,7 +191,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) constant returns (bool) {
         var pro = rmul(tag(), ink(cup));
-        var con = rmul(tip.par(), tab(cup));
+        var con = rmul(vox.par(), tab(cup));
         var min = rmul(con, mat);
         return pro >= min;
     }
@@ -268,7 +268,7 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         cups[cup].art = 0;
 
         // Amount owed in SKR, including liquidation penalty
-        var owe = rdiv(rmul(rmul(rue, axe), tip.par()), tag());
+        var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
 
         if (owe > cups[cup].ink) {
             owe = cups[cup].ink;
