@@ -187,7 +187,6 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     function tag() constant returns (uint wad) {
         return off ? fit : wmul(per(), uint(pip.read()));
     }
-
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) constant returns (bool) {
         var pro = rmul(tag(), ink(cup));
