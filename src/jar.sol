@@ -68,6 +68,7 @@ contract SaiJar is DSThing {
         off = true;
         gem.transfer(tap, jam);
     }
+     
     function flow() note auth {
         require(off);
         off = false;
