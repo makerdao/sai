@@ -221,15 +221,35 @@ Two features of this mechanism:
 
 ### `top`: Global Settlement Manager
 
-Other components need very little awareness of what `top` does.
+A key feature of Sai is the possibility of `cage`: shutting down the
+system and reimbursing Sai holders. This is provided for easy upgrades
+between Sai iterations, and for security in case of implementation flaws
+- both in the code and in the design.
 
-`top` just needs authority to move balances from vaults.
+An admin can use the `top` to `cage` the system at a specific price (sai
+per gem), or by reading the last price from the price feed.
 
-This also serves as a useful frontend entrypoint to the system, as it
+First, sufficient real `gem` collateral is taken such that Sai holders
+can redeem their Sai at face value. The `gem` is moved from the `tub` to
+the `tap` and the `tap.cash` function is unlocked for Sai holders to
+call.
+
+Any remaining `gem` remains in the `tub`. SKR holders can now `exit`.
+CDP holders must first `bite` their CDPs (although anyone can do this)
+and then `free` their SKR.
+
+Some important features of `cage`:
+
+- Sai holders are not guaranteed their face value, only preferential payout.
+- *the full real collateral pool is tapped* to make Sai whole. SKR is a
+  *risk-bearing* token.
+- SKR holders will receive a poor rate if they try to `exit` before all
+  CDPs are processed by `bite`. To prevent accidental early `exit`,
+  `top.flow` is provided, which will only enable `exit` after all CDPs
+  are processed, or a timeout has expired.
+
+The `top` also serves as a useful frontend entrypoint to the system, as it
 links to all other components.
-
-TODO: finish this
-
 
 ### `drip`, `art` and `chi`: Dynamic Fee Accumulation
 
