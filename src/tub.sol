@@ -11,30 +11,19 @@ import "ds-token/token.sol";
 
 import "./tip.sol";
 
-// ref/gem is the only piece external data  (e.g. USD/ETH)
-//    so there is a strong separation between "data feeds" and "policy"
-// skr/gem is ratio of supply (outstanding skr to total locked gem)
-// sai/ref decays ("holder fee")
-
-// surplus also market makes for gem
-
-// refprice(skr) := ethers per claim * tag
-// risky := refprice(skr):refprice(debt) too high
-
 contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
 contract SaiTub is DSThing, DSWarp, SaiTubEvents {
-    SaiTip   public  tip;  // Target price source
-
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
 
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    DSValue  public  pip;
+    SaiTip   public  tip;  // Target price feed
+    DSValue  public  pip;  // Reference price feed
 
     address  public  tap;  // Liquidator
 
@@ -42,9 +31,10 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
     uint256  public  tax;  // Stability fee
-    uint256  public  gap;  // Spread
+    uint256  public  gap;  // Join-Exit Spread
 
     bool     public  off;  // Cage flag
+    bool     public  out;  // Post cage exit
 
     uint256  public  fit;  // Gem per SKR (just before settlement)
 
@@ -56,18 +46,31 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     struct Cup {
         address  lad;      // CDP owner
-        uint  art;      // Outstanding debt (in internal debt units)
-        uint  ink;      // Locked collateral (in SKR)
+        uint256  ink;      // Locked collateral (in SKR)
+        uint256  art;      // Outstanding debt (in internal debt units)
     }
 
-    function tab(bytes32 cup) constant returns (uint) {
-        return rmul(cups[cup].art, chi());
+    function lad(bytes32 cup) constant returns (address) {
+        return cups[cup].lad;
     }
     function ink(bytes32 cup) constant returns (uint) {
         return cups[cup].ink;
     }
-    function lad(bytes32 cup) constant returns (address) {
-        return cups[cup].lad;
+    function tab(bytes32 cup) constant returns (uint) {
+        return rmul(cups[cup].art, chi());
+    }
+
+    // Good debt
+    function ice() constant returns (uint) {
+        return sin.balanceOf(this);
+    }
+    // Backing collateral
+    function air() constant returns (uint) {
+        return skr.balanceOf(this);
+    }
+    // Raw collateral
+    function pie() constant returns (uint) {
+        return gem.balanceOf(this);
     }
 
     //------------------------------------------------------------------
@@ -101,6 +104,8 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         rho = era();
     }
 
+    //--Risk-parameter-config-------------------------------------------
+
     function chop(uint ray) note auth {
         axe = ray;
         require(axe >= RAY && axe <= mat);
@@ -118,6 +123,34 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         require(RAY <= tax);
         require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
+    function calk(uint wad) note auth {
+        gap = wad;
+    }
+
+    //--Collateral-wrapper----------------------------------------------
+
+    // Entry price (gem per skr)
+    function per() constant returns (uint ray) {
+        return skr.totalSupply() == 0 ? RAY : rdiv(pie(), skr.totalSupply());
+    }
+    function ask(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), gap));
+    }
+    function bid(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
+    }
+    function join(uint wad) note {
+        require(!off);
+        gem.transferFrom(msg.sender, this, ask(wad));
+        skr.mint(msg.sender, wad);
+    }
+    function exit(uint wad) note {
+        require(!off || out);
+        gem.transfer(msg.sender, bid(wad));
+        skr.burn(msg.sender, wad);
+    }
+
+    //--CDP-debt-appreciation-------------------------------------------
 
     function chi() returns (uint) {
         drip();
@@ -140,55 +173,11 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         _chi = rmul(_chi, inc);
     }
 
-    // Good debt
-    function ice() constant returns (uint) {
-        return sin.balanceOf(this);
-    }
-    // Raw collateral
-    function pie() constant returns (uint) {
-        return gem.balanceOf(this);
-    }
-    // Backing collateral
-    function air() constant returns (uint) {
-        return skr.balanceOf(this);
-    }
+    //--CDP-risk-indicator----------------------------------------------
 
-    // ref per skr
+    // Abstracted collateral price (ref per skr)
     function tag() constant returns (uint wad) {
         return off ? fit : wmul(per(), uint(pip.read()));
-    }
-
-    // gem per skr
-    function per() constant returns (uint ray) {
-        // this avoids 0 edge case / rounding errors TODO delete me
-        // TODO delegate edge case via fee built into conversion formula
-        // TODO could also initialize with 1 gem and 1 skr, send skr to 0x0
-
-        // TODO can we prove that skr.sum() == 0 --> pie() == 0 ?
-        var fat = skr.totalSupply();
-        return skr.totalSupply() == 0 ? RAY : rdiv(pie(), fat);
-    }
-
-    function calk(uint wad) note auth {
-        gap = wad;
-    }
-    function ask(uint wad) constant returns (uint) {
-        return rmul(wad, wmul(per(), gap));
-    }
-    function bid(uint wad) constant returns (uint) {
-        return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
-    }
-
-    function join(uint wad) note {
-        require(!off);
-        gem.transferFrom(msg.sender, this, ask(wad));
-        skr.mint(msg.sender, wad);
-    }
-
-    function exit(uint wad) note {
-        require(!off);
-        gem.transfer(msg.sender, bid(wad));
-        skr.burn(msg.sender, wad);
     }
 
     // Returns true if cup is well-collateralized
@@ -199,7 +188,18 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         return pro >= min;
     }
 
-    //------------------------------------------------------------------
+    //--Anti-corruption-aliases-----------------------------------------
+
+    function lend(address dst, uint wad) internal {
+        sin.mint(wad);
+        sai.mint(dst, wad);
+    }
+    function mend(address src, uint wad) internal {
+        sai.burn(src, wad);
+        sin.burn(wad);
+    }
+
+    //--CDP-operations--------------------------------------------------
 
     function open() note returns (bytes32 cup) {
         require(!off);
@@ -272,17 +272,6 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         cups[cup].ink = sub(cups[cup].ink, owe);
     }
 
-    //-- anti-corruption wrapper ---------------------------------------
-
-    function lend(address dst, uint wad) internal {
-        sin.mint(wad);
-        sai.mint(dst, wad);
-    }
-    function mend(address src, uint wad) internal {
-        sai.burn(src, wad);
-        sin.burn(wad);
-    }
-
     //------------------------------------------------------------------
 
     function cage(uint fit_, uint jam) note auth {
@@ -293,6 +282,6 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
     }
     function flow() note auth {
         require(off);
-        off = false;
+        out = true;
     }
 }

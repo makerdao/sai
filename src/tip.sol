@@ -1,4 +1,4 @@
-/// tip.sol -- a source of information
+/// tip.sol -- target price feed
 
 // Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
@@ -27,16 +27,16 @@ contract SaiTip is DSThing, DSWarp {
         require(way >  9998 * 10 ** 23);
     }
 
-    // ref per sai
+    // Target Price (ref per sai)
     function par() returns (uint) {
         prod();
         return _par;
     }
     function prod() note {
         var age = sub(era(), tau);
-        if (age == 0) return;
+        if (age == 0) return;    // optimised
         tau = era();
-        if (way == RAY) return;
+        if (way == RAY) return;  // optimised
         _par = rmul(_par, rpow(way, age));
     }
 }

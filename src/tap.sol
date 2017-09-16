@@ -6,7 +6,6 @@
 
 pragma solidity ^0.4.10;
 
-import "./tip.sol";
 import "./tub.sol";
 
 contract SaiTap is DSThing {
@@ -17,25 +16,11 @@ contract SaiTap is DSThing {
     SaiTip   public  tip;
     SaiTub   public  tub;
 
-    uint256  public  gap;  // Spread
+    uint256  public  gap;  // Boom-Bust Spread
     bool     public  off;  // Cage flag
     uint256  public  fix;  // Cage price
 
-    function SaiTap() {
-        gap = WAD;
-    }
-
-    function turn(SaiTub tub_) {
-        tub = tub_;
-
-        sai = tub.sai();
-        sin = tub.sin();
-        skr = tub.skr();
-
-        tip = tub.tip();
-    }
-
-    // surplus
+    // Surplus
     function joy() constant returns (uint) {
         return sai.balanceOf(this);
     }
@@ -48,11 +33,9 @@ contract SaiTap is DSThing {
         return skr.balanceOf(this);
     }
 
-    // sai per skr
-    function s2s() returns (uint) {
-        var tag = tub.tag();    // ref per skr
-        var par = tip.par();    // ref per sai
-        return rdiv(tag, par);  // sai per skr
+
+    function SaiTap() {
+        gap = WAD;
     }
 
     function calk(uint wad) note auth {
@@ -60,14 +43,14 @@ contract SaiTap is DSThing {
         require(gap <= 1.05 ether);
         require(gap >= 0.95 ether);
     }
+    function turn(SaiTub tub_) note auth {
+        tub = tub_;
 
-    // price of skr in sai for boom
-    function bid(uint wad) constant returns (uint) {
-        return rmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
-    }
-    // price of skr in sai for bust
-    function ask(uint wad) constant returns (uint) {
-        return rmul(wad, wmul(s2s(), gap));
+        sai = tub.sai();
+        sin = tub.sin();
+        skr = tub.skr();
+
+        tip = tub.tip();
     }
 
     function heal() note {
@@ -76,6 +59,20 @@ contract SaiTap is DSThing {
         sin.burn(wad);
     }
 
+    // sai per skr
+    function s2s() returns (uint) {
+        var tag = tub.tag();    // ref per skr
+        var par = tip.par();    // ref per sai
+        return rdiv(tag, par);  // sai per skr
+    }
+    // price of skr in sai for boom
+    function bid(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
+    }
+    // price of skr in sai for bust
+    function ask(uint wad) constant returns (uint) {
+        return rmul(wad, wmul(s2s(), gap));
+    }
     // constant skr/sai mint/sell/buy/burn to process joy/woe
     function boom(uint wad) note {
         require(!off);
