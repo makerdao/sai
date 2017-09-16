@@ -57,6 +57,7 @@ contract SaiTap is DSThing {
 
     // Cancel debt
     function heal() note {
+        if (joy() == 0 || woe() == 0) return;  // optimised
         var wad = min(joy(), woe());
         sai.burn(wad);
         sin.burn(wad);
