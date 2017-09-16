@@ -8,6 +8,7 @@ pragma solidity ^0.4.15;
 
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
+import "ds-value/value.sol";
 
 import "./tip.sol";
 

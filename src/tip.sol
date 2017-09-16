@@ -7,7 +7,6 @@
 pragma solidity ^0.4.15;
 
 import "ds-thing/thing.sol";
-import "ds-value/value.sol";
 import "ds-warp/warp.sol";
 
 contract SaiTip is DSThing, DSWarp {
@@ -21,13 +20,14 @@ contract SaiTip is DSThing, DSWarp {
         tau  = _era;
     }
 
+    // Rate of change of target price (per second)
     function coax(uint ray) note auth {
         way = ray;
         require(way < 10002 * 10 ** 23);  // ~200% per hour
         require(way >  9998 * 10 ** 23);
     }
 
-    // Target Price (ref per sai)
+    // Sai Target Price (ref per sai)
     function par() returns (uint) {
         prod();
         return _par;
