@@ -71,8 +71,10 @@ TOOD: risk parameters
 
 ### `jar`: A Token Wrapper
 
-The `jar` is a token wrapper. Users `join` to deposit `gem` in return
-for `skr`, and `exit` to claim `gem` with their `skr`.
+The `jar` is a token wrapper.
+
+- `join`: deposit `gem` in return for `skr`
+- `exit`: claim `gem` with their `skr`.
 
 ![Join-Exit](https://user-images.githubusercontent.com/5028/30302214-a5e79350-97b3-11e7-924c-adc2edf1c61d.png)
 
