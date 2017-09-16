@@ -4,7 +4,7 @@
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
-pragma solidity ^0.4.10;
+pragma solidity ^0.4.15;
 
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
