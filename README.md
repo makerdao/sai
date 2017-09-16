@@ -2,6 +2,9 @@
 `sai` is a simple single-collateral stablecoin that is dependent on a
 trusted oracle address and has a kill-switch.
 
+See the [developer documentation](DEVELOPING.md) for a more technical
+overview.
+
 There are three tokens in the system:
 
 - `gem`: externally valuable token e.g. ETH
