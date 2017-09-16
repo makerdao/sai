@@ -55,7 +55,15 @@ Sai has the following core components:
 - `tap`: liquidation mechanism
 - `top`: global settlement facilitator
 
-TOOD: risk parameters
+Sai is configured by the following 'risk parameters':
+
+- `way`: Sai reference price drift
+- `hat`: Debt ceiling
+- `mat`: Minimum allowed collateralisation
+- `tax`: CDP holder fee
+- `axe`: Liquidation penalty
+- `gap`: Join/Exit and Boom/Bust spread
+
 
 
 ### `skr`: A Token Wrapper
