@@ -41,12 +41,14 @@ contract DaiVox is DSThing, DSWarp {
 
     function prod() note {
         var age = era() - tau;
-        var wag = int128(how * age);
-
-        _par = rmul(_par, rpow(_way, age));
-        _way = inj(prj(_way) + (fix < _par ? wag : -wag));
-
+        if (age == 0) return;  // optimised
         tau = era();
+
+        if (_way != RAY) _par = rmul(_par, rpow(_way, age));  // optimised
+
+        if (how == 0) return;  // optimised
+        var wag = int128(how * age);
+        _way = inj(prj(_way) + (fix < _par ? wag : -wag));
     }
 
     function inj(int128 x) internal returns (uint256) {
