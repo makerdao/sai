@@ -19,24 +19,10 @@ This document is an introduction to Sai, aimed at those seeking an
 understanding of the Solidity implementation.  We assume knowledge of
 the [white paper], a high level overview of Dai.  A reading of the
 [purple paper], the (in progress) detailed Dai technical specification
-and reference implementation is useful but not required.
+and reference implementation is strongly encouraged but not required.
 
 [white paper]: https://github.com/makerdao/docs/blob/master/Dai.md
 [purple paper]: https://makerdao.com/purple
-
-### Note on memes
-
-Blockchain applications are a constrained environment. This neccesitates
-constrained language.  It is no accident that reading the Sai and Dai
-source feels like reading assembly at times.
-
-The idiosyncratic terms used within are affectionately referred to as
-'memes':
-
-- four letter memes are typically used for functions that effect state
-transitions, and are referred to as 'acts'.
-- three letter memes are used for variables, constants, and derived
-quantities.
 
 
 ## Overview
@@ -59,8 +45,8 @@ Sai is configured by the following 'risk parameters':
 
 - `way`: Sai reference price drift
 - `hat`: Debt ceiling
-- `mat`: Minimum allowed collateralisation
-- `tax`: CDP holder fee
+- `mat`: Liquidation ratio
+- `tax`: Stability fee
 - `axe`: Liquidation penalty
 - `gap`: Join/Exit and Boom/Bust spread
 

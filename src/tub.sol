@@ -106,36 +106,43 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //--Risk-parameter-config-------------------------------------------
 
-    function chop(uint ray) note auth {
-        axe = ray;
-        require(axe >= RAY && axe <= mat);
-    }
+    // Debt ceiling
     function cork(uint wad) note auth {
         hat = wad;
     }
+    // Liquidation ratio
     function cuff(uint ray) note auth {
         mat = ray;
         require(axe >= RAY && axe <= mat);
     }
+    // Stability fee
     function crop(uint ray) note auth {
         drip();
         tax = ray;
         require(RAY <= tax);
         require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
+    // Liquidation fee
+    function chop(uint ray) note auth {
+        axe = ray;
+        require(axe >= RAY && axe <= mat);
+    }
+    // Join/Exit Spread
     function calk(uint wad) note auth {
         gap = wad;
     }
 
     //--Collateral-wrapper----------------------------------------------
 
-    // Entry price (gem per skr)
+    // Wrapper ratio (gem per skr)
     function per() constant returns (uint ray) {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie(), skr.totalSupply());
     }
+    // Join price (gem per skr)
     function ask(uint wad) constant returns (uint) {
         return rmul(wad, wmul(per(), gap));
     }
+    // Exit price (gem per skr)
     function bid(uint wad) constant returns (uint) {
         return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
     }
@@ -150,8 +157,9 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         skr.burn(msg.sender, wad);
     }
 
-    //--CDP-debt-appreciation-------------------------------------------
+    //--Stability-fee-accumulation--------------------------------------
 
+    // Internal debt price (sai per debt unit)
     function chi() returns (uint) {
         drip();
         return _chi;
@@ -207,11 +215,10 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         cups[cup].lad = msg.sender;
         LogNewCup(msg.sender, cup);
     }
-    function shut(bytes32 cup) note {
-        require(!off);
-        wipe(cup, tab(cup));
-        free(cup, cups[cup].ink);
-        delete cups[cup];
+    function give(bytes32 cup, address guy) note {
+        require(msg.sender == cups[cup].lad);
+        require(guy != 0);
+        cups[cup].lad = guy;
     }
 
     function lock(bytes32 cup, uint wad) note {
@@ -245,13 +252,12 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         mend(cups[cup].lad, wad);
     }
 
-    function give(bytes32 cup, address guy) note {
-        require(msg.sender == cups[cup].lad);
-        require(guy != 0);
-        cups[cup].lad = guy;
+    function shut(bytes32 cup) note {
+        require(!off);
+        wipe(cup, tab(cup));
+        free(cup, cups[cup].ink);
+        delete cups[cup];
     }
-
-    //------------------------------------------------------------------
 
     function bite(bytes32 cup) note {
         require(!safe(cup) || off);
