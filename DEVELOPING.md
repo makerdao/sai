@@ -19,7 +19,7 @@ This document is an introduction to Sai, aimed at those seeking an
 understanding of the Solidity implementation.  We assume knowledge of
 the [white paper], a high level overview of Dai.  A reading of the
 [purple paper], the (in progress) detailed Dai technical specification
-and reference implementation is strongly encouraged but not required.
+and reference implementation, is strongly encouraged but not required.
 
 [white paper]: https://github.com/makerdao/docs/blob/master/Dai.md
 [purple paper]: https://makerdao.com/purple
