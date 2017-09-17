@@ -59,7 +59,7 @@ Sai is configured by the following 'risk parameters':
 - `join`: deposit `gem` in return for `skr`
 - `exit`: claim `gem` with their `skr`.
 
-![Join-Exit](https://user-images.githubusercontent.com/5028/30302214-a5e79350-97b3-11e7-924c-adc2edf1c61d.png)
+![Join-Exit](https://user-images.githubusercontent.com/5028/30517891-928dd4d8-9bc1-11e7-9398-639233d851ae.png)
 
 `skr` is a simple proportional claim on a collateral pool, with the
 initial `gem`<->`skr` exchange ratio being 1:1.  The essential reason
@@ -119,7 +119,7 @@ to unsafe:
 - `give`: transfer ownership (changes `lad`)
 ---
 
-![Lock-Free](https://user-images.githubusercontent.com/5028/30302506-9ff08748-97b5-11e7-95bb-f03ae7d92a1b.png)
+![Lock-Free](https://user-images.githubusercontent.com/5028/30517892-928e06ec-9bc1-11e7-91e8-6ae6caae8585.png)
 
 
 - `lock`: deposit SKR collateral (increases `ink`)
@@ -127,7 +127,7 @@ to unsafe:
 
 ---
 
-![Draw | Wipe](https://user-images.githubusercontent.com/5028/30319553-5094c4e4-9804-11e7-9417-c9085a771643.png)
+![Draw | Wipe](https://user-images.githubusercontent.com/5028/30463893-97a6aef4-9a22-11e7-9a65-3055ad05b8d6.png)
 
 - `draw`: create Sai (increases `art`)
 - `wipe`: return Sai (decreases `art`)
@@ -138,7 +138,7 @@ to unsafe:
 
 ---
 
-<img src="https://user-images.githubusercontent.com/5028/30306754-383f5304-97ce-11e7-9f2e-dcd077b5f1f9.png" width="600" />
+<img src="https://user-images.githubusercontent.com/5028/30463890-97552d22-9a22-11e7-933b-9f60cdb061a7.png" width="600" />
 
 - `bite`: liquidate CDP (zeros `art`, decreases `ink`, transfers `sin` to `pit`)
 
@@ -179,7 +179,7 @@ The `tap` has two acts:
 Given a net Sai balance, sell the Sai in return for SKR, which is
 burned.
 
-<img src="https://user-images.githubusercontent.com/5028/30313253-d17d6386-97f0-11e7-935d-747521bf9478.png" width="500" />
+<img src="https://user-images.githubusercontent.com/5028/30517887-924bec1c-9bc1-11e7-8c25-6d73a1c48340.png" width="500" />
 
 `bust` is really two functions in one: collateral sell off, and
 inflate and sell. When `fog` is non zero it is sold in return for Sai,
@@ -187,7 +187,7 @@ which is used to cancel out the bad debt, `woe`. If `fog` is zero but
 the `tap` has a net Sin balance, then SKR is minted and sold in return
 for Sai, up to the point that the net Sin balance is zero.
 
-![Bust](https://user-images.githubusercontent.com/5028/30313251-cf8596d4-97f0-11e7-9140-ed75c9c335ef.png)
+![Bust](https://user-images.githubusercontent.com/5028/30517888-9287dd76-9bc1-11e7-8726-6b21843e27a5.png)
 
 Through `boom` and `bust` we close the feedback loop on the price of
 SKR. When there is surplus Sai, SKR is burned, decreasing the SKR supply
@@ -227,6 +227,8 @@ can redeem their Sai at face value. The `gem` is moved from the `tub` to
 the `tap` and the `tap.cash` function is unlocked for Sai holders to
 call.
 
+![Cage](https://user-images.githubusercontent.com/5028/30517915-5190ae96-9bc2-11e7-90d4-c14a7d6db13e.png)
+
 Any remaining `gem` remains in the `tub`. SKR holders can now `exit`.
 CDP holders must first `bite` their CDPs (although anyone can do this)
 and then `free` their SKR.
@@ -261,7 +263,7 @@ act, which also collects unprocessed revenue.
 The `chi` abstraction allows us to compute the per CDP debt, and the
 total unprocessed revenue, with varying `tax`, in constant time.
 
-<img src="https://user-images.githubusercontent.com/5028/30360338-dd708204-98a4-11e7-9da7-f016840a120c.png" width="600" />
+<img src="https://user-images.githubusercontent.com/5028/30517890-928d0094-9bc1-11e7-936c-544f5bc4d197.png" width="600" />
 
 ## Auth setup
 
