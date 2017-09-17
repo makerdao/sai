@@ -77,28 +77,31 @@ contract SaiTap is DSThing {
     function ask(uint wad) constant returns (uint) {
         return rmul(wad, wmul(s2s(), gap));
     }
-    function boom(uint wad) note {
-        require(!off);
+    function flip(uint wad) internal {
+        skr.push(msg.sender, wad);
+        sai.pull(msg.sender, ask(wad));
+        heal();
+    }
+    function flop(uint wad) internal {
+        skr.mint(sub(wad, fog()));
+        skr.push(msg.sender, wad);
+        sai.pull(msg.sender, ask(wad));
+        heal();
+        require(joy() == 0);  // can't flop into surplus
+    }
+    function flap(uint wad) internal {
         heal();
         sai.push(msg.sender, bid(wad));
         skr.burn(msg.sender, wad);
     }
     function bust(uint wad) note {
         require(!off);
-        heal();
-
-        uint ash;
-        if (wad > fog()) {
-            skr.mint(wad - fog());
-            ash = ask(wad);
-            require(ash <= woe());
-        } else {
-            ash = ask(wad);
-        }
-
-        skr.push(msg.sender, wad);
-        sai.pull(msg.sender, ash);
-        heal();
+        if (wad > fog()) flop(wad);
+        else flip(wad);
+    }
+    function boom(uint wad) note {
+        require(!off);
+        flap(wad);
     }
 
     //------------------------------------------------------------------
