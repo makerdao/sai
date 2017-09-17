@@ -138,7 +138,7 @@ to unsafe:
 
 ---
 
-<img src="https://user-images.githubusercontent.com/5028/30463890-97552d22-9a22-11e7-933b-9f60cdb061a7.png" width="600" />
+<img src="https://user-images.githubusercontent.com/5028/30519068-6c871ed2-9be1-11e7-83df-3cbda6a49e3b.png" width="600" />
 
 - `bite`: liquidate CDP (zeros `art`, decreases `ink`, transfers `sin` to `pit`)
 
@@ -222,12 +222,14 @@ between Sai iterations, and for security in case of implementation flaws
 An admin can use the `top` to `cage` the system at a specific price (sai
 per gem), or by reading the last price from the price feed.
 
+<img src="https://user-images.githubusercontent.com/5028/30519069-6c9ae656-9be1-11e7-9e3f-e75f585024f7.png" width="600" />
+
 First, sufficient real `gem` collateral is taken such that Sai holders
 can redeem their Sai at face value. The `gem` is moved from the `tub` to
 the `tap` and the `tap.cash` function is unlocked for Sai holders to
 call.
 
-![Cage](https://user-images.githubusercontent.com/5028/30517915-5190ae96-9bc2-11e7-90d4-c14a7d6db13e.png)
+![Cash](https://user-images.githubusercontent.com/5028/30519070-6cc4fd6a-9be1-11e7-92d8-5d965721d8ef.png)
 
 Any remaining `gem` remains in the `tub`. SKR holders can now `exit`.
 CDP holders must first `bite` their CDPs (although anyone can do this)
