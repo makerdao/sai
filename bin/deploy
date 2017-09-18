@@ -71,7 +71,6 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --
 
 seth send $SAI_SAI "trust(address,bool)" $SAI_TUB true
 seth send $SAI_SKR "trust(address,bool)" $SAI_TUB true
-seth send $SAI_GEM "trust(address,bool)" $SAI_TUB true
 
 seth send $SAI_SAI "trust(address,bool)" $SAI_TAP true
 seth send $SAI_SKR "trust(address,bool)" $SAI_TAP true
