@@ -107,30 +107,13 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     //--Risk-parameter-config-------------------------------------------
 
-    // Debt ceiling
-    function cork(uint wad) note auth {
-        hat = wad;
-    }
-    // Liquidation ratio
-    function cuff(uint ray) note auth {
-        mat = ray;
-        require(axe >= RAY && axe <= mat);
-    }
-    // Stability fee
-    function crop(uint ray) note auth {
-        drip();
-        tax = ray;
-        require(RAY <= tax);
-        require(tax < 10002 * 10 ** 23);  // ~200% per hour
-    }
-    // Liquidation fee
-    function chop(uint ray) note auth {
-        axe = ray;
-        require(axe >= RAY && axe <= mat);
-    }
-    // Join/Exit Spread
-    function calk(uint wad) note auth {
-        gap = wad;
+    function mold(bytes32 param, uint val) note auth {
+        if      (param == 'hat') hat = val;
+        else if (param == 'mat') mat = val;
+        else if (param == 'tax') { drip(); tax = val; }
+        else if (param == 'axe') axe = val;
+        else if (param == 'gap') gap = val;
+        else return;
     }
 
     //--Collateral-wrapper----------------------------------------------

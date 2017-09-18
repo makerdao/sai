@@ -13,10 +13,7 @@ contract SaiVox is DaiVox {
         how = 0;  // zero initial sensitivity
     }
 
-    // Rate of change of target price (per second)
-    function coax(uint ray) note auth {
-        _way = ray;
-        require(_way < 10002 * 10 ** 23);  // ~200% per hour
-        require(_way >  9998 * 10 ** 23);
+    function mold(bytes32 param, uint val) {
+        if (param == 'way') _way = val;
     }
 }

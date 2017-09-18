@@ -38,12 +38,10 @@ contract SaiTap is DSThing {
         gap = WAD;
     }
 
-    // Boom/Bust spread
-    function calk(uint wad) note auth {
-        gap = wad;
-        require(gap <= 1.05 ether);
-        require(gap >= 0.95 ether);
+    function mold(bytes32 param, uint val) note auth {
+        if (param == 'gap') gap = val;
     }
+
     // Associate with tub
     function turn(SaiTub tub_) note auth {
         tub = tub_;
