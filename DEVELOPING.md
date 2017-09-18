@@ -269,11 +269,7 @@ total unprocessed revenue, with varying `tax`, in constant time.
 
 ## Auth setup
 
-ds-auth is used, with no owners and two authorities:
-
-1. `dad`: ds-guard, used for internal authority
-
-2. `mom`: ds-roles, used for external authority
+ds-auth is used, with no owners and a ds-guard authority.
 
 The auth setup looks as follows: sai-auth.jpeg [XXX: do this in graphviz]
 

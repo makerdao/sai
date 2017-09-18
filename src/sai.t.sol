@@ -6,7 +6,6 @@ import "ds-math/math.sol";
 
 import 'ds-token/token.sol';
 import 'ds-guard/guard.sol';
-import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './tub.sol';
@@ -40,7 +39,6 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  skr;
 
     DSValue  tag;
-    DSRoles  mom;
     DSGuard  dad;
 
     function ray(uint256 wad) returns (uint256) {
@@ -60,40 +58,14 @@ contract SaiTestBase is DSTest, DSMath {
     }
 
     function configureAuth() {
-        // user facing, use ds-roles
-        vox.setAuthority(mom);
-        tub.setAuthority(mom);
-        tap.setAuthority(mom);
-        top.setAuthority(mom);
+        vox.setAuthority(dad);
+        tub.setAuthority(dad);
+        tap.setAuthority(dad);
+        top.setAuthority(dad);
 
-        // internal, use ds-guard
         sai.setAuthority(dad);
         sin.setAuthority(dad);
         skr.setAuthority(dad);
-
-        mom.setUserRole(top, 254, true);
-        mom.setRoleCapability(254, tub, bytes4(sha3("cage(uint256,uint256)")), true);
-        mom.setRoleCapability(254, tub, bytes4(sha3("flow()")), true);
-        mom.setRoleCapability(254, tap, bytes4(sha3("cage(uint256)")), true);
-
-        dad.permit(tub, skr, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(tub, skr, bytes4(sha3('burn(address,uint256)')));
-
-        dad.permit(tub, sai, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(tub, sai, bytes4(sha3('burn(address,uint256)')));
-
-        dad.permit(tub, sin, bytes4(sha3('mint(uint256)')));
-        dad.permit(tub, sin, bytes4(sha3('burn(uint256)')));
-        dad.permit(tub, sin, bytes4(sha3('burn(address,uint256)')));
-
-        dad.permit(tap, sai, bytes4(sha3('burn(uint256)')));
-        dad.permit(tap, sin, bytes4(sha3('burn(uint256)')));
-
-        dad.permit(tap, skr, bytes4(sha3('mint(uint256)')));
-        dad.permit(tap, skr, bytes4(sha3('mint(address,uint256)')));
-        dad.permit(tap, skr, bytes4(sha3('burn(uint256)')));
-        dad.permit(tap, skr, bytes4(sha3('burn(address,uint256)')));
-        dad.permit(tap, skr, bytes4(sha3('burn(address)')));
 
         vox.setOwner(0);
         tub.setOwner(0);
@@ -103,6 +75,41 @@ contract SaiTestBase is DSTest, DSMath {
         sai.setOwner(0);
         sin.setOwner(0);
         skr.setOwner(0);
+
+        dad.permit(top, tub, bytes4(sha3("cage(uint256,uint256)")));
+        dad.permit(top, tub, bytes4(sha3("flow()")));
+        dad.permit(top, tap, bytes4(sha3("cage(uint256)")));
+
+        dad.permit(tub, skr, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(tub, skr, bytes4(sha3('burn(address,uint256)')));
+
+        dad.permit(tub, sai, bytes4(sha3('mint(address,uint256)')));
+        dad.permit(tub, sai, bytes4(sha3('burn(address,uint256)')));
+
+        dad.permit(tub, sin, bytes4(sha3('mint(uint256)')));
+        dad.permit(tub, sin, bytes4(sha3('burn(uint256)')));
+
+        dad.permit(tap, sai, bytes4(sha3('burn(uint256)')));
+        dad.permit(tap, sin, bytes4(sha3('burn(uint256)')));
+
+        dad.permit(tap, skr, bytes4(sha3('mint(uint256)')));
+        dad.permit(tap, skr, bytes4(sha3('burn(uint256)')));
+        dad.permit(tap, skr, bytes4(sha3('burn(address,uint256)')));
+
+        // admin controls
+        dad.permit(this, vox, bytes4(sha3("coax(uint256)")));
+
+        dad.permit(this, tub, bytes4(sha3("chop(uint256)")));
+        dad.permit(this, tub, bytes4(sha3("cork(uint256)")));
+        dad.permit(this, tub, bytes4(sha3("cuff(uint256)")));
+        dad.permit(this, tub, bytes4(sha3("crop(uint256)")));
+        dad.permit(this, tub, bytes4(sha3("calk(uint256)")));
+
+        dad.permit(this, tap, bytes4(sha3("calk(uint256)")));
+
+        dad.permit(this, top, bytes4(sha3("cage(uint256)")));
+        dad.permit(this, top, bytes4(sha3("cage()")));
+        dad.permit(this, top, bytes4(sha3("setCooldown(uint64)")));
 
         // convenience in tests
         dad.permit(this, sai, bytes4(sha3('mint(uint256)')));
@@ -119,20 +126,6 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(this, skr, bytes4(sha3('burn(address,uint256)')));
 
         dad.setOwner(0);
-    }
-    function setAdminRoles() {
-        mom.setRoleCapability(1, tub, bytes4(sha3("chop(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("cork(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("cuff(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("crop(uint256)")), true);
-        mom.setRoleCapability(1, vox, bytes4(sha3("coax(uint256)")), true);
-
-        mom.setRoleCapability(1, tap, bytes4(sha3("calk(uint256)")), true);
-        mom.setRoleCapability(1, tub, bytes4(sha3("calk(uint256)")), true);
-
-        mom.setRoleCapability(1, top, bytes4(sha3("cage(uint256)")), true);
-        mom.setRoleCapability(1, top, bytes4(sha3("cage()")), true);
-        mom.setRoleCapability(1, top, bytes4(sha3("setCooldown(uint64)")), true);
     }
 
     function setUp() {
@@ -153,12 +146,8 @@ contract SaiTestBase is DSTest, DSMath {
         tap.turn(tub);
 
         dad = new DSGuard();
-        mom = new DSRoles();
 
         configureAuth();
-        setAdminRoles();
-
-        mom.setUserRole(this, 1, true);  // admin
 
         sai.trust(tub, true);
         skr.trust(tub, true);
@@ -1034,7 +1023,6 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(tub), 10 ether); // locked skr
 
         FakePerson person = new FakePerson(tap);
-        mom.setUserRole(person, 1, true);
         sai.transfer(person, 2.5 ether); // Transfer half of SAI balance to the other user
 
         var price = rdiv(9 ether, 8 ether);
