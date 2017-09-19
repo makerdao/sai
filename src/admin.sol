@@ -1,4 +1,4 @@
-/// tap.sol -- liquidation engine (see also `vow`)
+/// admin.sol -- admin manager
 
 // Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
