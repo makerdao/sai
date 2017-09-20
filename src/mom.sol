@@ -1,4 +1,4 @@
-/// admin.sol -- admin manager
+/// mom.sol -- admin manager
 
 // Copyright (C) 2017  Nikolai Mushegian <nikolai@dapphub.com>
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
@@ -11,12 +11,12 @@ import './tub.sol';
 import './top.sol';
 import './tap.sol';
 
-contract SaiAdmin is DSThing {
+contract SaiMom is DSThing {
     SaiTub  public  tub;
     SaiTap  public  tap;
     SaiVox  public  vox;
 
-    function SaiAdmin(SaiTub tub_, SaiTap tap_, SaiVox vox_) {
+    function SaiMom(SaiTub tub_, SaiTap tap_, SaiVox vox_) {
         tub = tub_;
         tap = tap_;
         vox = vox_;

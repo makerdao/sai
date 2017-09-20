@@ -32,7 +32,7 @@ SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_TAG $SAI_V
 SAI_TOP=$(dapp create SaiTop $SAI_TUB $SAI_TAP)
 seth send $SAI_TAP 'turn(address)' $SAI_TUB
 
-SAI_ADMIN=$(dapp create SaiAdmin $SAI_TUB $SAI_TAP $SAI_VOX)
+SAI_MOM=$(dapp create SaiMom $SAI_TUB $SAI_TAP $SAI_VOX)
 
 SAI_DAD=$(seth receipt $DADtx contractAddress)
 
@@ -71,9 +71,9 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_ADMIN $SAI_VOX $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_ADMIN $SAI_TUB $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_ADMIN $SAI_TAP $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_VOX $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TUB $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TAP $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
@@ -87,7 +87,7 @@ export SAI_SIN=$SAI_SIN
 export SAI_SKR=$SAI_SKR
 export SAI_TAG=$SAI_TAG
 export SAI_DAD=$SAI_DAD
-export SAI_ADMIN=$SAI_ADMIN
+export SAI_MOM=$SAI_MOM
 export SAI_TIP=$SAI_VOX
 export SAI_TUB=$SAI_TUB
 export SAI_TAP=$SAI_TAP
