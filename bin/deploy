@@ -38,10 +38,6 @@ SAI_DAD=$(seth receipt $DADtx contractAddress)
 
 export SETH_ASYNC=yes
 
-seth send $SAI_VOX "warp(uint64)" 0
-seth send $SAI_TUB "warp(uint64)" 0
-seth send $SAI_TOP "warp(uint64)" 0
-
 seth send $SAI_VOX "setAuthority(address)" $SAI_DAD
 seth send $SAI_TUB "setAuthority(address)" $SAI_DAD
 seth send $SAI_TAP "setAuthority(address)" $SAI_DAD

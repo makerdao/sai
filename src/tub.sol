@@ -16,7 +16,7 @@ contract SaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract SaiTub is DSThing, DSWarp, SaiTubEvents {
+contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  sai;  // Stablecoin
     DSToken  public  sin;  // Debt (negative sai)
 
@@ -39,8 +39,8 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
 
     uint256  public  fit;  // REF per SKR (just before settlement)
 
-    uint64   public  rho;  // Time of last drip
-    uint256         _chi;  // Price of internal debt unit
+    uint256  public  rho;  // Time of last drip
+    uint256          _chi;  // Price of internal debt unit
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -103,6 +103,10 @@ contract SaiTub is DSThing, DSWarp, SaiTubEvents {
         _chi = RAY;
 
         rho = era();
+    }
+
+    function era() public constant returns (uint) {
+        return block.timestamp;
     }
 
     //--Risk-parameter-config-------------------------------------------

@@ -4,15 +4,34 @@ import "ds-test/test.sol";
 import "ds-math/math.sol";
 import './vox.sol';
 
+contract TestWarp is DSNote {
+    uint  _era;
+
+    function TestWarp() {
+        _era = uint(now);
+    }
+
+    function era() constant returns (uint) {
+        return _era == 0 ? now : _era;
+    }
+
+    function warp(uint age) note {
+        require(_era != 0);
+        _era = age == 0 ? 0 : _era + age;
+    }
+}
+
+contract DevVox is SaiVox, TestWarp {}
+
 contract VoxTest is DSTest, DSMath {
-    SaiVox vox;
+    DevVox vox;
 
     function wad(uint256 ray_) returns (uint256) {
         return wdiv(ray_, RAY);
     }
 
     function setUp() {
-        vox = new SaiVox();
+        vox = new DevVox();
     }
     function testVoxDefaultPar() {
         assertEq(vox.par(), RAY);

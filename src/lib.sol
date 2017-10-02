@@ -6,20 +6,23 @@
 pragma solidity ^0.4.11;
 
 import "ds-thing/thing.sol";
-import "ds-warp/warp.sol";
 
-contract DaiVox is DSThing, DSWarp {
+contract DaiVox is DSThing {
     uint256  _par;
     uint256  _way;
 
     uint256  public  fix;
     uint256  public  how;
-    uint64   public  tau;
+    uint256  public  tau;
 
     function DaiVox(uint256 par) {
         _par = fix = par;
         _way = how = RAY;
         tau  = era();
+    }
+
+    function era() constant returns (uint) {
+        return block.timestamp;
     }
 
     // Dai Target Price (ref per dai)

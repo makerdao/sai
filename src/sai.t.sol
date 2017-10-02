@@ -10,6 +10,40 @@ import 'ds-value/value.sol';
 
 import './mom.sol';
 
+contract TestWarp is DSNote {
+    uint256  _era;
+
+    function TestWarp() {
+        _era = now;
+    }
+
+    function era() constant returns (uint256) {
+        return _era == 0 ? now : _era;
+    }
+
+    function warp(uint age) note {
+        require(_era != 0);
+        _era = age == 0 ? 0 : _era + age;
+    }
+}
+
+contract DevTub is SaiTub, TestWarp {
+    function DevTub(
+        DSToken  sai_,
+        DSToken  sin_,
+        DSToken  skr_,
+        ERC20    gem_,
+        DSValue  pip_,
+        SaiVox   vox_,
+        address  tap_
+    ) SaiTub(sai_, sin_, skr_, gem_, pip_, vox_, tap_) {}
+}
+
+contract DevTop is SaiTop, TestWarp {
+    function DevTop(SaiTub tub_, SaiTap tap_) SaiTop(tub_, tap_) {}
+}
+contract DevVox is SaiVox, TestWarp {}
+
 contract FakePerson {
     SaiTap  public tap;
     DSToken public sai;
@@ -26,9 +60,9 @@ contract FakePerson {
 }
 
 contract SaiTestBase is DSTest, DSMath {
-    SaiVox   vox;
-    SaiTub   tub;
-    SaiTop   top;
+    DevVox   vox;
+    DevTub   tub;
+    DevTop   top;
     SaiTap   tap;
 
     SaiMom   mom;
@@ -51,7 +85,7 @@ contract SaiTestBase is DSTest, DSMath {
     function mark(uint256 price) {
         tag.poke(bytes32(price));
     }
-    function warp(uint64 age) {
+    function warp(uint256 age) {
         vox.warp(age);
         tub.warp(age);
         top.warp(age);
@@ -103,7 +137,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad.permit(this, top, bytes4(sha3("cage(uint256)")));
         dad.permit(this, top, bytes4(sha3("cage()")));
-        dad.permit(this, top, bytes4(sha3("setCooldown(uint64)")));
+        dad.permit(this, top, bytes4(sha3("setCooldown(uint256)")));
 
         // convenience in tests
         dad.permit(this, sai, bytes4(sha3('mint(uint256)')));
@@ -132,11 +166,11 @@ contract SaiTestBase is DSTest, DSMath {
         skr = new DSToken("SKR");
 
         tag = new DSValue();
-        vox = new SaiVox();
+        vox = new DevVox();
 
         tap = new SaiTap();
-        tub = new SaiTub(sai, sin, skr, gem, tag, vox, tap);
-        top = new SaiTop(tub, tap);
+        tub = new DevTub(sai, sin, skr, gem, tag, vox, tap);
+        top = new DevTop(tub, tap);
         tap.turn(tub);
 
         dad = new DSGuard();
@@ -1971,7 +2005,7 @@ contract GasTest is SaiTestBase {
         tap.boom(wad);
     }
 
-    uint64 tic = 15 seconds;
+    uint256 tic = 15 seconds;
 
     function testGasLock() {
         warp(tic);

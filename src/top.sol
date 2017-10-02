@@ -9,7 +9,7 @@ pragma solidity ^0.4.15;
 import "./tub.sol";
 import "./tap.sol";
 
-contract SaiTop is DSThing, DSWarp {
+contract SaiTop is DSThing {
     SaiVox   public  vox;
     SaiTub   public  tub;
     SaiTap   public  tap;
@@ -21,8 +21,8 @@ contract SaiTop is DSThing, DSWarp {
 
     uint256  public  fix;  // sai cage price (gem per sai)
     uint256  public  fit;  // skr cage price (ref per skr)
-    uint64   public  caged;
-    uint64   public  cooldown = 6 hours;
+    uint256  public  caged;
+    uint256  public  cooldown = 6 hours;
 
     function SaiTop(SaiTub tub_, SaiTap tap_) {
         tub = tub_;
@@ -34,6 +34,10 @@ contract SaiTop is DSThing, DSWarp {
         sin = tub.sin();
         skr = tub.skr();
         gem = tub.gem();
+    }
+
+    function era() constant returns (uint) {
+        return block.timestamp;
     }
 
     // force settlement of the system at a given price (sai per gem).
@@ -69,7 +73,7 @@ contract SaiTop is DSThing, DSWarp {
         tub.flow();
     }
 
-    function setCooldown(uint64 cooldown_) auth {
+    function setCooldown(uint cooldown_) auth {
         cooldown = cooldown_;
     }
 }
