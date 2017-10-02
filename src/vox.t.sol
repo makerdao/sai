@@ -26,7 +26,7 @@ contract DevVox is SaiVox, TestWarp {}
 contract VoxTest is DSTest, DSMath {
     DevVox vox;
 
-    function wad(uint256 ray_) internal returns (uint256) {
+    function wad(uint256 ray_) internal pure returns (uint256) {
         return wdiv(ray_, RAY);
     }
 
