@@ -15,34 +15,34 @@ contract DaiVox is DSThing {
     uint256  public  how;
     uint256  public  tau;
 
-    function DaiVox(uint256 par) {
+    function DaiVox(uint256 par) public {
         _par = fix = par;
         _way = how = RAY;
         tau  = era();
     }
 
-    function era() constant returns (uint) {
+    function era() public view returns (uint) {
         return block.timestamp;
     }
 
     // Dai Target Price (ref per dai)
-    function par() constant returns (uint) {
+    function par() public returns (uint) {
         prod();
         return _par;
     }
-    function way() constant returns (uint) {
+    function way() public returns (uint) {
         prod();
         return _way;
     }
 
-    function tell(uint256 ray) note auth {
+    function tell(uint256 ray) public note auth {
         fix = ray;
     }
-    function tune(uint256 ray) note auth {
+    function tune(uint256 ray) public note auth {
         how = ray;
     }
 
-    function prod() note {
+    function prod() public note {
         var age = era() - tau;
         if (age == 0) return;  // optimised
         tau = era();
@@ -54,11 +54,11 @@ contract DaiVox is DSThing {
         _way = inj(prj(_way) + (fix < _par ? wag : -wag));
     }
 
-    function inj(int128 x) internal returns (uint256) {
+    function inj(int128 x) internal pure returns (uint256) {
         return x >= 0 ? uint256(x) + RAY
             : rdiv(RAY, RAY + uint256(-x));
     }
-    function prj(uint256 x) internal returns (int128) {
+    function prj(uint256 x) internal pure returns (int128) {
         return x >= RAY ? int128(x - RAY)
             : int128(RAY) - int128(rdiv(RAY, x));
     }

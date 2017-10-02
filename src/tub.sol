@@ -51,26 +51,26 @@ contract SaiTub is DSThing, SaiTubEvents {
         uint256  art;      // Outstanding debt (in internal debt units)
     }
 
-    function lad(bytes32 cup) constant returns (address) {
+    function lad(bytes32 cup) public view returns (address) {
         return cups[cup].lad;
     }
-    function ink(bytes32 cup) constant returns (uint) {
+    function ink(bytes32 cup) public view returns (uint) {
         return cups[cup].ink;
     }
-    function tab(bytes32 cup) constant returns (uint) {
+    function tab(bytes32 cup) public returns (uint) {
         return rmul(cups[cup].art, chi());
     }
 
     // Good debt
-    function ice() constant returns (uint) {
+    function ice() public view returns (uint) {
         return sin.balanceOf(this);
     }
     // Backing collateral
-    function air() constant returns (uint) {
+    function air() public view returns (uint) {
         return skr.balanceOf(this);
     }
     // Raw collateral
-    function pie() constant returns (uint) {
+    function pie() public view returns (uint) {
         return gem.balanceOf(this);
     }
 
@@ -84,7 +84,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSValue  pip_,
         SaiVox   vox_,
         address  tap_
-    ) {
+    ) public {
         gem = gem_;
         skr = skr_;
 
@@ -111,7 +111,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--Risk-parameter-config-------------------------------------------
 
-    function mold(bytes32 param, uint val) note auth {
+    function mold(bytes32 param, uint val) public note auth {
         if      (param == 'hat') hat = val;
         else if (param == 'mat') mat = val;
         else if (param == 'tax') { drip(); tax = val; }
@@ -123,23 +123,23 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--Collateral-wrapper----------------------------------------------
 
     // Wrapper ratio (gem per skr)
-    function per() constant returns (uint ray) {
+    function per() public view returns (uint ray) {
         return skr.totalSupply() == 0 ? RAY : rdiv(pie(), skr.totalSupply());
     }
     // Join price (gem per skr)
-    function ask(uint wad) constant returns (uint) {
+    function ask(uint wad) public view returns (uint) {
         return rmul(wad, wmul(per(), gap));
     }
     // Exit price (gem per skr)
-    function bid(uint wad) constant returns (uint) {
+    function bid(uint wad) public view returns (uint) {
         return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
     }
-    function join(uint wad) note {
+    function join(uint wad) public note {
         require(!off);
         gem.transferFrom(msg.sender, this, ask(wad));
         skr.mint(msg.sender, wad);
     }
-    function exit(uint wad) note {
+    function exit(uint wad) public note {
         require(!off || out);
         gem.transfer(msg.sender, bid(wad));
         skr.burn(msg.sender, wad);
@@ -148,11 +148,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--Stability-fee-accumulation--------------------------------------
 
     // Internal debt price (sai per debt unit)
-    function chi() returns (uint) {
+    function chi() public returns (uint) {
         drip();
         return _chi;
     }
-    function drip() note {
+    function drip() public note {
         if (off) return;
 
         var rho_ = era();
@@ -172,11 +172,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--CDP-risk-indicator----------------------------------------------
 
     // Abstracted collateral price (ref per skr)
-    function tag() constant returns (uint wad) {
+    function tag() public view returns (uint wad) {
         return off ? fit : wmul(per(), uint(pip.read()));
     }
     // Returns true if cup is well-collateralized
-    function safe(bytes32 cup) constant returns (bool) {
+    function safe(bytes32 cup) public returns (bool) {
         var pro = rmul(tag(), ink(cup));
         var con = rmul(vox.par(), tab(cup));
         var min = rmul(con, mat);
@@ -196,32 +196,32 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--CDP-operations--------------------------------------------------
 
-    function open() note returns (bytes32 cup) {
+    function open() public note returns (bytes32 cup) {
         require(!off);
         cup = bytes32(++cupi);
         cups[cup].lad = msg.sender;
         LogNewCup(msg.sender, cup);
     }
-    function give(bytes32 cup, address guy) note {
+    function give(bytes32 cup, address guy) public note {
         require(msg.sender == cups[cup].lad);
         require(guy != 0);
         cups[cup].lad = guy;
     }
 
-    function lock(bytes32 cup, uint wad) note {
+    function lock(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
     }
-    function free(bytes32 cup, uint wad) note {
+    function free(bytes32 cup, uint wad) public note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         skr.push(msg.sender, wad);
         require(safe(cup));
     }
 
-    function draw(bytes32 cup, uint wad) note {
+    function draw(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
@@ -231,7 +231,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(safe(cup));
         require(sin.totalSupply() <= hat);
     }
-    function wipe(bytes32 cup, uint wad) note {
+    function wipe(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
@@ -239,14 +239,14 @@ contract SaiTub is DSThing, SaiTubEvents {
         mend(cups[cup].lad, wad);
     }
 
-    function shut(bytes32 cup) note {
+    function shut(bytes32 cup) public note {
         require(!off);
         wipe(cup, tab(cup));
         free(cup, cups[cup].ink);
         delete cups[cup];
     }
 
-    function bite(bytes32 cup) note {
+    function bite(bytes32 cup) public note {
         require(!safe(cup) || off);
 
         // Take on all of the debt
@@ -267,13 +267,13 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function cage(uint fit_, uint jam) note auth {
+    function cage(uint fit_, uint jam) public note auth {
         require(!off);
         off = true;
         fit = fit_;         // ref per skr
         gem.transfer(tap, jam);
     }
-    function flow() note auth {
+    function flow() public note auth {
         require(off);
         out = true;
     }

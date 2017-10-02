@@ -9,11 +9,11 @@ pragma solidity ^0.4.15;
 import "./lib.sol";
 
 contract SaiVox is DaiVox {
-    function SaiVox() DaiVox(RAY) {
+    function SaiVox() DaiVox(RAY) public {
         how = 0;  // zero initial sensitivity
     }
 
-    function mold(bytes32 param, uint val) {
+    function mold(bytes32 param, uint val) public note auth {
         if (param == 'way') _way = val;
     }
 }

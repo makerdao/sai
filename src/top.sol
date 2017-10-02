@@ -24,7 +24,7 @@ contract SaiTop is DSThing {
     uint256  public  caged;
     uint256  public  cooldown = 6 hours;
 
-    function SaiTop(SaiTub tub_, SaiTap tap_) {
+    function SaiTop(SaiTub tub_, SaiTap tap_) public {
         tub = tub_;
         tap = tap_;
 
@@ -36,7 +36,7 @@ contract SaiTop is DSThing {
         gem = tub.gem();
     }
 
-    function era() constant returns (uint) {
+    function era() public view returns (uint) {
         return block.timestamp;
     }
 
@@ -44,7 +44,7 @@ contract SaiTop is DSThing {
     // This is nearly the equivalent of biting all cups at once.
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
-    function cage(uint price) note auth {
+    function cage(uint price) public note auth {
         require(!tub.off());
         caged = era();
 
@@ -61,11 +61,11 @@ contract SaiTop is DSThing {
         tap.vent();    // burn pending sale skr
     }
     // cage by reading the last value from the feed for the price
-    function cage() note auth {
+    function cage() public note auth {
         cage(rdiv(uint(tub.pip().read()), vox.par()));
     }
 
-    function flow() note {
+    function flow() public note {
         require(tub.off());
         var empty = tub.ice() == 0 && tap.fog() == 0;
         var ended = era() > caged + cooldown;
@@ -73,7 +73,7 @@ contract SaiTop is DSThing {
         tub.flow();
     }
 
-    function setCooldown(uint cooldown_) auth {
+    function setCooldown(uint cooldown_) public auth {
         cooldown = cooldown_;
     }
 }

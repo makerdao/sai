@@ -21,29 +21,29 @@ contract SaiTap is DSThing {
     uint256  public  fix;  // Cage price
 
     // Surplus
-    function joy() constant returns (uint) {
+    function joy() public view returns (uint) {
         return sai.balanceOf(this);
     }
     // Bad debt
-    function woe() constant returns (uint) {
+    function woe() public view returns (uint) {
         return sin.balanceOf(this);
     }
     // Collateral pending liquidation
-    function fog() constant returns (uint) {
+    function fog() public view returns (uint) {
         return skr.balanceOf(this);
     }
 
 
-    function SaiTap() {
+    function SaiTap() public {
         gap = WAD;
     }
 
-    function mold(bytes32 param, uint val) note auth {
+    function mold(bytes32 param, uint val) public note auth {
         if (param == 'gap') gap = val;
     }
 
     // Associate with tub
-    function turn(SaiTub tub_) note auth {
+    function turn(SaiTub tub_) public note auth {
         tub = tub_;
 
         sai = tub.sai();
@@ -54,7 +54,7 @@ contract SaiTap is DSThing {
     }
 
     // Cancel debt
-    function heal() note {
+    function heal() public note {
         if (joy() == 0 || woe() == 0) return;  // optimised
         var wad = min(joy(), woe());
         sai.burn(wad);
@@ -62,17 +62,17 @@ contract SaiTap is DSThing {
     }
 
     // Feed price (sai per skr)
-    function s2s() returns (uint) {
+    function s2s() public returns (uint) {
         var tag = tub.tag();    // ref per skr
         var par = vox.par();    // ref per sai
         return rdiv(tag, par);  // sai per skr
     }
     // Boom price (sai per skr)
-    function bid(uint wad) constant returns (uint) {
+    function bid(uint wad) public returns (uint) {
         return rmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
     }
     // Bust price (sai per skr)
-    function ask(uint wad) constant returns (uint) {
+    function ask(uint wad) public returns (uint) {
         return rmul(wad, wmul(s2s(), gap));
     }
     function flip(uint wad) internal {
@@ -92,29 +92,29 @@ contract SaiTap is DSThing {
         sai.push(msg.sender, bid(wad));
         skr.burn(msg.sender, wad);
     }
-    function bust(uint wad) note {
+    function bust(uint wad) public note {
         require(!off);
         if (wad > fog()) flop(wad);
         else flip(wad);
     }
-    function boom(uint wad) note {
+    function boom(uint wad) public note {
         require(!off);
         flap(wad);
     }
 
     //------------------------------------------------------------------
 
-    function cage(uint fix_) note auth {
+    function cage(uint fix_) public note auth {
         off = true;
         fix = fix_;
     }
-    function cash() note {
+    function cash() public note {
         require(off);
         var wad = sai.balanceOf(msg.sender);
         sai.pull(msg.sender, wad);
         tub.gem().transfer(msg.sender, rmul(wad, fix));
     }
-    function vent() note {
+    function vent() public note {
         require(off);
         heal();
         skr.burn(fog());

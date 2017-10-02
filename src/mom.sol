@@ -16,52 +16,52 @@ contract SaiMom is DSThing {
     SaiTap  public  tap;
     SaiVox  public  vox;
 
-    function SaiMom(SaiTub tub_, SaiTap tap_, SaiVox vox_) {
+    function SaiMom(SaiTub tub_, SaiTap tap_, SaiVox vox_) public {
         tub = tub_;
         tap = tap_;
         vox = vox_;
     }
-    function mold(bytes32 param, uint val) note auth {
+    function mold(bytes32 param, uint val) public note auth {
         tub.mold(param, val);
     }
     // Debt ceiling
-    function setHat(uint wad) note auth {
+    function setHat(uint wad) public note auth {
         tub.mold("hat", wad);
     }
     // Liquidation ratio
-    function setMat(uint ray) note auth {
+    function setMat(uint ray) public note auth {
         tub.mold("mat", ray);
         var axe = tub.axe();
         var mat = tub.mat();
         require(axe >= RAY && axe <= mat);
     }
     // Stability fee
-    function setTax(uint ray) note auth {
+    function setTax(uint ray) public note auth {
         tub.mold("tax", ray);
         var tax = tub.tax();
         require(RAY <= tax);
         require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
     // Liquidation fee
-    function setAxe(uint ray) note auth {
+    function setAxe(uint ray) public note auth {
         tub.mold("axe", ray);
         var axe = tub.axe();
         var mat = tub.mat();
         require(axe >= RAY && axe <= mat);
     }
     // Join/Exit Spread
-    function setTubGap(uint wad) note auth {
+    function setTubGap(uint wad) public note auth {
         tub.mold("gap", wad);
     }
     // Boom/Bust Spread
-    function setTapGap(uint wad) note auth {
+    function setTapGap(uint wad) public note auth {
         tap.mold("gap", wad);
         var gap = tap.gap();
         require(gap <= 1.05 ether);
         require(gap >= 0.95 ether);
     }
     // Rate of change of target price (per second)
-    function setWay(uint ray) note auth {
+    function setWay(uint ray) public note auth {
         require(ray < 10002 * 10 ** 23);  // ~200% per hour
         require(ray > 9998 * 10 ** 23);
         vox.mold("way", ray);

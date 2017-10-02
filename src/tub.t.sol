@@ -22,7 +22,7 @@ contract TubTest is DSTest, DSThing {
 	DSToken skr;
 	DSToken gem;
 
-	function setUp() {
+	function setUp() public {
 		sai = new DSToken("SAI");
 		sin = new DSToken("SIN");
 		skr = new DSToken("SKR");
@@ -37,8 +37,8 @@ contract TubTest is DSTest, DSThing {
 		skr.setAuthority(dad);
 
 		//Permit tub to 'mint' and 'burn' SKR
-		dad.permit(tub, skr, bytes4(sha3('mint(address,uint256)')));
-		dad.permit(tub, skr, bytes4(sha3('burn(address,uint256)')));
+		dad.permit(tub, skr, bytes4(keccak256('mint(address,uint256)')));
+		dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
 
 		//Allow tub to mint, burn, and transfer gem/skr without approval
 		gem.trust(tub, true);
@@ -53,7 +53,7 @@ contract TubTest is DSTest, DSThing {
 		assert(!tub.off());
 	}
 
-	function testPie() {
+	function testPie() public {
 		assertEq(tub.pie(), gem.balanceOf(tub));
 		assertEq(tub.pie(), 0 ether);
 		gem.mint(75 ether);
@@ -62,13 +62,13 @@ contract TubTest is DSTest, DSThing {
 		assertEq(tub.pie(), 72 ether);
 	}
 
-	function testPer() {
+	function testPer() public {
 		tub.join(5 ether);
 		assertEq(skr.totalSupply(), 5 ether);
 		assertEq(tub.per(), rdiv(5 ether, 5 ether));
 	}
 
-	function testTag() {
+	function testTag() public {
 		tub.pip().poke(bytes32(1 ether));
 		assertEq(tub.pip().read(), bytes32(1 ether));
 		assertEq(wmul(tub.per(), uint(tub.pip().read())), tub.tag());
@@ -77,7 +77,7 @@ contract TubTest is DSTest, DSThing {
 		assertEq(wmul(tub.per(), uint(tub.pip().read())), tub.tag());
 	}
 
-	function testGap() {
+	function testGap() public {
 		assertEq(tub.gap(), WAD);
 		tub.mold('gap', 2);
 		assertEq(tub.gap(), 2);
@@ -85,19 +85,19 @@ contract TubTest is DSTest, DSThing {
 		assertEq(tub.gap(), wmul(WAD, 10));
 	}
 
-	function testAsk() {
+	function testAsk() public {
 		assertEq(tub.per(), RAY);
 		assertEq(tub.ask(3 ether), rmul(3 ether, wmul(RAY, tub.gap())));
 		assertEq(tub.ask(wmul(WAD, 33)), rmul(wmul(WAD, 33), wmul(RAY, tub.gap())));
 	}
 
-	function testBid() {
+	function testBid() public {
 		assertEq(tub.per(), RAY);
 		assertEq(tub.bid(4 ether), rmul(4 ether, wmul(tub.per(), sub(2 * WAD, tub.gap()))));
 		assertEq(tub.bid(wmul(5 ether,3333333)), rmul(wmul(5 ether,3333333), wmul(tub.per(), sub(2 * WAD, tub.gap()))));
 	}
 
-	function testJoin() {
+	function testJoin() public {
 		tub.join(3 ether);
 		assertEq(gem.balanceOf(this), 3 ether);
 		assertEq(gem.balanceOf(tub), 3 ether);
@@ -108,7 +108,7 @@ contract TubTest is DSTest, DSThing {
 		assertEq(skr.totalSupply(), 4 ether);
 	}
 
-	function testExit() {
+	function testExit() public {
 		gem.mint(10 ether);
 		assertEq(gem.balanceOf(this), 16 ether);
 
@@ -128,7 +128,7 @@ contract TubTest is DSTest, DSThing {
 		assertEq(skr.totalSupply(), 2 ether);
 	}
 
-	function testCage() {
+	function testCage() public {
 		tub.join(5 ether);
 		assertEq(gem.balanceOf(tub), 5 ether);
 		assertEq(gem.balanceOf(this), 1 ether);
@@ -142,7 +142,7 @@ contract TubTest is DSTest, DSThing {
 		assert(tub.off());
 	}
 
-	function testFlow() {
+	function testFlow() public {
 		tub.join(1 ether);
 		tub.cage(tub.per(), 1 ether);
 		assert(tub.off());
