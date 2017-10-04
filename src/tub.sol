@@ -23,8 +23,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
+    DSToken  public  gov;  // Governance token
+
     SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
+    DSValue  public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
 
@@ -32,6 +35,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
     uint256  public  tax;  // Stability fee
+    uint256  public  fee;  // Governance fee
     uint256  public  gap;  // Join-Exit Spread
 
     bool     public  off;  // Cage flag
@@ -40,7 +44,8 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  fit;  // REF per SKR (just before settlement)
 
     uint256  public  rho;  // Time of last drip
-    uint256          _chi;  // Price of internal debt unit
+    uint256         _chi;  // Accumulated Tax Rates
+    uint256         _rhi;  // Accumulated Tax + Fee Rates
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -48,7 +53,8 @@ contract SaiTub is DSThing, SaiTubEvents {
     struct Cup {
         address  lad;      // CDP owner
         uint256  ink;      // Locked collateral (in SKR)
-        uint256  art;      // Outstanding debt (in internal debt units)
+        uint256  art;      // Outstanding normalised debt (tax only)
+        uint256  irk;      // Outstanding normalised debt
     }
 
     function lad(bytes32 cup) public view returns (address) {
@@ -59,6 +65,9 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function tab(bytes32 cup) public returns (uint) {
         return rmul(cups[cup].art, chi());
+    }
+    function rap(bytes32 cup) public returns (uint) {
+        return rmul(cups[cup].irk, rhi());
     }
 
     // Good debt
@@ -81,7 +90,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
+        DSToken  gov_,
         DSValue  pip_,
+        DSValue  pep_,
         SaiVox   vox_,
         address  tap_
     ) public {
@@ -91,16 +102,21 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai = sai_;
         sin = sin_;
 
+        gov = gov_;
+
         pip = pip_;
+        pep = pep_;
         vox = vox_;
         tap = tap_;
 
         axe = RAY;
         mat = RAY;
         tax = RAY;
+        fee = RAY;
         gap = WAD;
 
         _chi = RAY;
+        _rhi = RAY;
 
         rho = era();
     }
@@ -115,6 +131,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         if      (param == 'hat') hat = val;
         else if (param == 'mat') mat = val;
         else if (param == 'tax') { drip(); tax = val; }
+        else if (param == 'fee') { drip(); fee = val; }
         else if (param == 'axe') axe = val;
         else if (param == 'gap') gap = val;
         else return;
@@ -147,10 +164,14 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--Stability-fee-accumulation--------------------------------------
 
-    // Internal debt price (sai per debt unit)
+    // Accumulated Rates
     function chi() public returns (uint) {
         drip();
         return _chi;
+    }
+    function rhi() public returns (uint) {
+        drip();
+        return _rhi;
     }
     function drip() public note {
         if (off) return;
@@ -160,13 +181,17 @@ contract SaiTub is DSThing, SaiTubEvents {
         if (age == 0) return;    // optimised
         rho = rho_;
 
-        if (tax == RAY) return;  // optimised
-        var inc = rpow(tax, age);
+        var inc = RAY;
 
-        if (inc == RAY) return;  // optimised
-        var dew = sub(rmul(ice(), inc), ice());
-        lend(tap, dew);
-        _chi = rmul(_chi, inc);
+        if (tax != RAY) {  // optimised
+            inc = rpow(tax, age);
+            _chi = rmul(_chi, inc);
+            lend(tap, sub(rmul(ice(), inc), ice()));
+        }
+
+        // optimised
+        if (fee != RAY) inc = rmul(inc, rpow(fee, age));
+        if (inc != RAY) _rhi = rmul(_rhi, inc);
     }
 
     //--CDP-risk-indicator----------------------------------------------
@@ -226,6 +251,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
+        cups[cup].irk = add(cups[cup].irk, rdiv(wad, rhi()));
         lend(cups[cup].lad, wad);
 
         require(safe(cup));
@@ -235,8 +261,13 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
+        var owe = rmul(wad, rdiv(sub(rap(cup), tab(cup)), tab(cup)));
+
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-        mend(cups[cup].lad, wad);
+        cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
+        mend(msg.sender, wad);
+
+        gov.burn(msg.sender, wdiv(owe, uint(pep.read())));
     }
 
     function shut(bytes32 cup) public note {
@@ -249,10 +280,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     function bite(bytes32 cup) public note {
         require(!safe(cup) || off);
 
-        // Take on all of the debt
+        // Take on all of the debt, except unpaid fees
         var rue = tab(cup);
         sin.push(tap, rue);
         cups[cup].art = 0;
+        cups[cup].irk = 0;
 
         // Amount owed in SKR, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
