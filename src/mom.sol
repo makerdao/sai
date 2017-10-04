@@ -42,6 +42,10 @@ contract SaiMom is DSThing {
         require(RAY <= tax);
         require(tax < 10002 * 10 ** 23);  // ~200% per hour
     }
+    // Governance fee
+    function setFee(uint ray) public note auth {
+        tub.mold("fee", ray);
+    }
     // Liquidation fee
     function setAxe(uint ray) public note auth {
         tub.mold("axe", ray);
