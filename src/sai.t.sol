@@ -327,7 +327,7 @@ contract SaiTubTest is SaiTestBase {
         tub.draw(cup, 9 ether);
 
         assertTrue(tub.safe(cup));
-        tag.poke(bytes32(1 ether / 2));
+        mark(1 ether / 2);
         assertTrue(!tub.safe(cup));
     }
     function testBiteUnderParity() public {
@@ -336,7 +336,7 @@ contract SaiTubTest is SaiTestBase {
         var cup = tub.open();
         tub.lock(cup, 10 ether);
         tub.draw(cup, 5 ether);           // 200% collateralisation
-        tag.poke(bytes32(1 ether / 4));   // 50% collateralisation
+        mark(1 ether / 4);                // 50% collateralisation
 
         assertEq(tap.fog(), uint(0));
         tub.bite(cup);
@@ -350,7 +350,7 @@ contract SaiTubTest is SaiTestBase {
 
         tub.draw(cup, 4 ether);  // 250% collateralisation
         assertTrue(tub.safe(cup));
-        tag.poke(bytes32(1 ether / 2));   // 125% collateralisation
+        mark(1 ether / 2);       // 125% collateralisation
         assertTrue(!tub.safe(cup));
 
         assertEq(tap.fog(), uint(0));
@@ -406,7 +406,7 @@ contract SaiTubTest is SaiTestBase {
         tub.lock(cup, 10 ether);
 
         tub.draw(cup, 5 ether);          // 200% collat, full debt ceiling
-        tag.poke(bytes32(1 ether / 2));  // 100% collat
+        mark(1 ether / 2);  // 100% collat
 
         assertEq(tub.air(), uint(10 ether));
         assertEq(tap.fog(), uint(0 ether));
@@ -424,7 +424,7 @@ contract CageTest is SaiTestBase {
     // ensure cage sets the settle prices right
     function cageSetup() public returns (bytes32) {
         mom.setHat(5 ether);            // 5 sai debt ceiling
-        tag.poke(bytes32(1 ether));   // price 1:1 gem:ref
+        mark(1 ether);   // price 1:1 gem:ref
         mom.setMat(ray(2 ether));       // require 200% collat
         tub.join(10 ether);
         var cup = tub.open();
