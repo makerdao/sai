@@ -165,7 +165,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         if (inc == RAY) return;  // optimised
         var dew = sub(rmul(ice(), inc), ice());
-        lend(tap, dew);
+        lend(tap, dew);    // TODO this needs to go in the buffer
         _chi = rmul(_chi, inc);
     }
 
@@ -231,12 +231,20 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(safe(cup));
         require(sin.totalSupply() <= hat);
     }
-    function wipe(bytes32 cup, uint wad) public note {
+
+    function wipe(bytes32 cup, DSToken gem, uint wad) note {
+        drip();
+        var amt = convert(gem, wad);  // from a feed
+        gem.push(liquidator(gem), amt);    // for MKR, this will get the burn address
+        wipe(cup, wad);                
+    }
+
+    function wipe(bytes32 cup, uint wad) public note auth {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
-        mend(cups[cup].lad, wad);
+        mend(cups[cup].lad, wad); // TODO this should use `this` sometimes in light of changes above
     }
 
     function shut(bytes32 cup) public note {
