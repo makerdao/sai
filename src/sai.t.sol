@@ -1584,13 +1584,15 @@ contract TaxTest is SaiTestBase {
         warp(1 days);
         assertEq(tub.tab(cup), 110.25 ether);
     }
-    // Tax accumulates as sai surplus
+    // Tax accumulates as sai surplus, and sin debt
     function testTaxJoy() public {
         var cup = taxSetup();
-        assertEq(tap.joy(),      0 ether);
         assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.ice(),    100 ether);
+        assertEq(tap.joy(),      0 ether);
         warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.ice(),    105 ether);
         assertEq(tap.joy(),      5 ether);
     }
     function testTaxDraw() public {
