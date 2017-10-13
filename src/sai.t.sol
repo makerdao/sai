@@ -2133,43 +2133,44 @@ contract FeeTest is SaiTestBase {
         var cup = feeSetup();
         assertEq(tub.ice(),    100 ether);
         assertEq(tub.tab(cup), 100 ether);
-        assertEq(tub.rap(cup), 100 ether);
+        assertEq(tub.rap(cup),   0 ether);
         warp(1 days);
         assertEq(tub.ice(),    100 ether);
         assertEq(tub.tab(cup), 100 ether);
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
     }
     function testFeeDraw() public {
         var cup = feeSetup();
         warp(1 days);
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
         tub.draw(cup, 100 ether);
-        assertEq(tub.rap(cup), 205 ether);
+        assertEq(tub.rap(cup),   5 ether);
         warp(1 days);
-        assertEq(tub.rap(cup), 215.25 ether);
+        assertEq(tub.rap(cup),  15.25 ether);
     }
     function testFeeWipe() public {
         var cup = feeSetup();
         warp(1 days);
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
         tub.wipe(cup, 50 ether);
-        assertEq(tub.rap(cup), 52.5 ether);
+        assertEq(tub.rap(cup),  2.5 ether);
         warp(1 days);
-        assertEq(tub.rap(cup), 55.125 ether);
+        assertEq(tub.rap(cup),  5.125 ether);
     }
     function testFeeCalcFromRap() public {
         var cup = feeSetup();
 
-        assertEq(tub.tab(cup), tub.rap(cup));
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.rap(cup),   0 ether);
         warp(1 days);
         assertEq(tub.tab(cup), 100 ether);
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
     }
     function testFeeWipePays() public {
         var cup = feeSetup();
         warp(1 days);
 
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
         assertEq(gov.balanceOf(this), 100 ether);
         tub.wipe(cup, 50 ether);
         assertEq(tub.tab(cup), 50 ether);
@@ -2189,7 +2190,7 @@ contract FeeTest is SaiTestBase {
 
         var wad = tub.tab(cup);
         assertEq(wad, 100 ether);
-        var owe = sub(tub.rap(cup), tub.tab(cup));
+        var owe = tub.rap(cup);
         assertEq(owe, 5 ether);
 
         var ( , , art, irk) = tub.cups(cup);
@@ -2198,7 +2199,7 @@ contract FeeTest is SaiTestBase {
         assertEq(rdiv(wad, tub.chi()), art);
         assertEq(rdiv(add(wad, owe), tub.rhi()), irk);
 
-        assertEq(tub.rap(cup), 105 ether);
+        assertEq(tub.rap(cup),   5 ether);
         assertEq(tub.tab(cup), 100 ether);
         assertEq(gov.balanceOf(this), 100 ether);
         tub.wipe(cup, 100 ether);
@@ -2237,7 +2238,7 @@ contract FeeTaxTest is SaiTestBase {
         var cup = feeSetup();
 
         assertEq(tub.tab(cup), 100 ether);
-        assertEq(tub.rap(cup), 100 ether);
+        assertEq(tub.rap(cup),   0 ether);
 
         assertEq(tub.ice(),    100 ether);
         assertEq(tap.joy(),      0 ether);
@@ -2245,7 +2246,7 @@ contract FeeTaxTest is SaiTestBase {
         warp(1 days);
 
         assertEq(tub.tab(cup), 105 ether);
-        assertEq(tub.rap(cup), 110.25 ether);
+        assertEq(tub.rap(cup),   5.25 ether);
 
         assertEq(tub.ice(),    105 ether);
         assertEq(tap.joy(),      5 ether);
@@ -2260,10 +2261,11 @@ contract FeeTaxTest is SaiTestBase {
     function testFeeTaxCalcFromRap() public {
         var cup = feeSetup();
 
-        assertEq(tub.tab(cup), tub.rap(cup));
+        assertEq(tub.tab(cup), 100.00 ether);
+        assertEq(tub.rap(cup),   0.00 ether);
         warp(1 days);
         assertEq(tub.tab(cup), 105.00 ether);
-        assertEq(tub.rap(cup), 110.25 ether);
+        assertEq(tub.rap(cup),   5.25 ether);
     }
     function testFeeTaxWipeAll() public {
         var cup = feeSetup();
@@ -2271,7 +2273,7 @@ contract FeeTaxTest is SaiTestBase {
 
         var wad = tub.tab(cup);
         assertEq(wad, 105 ether);
-        var owe = sub(tub.rap(cup), tub.tab(cup));
+        var owe = tub.rap(cup);
         assertEq(owe, 5.25 ether);
 
         var ( , , art, irk) = tub.cups(cup);
@@ -2282,7 +2284,7 @@ contract FeeTaxTest is SaiTestBase {
 
         sai.mint(5 ether);  // need to magic up some extra sai to pay tax
 
-        assertEq(tub.rap(cup), 110.25 ether);
+        assertEq(tub.rap(cup), 5.25 ether);
         assertEq(gov.balanceOf(this), 100 ether);
         tub.wipe(cup, 105 ether);
         assertEq(tub.rap(cup), 0 ether);

@@ -67,7 +67,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         return rmul(cups[cup].art, chi());
     }
     function rap(bytes32 cup) public returns (uint) {
-        return rmul(cups[cup].irk, rhi());
+        return sub(rmul(cups[cup].irk, rhi()), tab(cup));
     }
 
     // Good debt
@@ -261,7 +261,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
-        var owe = rmul(wad, rdiv(sub(rap(cup), tab(cup)), tab(cup)));
+        var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
