@@ -33,10 +33,12 @@ contract DevTub is SaiTub, TestWarp {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
+        DSToken  gov_,
         DSValue  pip_,
+        DSValue  pep_,
         SaiVox   vox_,
         address  tap_
-    ) public SaiTub(sai_, sin_, skr_, gem_, pip_, vox_, tap_) {}
+    ) public SaiTub(sai_, sin_, skr_, gem_, gov_, pip_, pep_, vox_, tap_) {}
 }
 
 contract DevTop is SaiTop, TestWarp {
@@ -71,8 +73,10 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  sai;
     DSToken  sin;
     DSToken  skr;
+    DSToken  gov;
 
     DSValue  tag;
+    DSValue  pep;
     DSGuard  dad;
 
     function ray(uint256 wad) internal pure returns (uint256) {
@@ -82,8 +86,12 @@ contract SaiTestBase is DSTest, DSMath {
         return wdiv(ray_, RAY);
     }
 
-    function mark(uint256 price) internal {
+    function mark(uint price) internal {
         tag.poke(bytes32(price));
+    }
+    function mark(DSToken tkn, uint price) internal {
+        if (tkn == gov) pep.poke(bytes32(price));
+        else if (tkn == gem) mark(price);
     }
     function warp(uint256 age) internal {
         vox.warp(age);
@@ -153,6 +161,11 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(this, skr, bytes4(keccak256('mint(address,uint256)')));
         dad.permit(this, skr, bytes4(keccak256('burn(address,uint256)')));
 
+        // gov would actually have its owner / authority outside the
+        // system. Set to `dad` for convenience.
+        gov.setAuthority(dad);
+        dad.permit(tub, gov, bytes4(keccak256('burn(address,uint256)')));
+
         dad.setOwner(0);
     }
 
@@ -165,11 +178,14 @@ contract SaiTestBase is DSTest, DSMath {
 
         skr = new DSToken("SKR");
 
+        gov = new DSToken("GOV");
+
         tag = new DSValue();
+        pep = new DSValue();
         vox = new DevVox();
 
         tap = new SaiTap();
-        tub = new DevTub(sai, sin, skr, gem, tag, vox, tap);
+        tub = new DevTub(sai, sin, skr, gem, gov, tag, pep, vox, tap);
         top = new DevTop(tub, tap);
         tap.turn(tub);
 
@@ -182,11 +198,13 @@ contract SaiTestBase is DSTest, DSMath {
         sai.trust(tub, true);
         skr.trust(tub, true);
         gem.trust(tub, true);
+        gov.trust(tub, true);
 
         sai.trust(tap, true);
         skr.trust(tap, true);
 
-        tag.poke(bytes32(1 ether));
+        mark(1 ether);
+        mark(gov, 1 ether);
 
         mom.setHat(20 ether);
     }
@@ -353,9 +371,15 @@ contract SaiTubTest is SaiTestBase {
         mark(1 ether / 2);       // 125% collateralisation
         assertTrue(!tub.safe(cup));
 
-        assertEq(tap.fog(), uint(0));
+        assertEq(tub.ice(),    4 ether);
+        assertEq(tub.tab(cup), 4 ether);
+        assertEq(tap.fog(),    0 ether);
+        assertEq(tap.woe(),    0 ether);
         tub.bite(cup);
-        assertEq(tap.fog(), uint(8 ether));
+        assertEq(tub.ice(),    0 ether);
+        assertEq(tub.tab(cup), 0 ether);
+        assertEq(tap.fog(),    8 ether);
+        assertEq(tap.woe(),    4 ether);
 
         // cdp should now be safe with 0 sai debt and 2 skr remaining
         var skr_before = skr.balanceOf(this);
@@ -2068,5 +2092,49 @@ contract GasTest is SaiTestBase {
     function testGasDrip1d() public {
         warp(1 days);
         doDrip();
+    }
+}
+
+contract FeeTest is SaiTestBase {
+    function feeSetup() public returns (bytes32 cup) {
+        mark(10 ether);
+        mark(gov, 1 ether / 2);
+        gem.mint(1000 ether);
+        gov.mint(100 ether);
+
+        mom.setHat(1000 ether);
+        mom.setFee(rdiv(5, 100));
+
+        cup = tub.open();
+        tub.join(100 ether);
+        tub.lock(cup, 100 ether);
+        tub.draw(cup, 100 ether);
+    }
+    function testFeeSet() public {
+        assertEq(tub.fee(), 0);
+        mom.setFee(ray(0.000000001 ether));
+        assertEq(tub.fee(), ray(0.000000001 ether));
+    }
+    function testFeeWipe() public {
+        var cup = feeSetup();
+        assertEq(tub.tab(cup), 100 ether);
+        tub.wipe(cup, 50 ether);
+        assertEq(tub.tab(cup), 50 ether);
+    }
+    function testFeeWipePays() public {
+        var cup = feeSetup();
+
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(gov.balanceOf(this), 100 ether);
+        tub.wipe(cup, 50 ether);
+        assertEq(tub.tab(cup), 50 ether);
+        assertEq(gov.balanceOf(this), 95 ether);
+    }
+    function testFeeWipeBurns() public {
+        var cup = feeSetup();
+
+        assertEq(gov.totalSupply(), 100 ether);
+        tub.wipe(cup, 50 ether);
+        assertEq(gov.totalSupply(), 95 ether);
     }
 }

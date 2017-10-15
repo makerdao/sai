@@ -23,8 +23,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
+    DSToken  public  gov;  // Governance token
+
     SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
+    DSValue  public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
 
@@ -32,6 +35,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
     uint256  public  tax;  // Stability fee
+    uint256  public  fee;  // Governance fee
     uint256  public  gap;  // Join-Exit Spread
 
     bool     public  off;  // Cage flag
@@ -40,7 +44,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  fit;  // REF per SKR (just before settlement)
 
     uint256  public  rho;  // Time of last drip
-    uint256          _chi;  // Price of internal debt unit
+    uint256         _chi;  // Accumulated Tax Rates
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -48,7 +52,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     struct Cup {
         address  lad;      // CDP owner
         uint256  ink;      // Locked collateral (in SKR)
-        uint256  art;      // Outstanding debt (in internal debt units)
+        uint256  art;      // Outstanding normalised debt (tax only)
     }
 
     function lad(bytes32 cup) public view returns (address) {
@@ -81,7 +85,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
+        DSToken  gov_,
         DSValue  pip_,
+        DSValue  pep_,
         SaiVox   vox_,
         address  tap_
     ) public {
@@ -91,7 +97,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai = sai_;
         sin = sin_;
 
+        gov = gov_;
+
         pip = pip_;
+        pep = pep_;
         vox = vox_;
         tap = tap_;
 
@@ -115,6 +124,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         if      (param == 'hat') hat = val;
         else if (param == 'mat') mat = val;
         else if (param == 'tax') { drip(); tax = val; }
+        else if (param == 'fee') fee = val;
         else if (param == 'axe') axe = val;
         else if (param == 'gap') gap = val;
         else return;
@@ -147,7 +157,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--Stability-fee-accumulation--------------------------------------
 
-    // Internal debt price (sai per debt unit)
+    // Accumulated Tax
     function chi() public returns (uint) {
         drip();
         return _chi;
@@ -237,6 +247,8 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         mend(cups[cup].lad, wad);
+
+        gov.burn(msg.sender, wdiv(rmul(wad, fee), uint(pep.read())));
     }
 
     function shut(bytes32 cup) public note {
