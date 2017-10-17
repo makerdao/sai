@@ -16,22 +16,26 @@ contract TubTest is DSTest, DSThing {
 	DSGuard dad;
 
 	DSValue pip;
+	DSValue pep;
 
 	DSToken sai;
 	DSToken sin;
 	DSToken skr;
 	DSToken gem;
+	DSToken gov;
 
 	function setUp() public {
 		sai = new DSToken("SAI");
 		sin = new DSToken("SIN");
 		skr = new DSToken("SKR");
 		gem = new DSToken("GEM");
+        gov = new DSToken("GOV");
 		pip = new DSValue();
+		pep = new DSValue();
 		dad = new DSGuard();
 		vox = new SaiVox();
 		tap = new SaiTap();
-		tub = new SaiTub(sai, sin, skr, gem, pip, vox, tap);
+		tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap);
 
 		//Set whitelist authority 
 		skr.setAuthority(dad);
