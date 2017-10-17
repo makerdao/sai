@@ -2157,6 +2157,20 @@ contract FeeTest is SaiTestBase {
         warp(1 days);
         assertEq(tub.rap(cup),  5.125 ether);
     }
+
+    // TODO this doesn't fail when it should
+    function testFeeWipeNoFeed() public {
+        require(false); // TODO remove me
+        var cup = feeSetup();
+        pep.void();
+        warp(1 days);
+        assertEq(tub.rap(cup),   5 ether);
+        tub.wipe(cup, 50 ether);
+        assertEq(tub.rap(cup),  2.5 ether);
+        warp(1 days);
+        assertEq(tub.rap(cup),  5.125 ether);
+    }
+
     function testFeeCalcFromRap() public {
         var cup = feeSetup();
 
