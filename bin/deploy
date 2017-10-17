@@ -10,10 +10,12 @@ dapp build
 export SETH_ASYNC=yes
 
 test -z $SAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
+test -z $SAI_GOV && GOVtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'GOV')))
 SAItx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SAI')))
 SINtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SIN')))
 SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
 test -z $SAI_TAG && TAGtx=$(dapp create DSValue)
+test -z $SAI_PEP && PEPtx=$(dapp create DSValue)
 VOXtx=$(dapp create SaiVox)
 TAPtx=$(dapp create SaiTap)
 
@@ -22,13 +24,16 @@ DADtx=$(dapp create DSGuard)
 export SETH_ASYNC=no
 
 test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
+test -z $SAI_GOV && TEST_GOV=TRUE
+test -z $SAI_GOV && SAI_GOV=$(seth receipt $GOVtx contractAddress)
 SAI_SAI=$(seth receipt $SAItx contractAddress)
 SAI_SIN=$(seth receipt $SINtx contractAddress)
 SAI_SKR=$(seth receipt $SKRtx contractAddress)
 test -z $SAI_TAG && SAI_TAG=$(seth receipt $TAGtx contractAddress)
+test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
 SAI_VOX=$(seth receipt $VOXtx contractAddress)
 SAI_TAP=$(seth receipt $TAPtx contractAddress)
-SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_TAG $SAI_VOX $SAI_TAP)
+SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_GOV $SAI_TAG $SAI_PEP $SAI_VOX $SAI_TAP)
 SAI_TOP=$(dapp create SaiTop $SAI_TUB $SAI_TAP)
 seth send $SAI_TAP 'turn(address)' $SAI_TUB
 
@@ -71,6 +76,15 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_VOX $(seth --
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TUB $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TAP $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
 
+# TODO: Replace $ETH_FROM with a CAGE Authority address
+seth send $SAI_DAD "permit(address,address,bytes32)" $ETH_FROM $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $ETH_FROM $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage()'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $ETH_FROM $SAI_TOP $(seth --to-bytes32 $(seth calldata 'setCooldown(uint256)'))
+
+# This is just for the case GOV is a test token
+test -z $TEST_GOV && seth send $SAI_GOV "setAuthority(address)" $SAI_DAD
+test -z $TEST_GOV && seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_GOV $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
 
@@ -78,10 +92,12 @@ cat > load-env-$(seth chain) << EOF
 # $(date)
 
 export SAI_GEM=$SAI_GEM
+export SAI_GOV=$SAI_GOV
 export SAI_SAI=$SAI_SAI
 export SAI_SIN=$SAI_SIN
 export SAI_SKR=$SAI_SKR
 export SAI_TAG=$SAI_TAG
+export SAI_PEP=$SAI_PEP
 export SAI_DAD=$SAI_DAD
 export SAI_MOM=$SAI_MOM
 export SAI_TIP=$SAI_VOX

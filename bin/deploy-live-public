@@ -8,16 +8,20 @@ CHAIN=$(seth chain)
 if [ "$CHAIN" = 'kovan' ]; then
     echo "Deploying to kovan..."
     WETH="0x53eccc9246c1e537d79199d0c7231e425a40f896"
-    MED="0xA944bd4b25C9F186A846fd5668941AA3d3B8425F"
+    MKR=""
+    PIP="0xA944bd4b25C9F186A846fd5668941AA3d3B8425F"
+    PEP=""
 elif [ "$CHAIN" = 'ethlive' ]; then
     echo "Deploying to ethlive..."
     WETH="0xECF8F87f810EcF450940c9f60066b4a7a501d6A7"
-    MED="0x729D19f657BD0614b4985Cf1D82531c67569197B"
+    MKR=""
+    PIP=""
+    PEP=""
 else
     exit
 fi
 
-SAI_PIP=$MED SAI_GEM=$WETH bin/deploy
+SAI_GEM=$WETH SAI_GOV=$MKR SAI_PIP=$PIP SAI_PEP=$PEP bin/deploy
 
 CHAIN=$(seth chain)
 
@@ -27,6 +31,13 @@ CHAIN=$(seth chain)
 # mat = 1.5 axe = 1.2 hat = 100,000,000 gap = 1 [but configurable, +/- 5%] 
 # tax = way = 1 [default]
 
-sai cuff 1.50
-sai chop 1.20
-sai cork 100000000.00
+seth send $SAI_MOM "setHat(uint256)" $(seth --to-uint256 $(seth --to-wei 100000000 ETH))
+seth send $SAI_MOM "setMat(uint256)" $(seth --to-uint256 $(seth --to-wei 1500000000 ETH))
+seth send $SAI_MOM "setAxe(uint256)" $(seth --to-uint256 $(seth --to-wei 1200000000 ETH))
+
+# TODO: Specify these initial values:
+# seth send $SAI_MOM "setTax(uint256)" $(seth --to-uint256 $(seth --to-wei X ETH))
+# seth send $SAI_MOM "setFee(uint256)" $(seth --to-uint256 $(seth --to-wei X ETH))
+# seth send $SAI_MOM "setTubGap(uint256)" $(seth --to-uint256 $(seth --to-wei X ETH))
+# seth send $SAI_MOM "setTapGap(uint256)" $(seth --to-uint256 $(seth --to-wei X ETH))
+# seth send $SAI_MOM "setWay(uint256)" $(seth --to-uint256 $(seth --to-wei X ETH))
