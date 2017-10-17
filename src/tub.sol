@@ -266,8 +266,11 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
         mend(msg.sender, wad);
-
-        gov.burn(msg.sender, wdiv(owe, uint(pep.read())));
+    
+        var (val, ok) = pep.peek();
+        if( ok ) {
+            gov.burn(msg.sender, wdiv(owe, uint(val)));
+        }
     }
 
     function shut(bytes32 cup) public note {
