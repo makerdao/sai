@@ -2157,20 +2157,6 @@ contract FeeTest is SaiTestBase {
         warp(1 days);
         assertEq(tub.rap(cup),  5.125 ether);
     }
-
-    // TODO this doesn't fail when it should
-    function testFeeWipeNoFeed() public {
-        require(false); // TODO remove me
-        var cup = feeSetup();
-        pep.void();
-        warp(1 days);
-        assertEq(tub.rap(cup),   5 ether);
-        tub.wipe(cup, 50 ether);
-        assertEq(tub.rap(cup),  2.5 ether);
-        warp(1 days);
-        assertEq(tub.rap(cup),  5.125 ether);
-    }
-
     function testFeeCalcFromRap() public {
         var cup = feeSetup();
 
@@ -2194,9 +2180,11 @@ contract FeeTest is SaiTestBase {
         var cup = feeSetup();
         warp(1 days);
 
-        assertEq(gov.totalSupply(), 100 ether);
+        assertEq(gov.totalSupply(),   100 ether);
+        assertEq(gov.balanceOf(this), 100 ether);
         tub.wipe(cup, 50 ether);
-        assertEq(gov.totalSupply(), 95 ether);
+        assertEq(gov.totalSupply(),    95 ether);
+        assertEq(gov.balanceOf(this),  95 ether);
     }
     function testFeeWipeAll() public {
         var cup = feeSetup();
@@ -2220,6 +2208,24 @@ contract FeeTest is SaiTestBase {
         assertEq(tub.rap(cup), 0 ether);
         assertEq(tub.tab(cup), 0 ether);
         assertEq(gov.balanceOf(this), 90 ether);
+    }
+    function testFeeWipeNoFeed() public {
+        var cup = feeSetup();
+        pep.void();
+        warp(1 days);
+
+        // fees continue to accumulate
+        assertEq(tub.rap(cup),   5 ether);
+
+        // gov is no longer taken
+        assertEq(gov.balanceOf(this), 100 ether);
+        tub.wipe(cup, 50 ether);
+        assertEq(gov.balanceOf(this), 100 ether);
+
+        // fees are still wiped proportionally
+        assertEq(tub.rap(cup),  2.5 ether);
+        warp(1 days);
+        assertEq(tub.rap(cup),  5.125 ether);
     }
 }
 
