@@ -35,7 +35,7 @@ contract TubTest is DSTest, DSThing {
 		dad = new DSGuard();
 		vox = new SaiVox();
 		tap = new SaiTap();
-		tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap);
+		tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap, 0x123);
 
 		//Set whitelist authority 
 		skr.setAuthority(dad);

@@ -30,6 +30,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSValue  public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
+    address  public  pit;  // Governance Vault
 
     uint256  public  axe;  // Liquidation penalty
     uint256  public  hat;  // Debt ceiling
@@ -94,7 +95,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSValue  pip_,
         DSValue  pep_,
         SaiVox   vox_,
-        address  tap_
+        address  tap_,
+        address  pit_
     ) public {
         gem = gem_;
         skr = skr_;
@@ -103,6 +105,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sin = sin_;
 
         gov = gov_;
+        pit = pit_;
 
         pip = pip_;
         pep = pep_;
@@ -268,7 +271,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         mend(msg.sender, wad);
 
         var (val, ok) = pep.peek();
-        if (ok) gov.burn(msg.sender, wdiv(owe, uint(val)));
+        if (ok) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
     function shut(bytes32 cup) public note {
