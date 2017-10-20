@@ -264,6 +264,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
+        if (wad == 0) return; // wipe(cup, 0) does not make sense, but closing an empty cup is possible
+
         var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));

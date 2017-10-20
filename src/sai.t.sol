@@ -1155,6 +1155,15 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this), 100 ether);
     }
+
+    function testShutEmptyCup() public {
+		var cup = tub.open();
+		var (lad,,,) = tub.cups(cup);
+		assertEq(lad, this);
+		tub.shut(cup);
+        (lad,,,) = tub.cups(cup);
+		assertEq(lad, 0);
+	}
 }
 
 contract LiquidationTest is SaiTestBase {
