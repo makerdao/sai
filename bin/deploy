@@ -82,8 +82,8 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $ETH_FROM $SAI_TOP $(seth -
 seth send $SAI_DAD "permit(address,address,bytes32)" $ETH_FROM $SAI_TOP $(seth --to-bytes32 $(seth calldata 'setCooldown(uint256)'))
 
 # This is just for the case GOV is a test token
-test -z $TEST_GOV && seth send $SAI_GOV "setAuthority(address)" $SAI_DAD
-test -z $TEST_GOV && seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_GOV $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+test $TEST_GOV && seth send $SAI_GOV "setAuthority(address)" $SAI_DAD
+test $TEST_GOV && seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_GOV $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
