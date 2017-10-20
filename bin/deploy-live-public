@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
+
 # deploy script for the live and public sai deployment
 
 CHAIN=$(seth chain)

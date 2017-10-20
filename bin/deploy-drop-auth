@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -ex
 
+export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
+
 # drop ownership of a deployed system
 objects="$SAI_VOX
 $SAI_TUB
