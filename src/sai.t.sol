@@ -1161,7 +1161,7 @@ contract CageTest is SaiTestBase {
 		var (lad,,,) = tub.cups(cup);
 		assertEq(lad, this);
 		tub.shut(cup);
-        (lad,,,) = tub.cups(cup);
+		(lad,,,) = tub.cups(cup);
 		assertEq(lad, 0);
 	}
 }
