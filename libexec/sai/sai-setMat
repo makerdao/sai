@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setMat -- update the liquidation ratio
+### Usage: sai setMat <new-mat>
+set -e
+[ $# = 1 ] || sai setMat --usage
+ray=$(sai ray -h "$1")
+echo >&2 "Setting mat to $ray..."
+ray=$(sai ray "$1")
+(set -x; seth send "${SAI_MOM?}" "setMat(uint256)" "$ray")

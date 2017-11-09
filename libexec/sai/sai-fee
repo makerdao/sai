@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-fee -- get the governance fee
+set -e
+ray=$(seth call "${SAI_TUB?}" "fee()")
+sai ray -h "$ray"

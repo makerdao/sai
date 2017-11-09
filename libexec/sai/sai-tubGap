@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-tubGap -- get the spread on `join` and `exit`
+set -e
+wad=$(seth call "$SAI_TUB" "gap()")
+sai wad -h "$wad"

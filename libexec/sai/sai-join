@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 ### sai-join -- buy SKR for gems
-### Usage: sai join <amount-in-gem>
+### Usage: sai join <amount-in-skr>
 set -e
 [ $# = 1 ] || sai join --usage
 jam=$(sai wad -h "$1")
-echo >&2 "Sending $jam GEM to TUB..."
+echo >&2 "Generating $jam SKR depositing GEM..."
 jam=$(sai wad "$1")
 (set -x; seth send "${SAI_TUB?}" "join(uint256)" "$jam")

@@ -6,4 +6,5 @@ set -e
 echo >&2 "cup id $((${SAI_CUP?}))..."
 echo "lad: $(sai lad)"
 echo "tab: $(sai tab)"
+echo "rap: $(sai rap)"
 echo "ink: $(sai ink)"

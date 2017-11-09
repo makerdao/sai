@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setAxe -- update the liquidation penalty
+### Usage: sai setAxe <new-axe>
+set -e
+[ $# = 1 ] || sai setAxe --usage
+ray=$(sai ray -h "$1")
+echo >&2 "Setting axe to $ray..."
+ray=$(sai ray "$1")
+(set -x; seth send "${SAI_MOM?}" "setAxe(uint256)" "$ray")

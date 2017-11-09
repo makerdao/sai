@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### sai-rap -- get the amount of governance debt
+### Usage: sai --cup=<id> rap
+set -e
+[ ! -z "$SAI_CUP" ] || sai rap --usage
+wad=$(seth call "${SAI_TUB?}" "rap(bytes32)" "${SAI_CUP?}")
+sai wad -h "$wad"

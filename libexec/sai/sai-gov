@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-gov -- get the gov token
+set -e
+gov=$(seth call "${SAI_TUB?}" 'gov()')
+echo "0x$(seth --abi-decode 'f()(address)' "$gov")"

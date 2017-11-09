@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+### sai-tapBid -- get the amount of skr in sai for boom
+set -e
+[ $# = 1 ] || sai tapBid --usage
+wad=$(seth call "${SAI_TAP?}" "bid(uint256)" $(sai wad "$1"))
+sai wad -h "$wad"

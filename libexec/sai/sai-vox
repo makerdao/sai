@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-vox -- get the target price engine
+set -e
+vox=$(seth call "${SAI_TUB?}" 'vox()')
+echo "0x$(seth --abi-decode 'f()(address)' "$vox")"

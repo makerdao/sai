@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 ### sai-per -- get the current entry price (gem per skr)
 set -e
-jar=$(seth call "${SAI_TUB?}" 'jar()')
-jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
-ray=$(seth call "$jar_address" "per()")
+ray=$(seth call "${SAI_TUB?}" "per()")
 sai ray -h "$ray"

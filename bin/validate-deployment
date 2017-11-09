@@ -35,8 +35,8 @@ test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG 
 test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TOP $(seth calldata 'cage()')) = true
 
 # reference timestamp
-export SAI_TIP="$(seth call $SAI_TUB 'tip()(address)')"
-era=$((16#$(seth call $SAI_TIP 'era()(uint64)')))
+export SAI_VOX="$(seth call $SAI_TUB 'vox()(address)')"
+era=$((16#$(seth call $SAI_VOX 'era()(uint64)')))
 timestamp=$(seth block latest timestamp)
 test $era = $timestamp
 
