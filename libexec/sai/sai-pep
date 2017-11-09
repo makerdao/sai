@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-pep -- get the gov price feed
+set -e
+pep=$(seth call "${SAI_TUB?}" 'pep()')
+echo "0x$(seth --abi-decode 'f()(address)' "$pep")"

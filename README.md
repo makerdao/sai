@@ -91,6 +91,7 @@ Read commands:
    par             get the accrued holder fee (ref per sai)
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
+   pep             get the gov price feed
    pip             get the gem price feed
    pit             get the liquidator vault
    rap             get the amount of governance debt in a cup
