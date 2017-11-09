@@ -157,14 +157,14 @@ $ export SAI_TUB=0x(...)
 
 # Give the system access to our GEM (W-ETH), SKR and SAI balances
 # so we can join()/exit() and also draw()/wipe() sai
-$ token approve $(sai gem) $(sai jar) $(seth --to-wei 1000000000 ETH)
-$ token approve $(sai skr) $(sai jar) $(seth --to-wei 1000000000 ETH)
-$ token approve $(sai sai) $(sai pot) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai gem) $(sai tub) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai skr) $(sai tub) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai sai) $(sai tub) $(seth --to-wei 1000000000 ETH)
 
 # If we also plan on using boom() and bust(), a different component
-# (called `pit`) will need to have access to our SKR and SAI balances 
-$ token approve $(sai skr) $(sai pit) $(seth --to-wei 1000000000 ETH)
-$ token approve $(sai sai) $(sai pit) $(seth --to-wei 1000000000 ETH)
+# (called `tap`) will need to have access to our SKR and SAI balances
+$ token approve $(sai skr) $(sai tap) $(seth --to-wei 1000000000 ETH)
+$ token approve $(sai sai) $(sai tap) $(seth --to-wei 1000000000 ETH)
 
 # We need to have some GEM (W-ETH) balance to start with
 $ token balance $(sai gem) $ETH_FROM
@@ -172,7 +172,7 @@ $ token balance $(sai gem) $ETH_FROM
 
 # Join the system by exchanging some GEM (W-ETH) to SKR
 $ sai join 2.2
-Sending 2.200000000000000000 GEM to TUB...
+Generating 2.200000000000000000 SKR depositing GEM...
 $ token balance $(sai gem) $ETH_FROM
 0.267935274974511817
 $ token balance $(sai skr) $ETH_FROM
@@ -199,11 +199,12 @@ $ token balance $(sai sai) $ETH_FROM
 89.000000000000000000
 
 # We can examine the cup details, `tab` and `ink` representing
-# the amount of debt and the amount of collateral respectively
+# the amount of debts and the amount of collateral respectively
 $ sai --cup 62 cup														
 cup id 62...
 lad: 0x(...)
 tab: 89.000000000000000000
+rap: 0.000000000000000000
 ink: 1.500000000000000000
 
 # We can check whether the cup is still safe
@@ -227,6 +228,7 @@ $ sai --cup 62 cup
 cup id 62...
 lad: 0x(...)
 tab: 30.000000000000000000
+rap: 0.000000000000000000
 ink: 0.400000000000000000
 
 # We can also `wipe` and `free` outstanding balances of SAI and SKR by calling `shut`
@@ -237,6 +239,7 @@ $ sai --cup 62 cup
 cup id 62...
 lad: 0x0000000000000000000000000000000000000000
 tab: 0.000000000000000000
+rap: 0.000000000000000000
 ink: 0.000000000000000000
 
 # Exit the system by exchanging SKR back to GEM (W-ETH)
