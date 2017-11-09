@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setTapGap -- update the spread on `boom` and `bust`
+### Usage: sai tapGap <new-gap>
+set -e
+[ $# = 1 ] || sai tap calk --usage
+wad=$(sai wad -h "$1")
+echo >&2 "Setting gap to $wad..."
+wad=$(sai wad "$1")
+(set -x; seth send "${SAI_MOM?}" "setTapGap(uint256)" "$wad")

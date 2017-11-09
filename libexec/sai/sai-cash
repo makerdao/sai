@@ -3,4 +3,4 @@
 set -e
 sai=$(token balance "$(sai sai)" "${ETH_FROM?}")
 echo >&2 "Cashing in $sai SAI..."
-(set -x; seth send "${SAI_TOP?}" "cash()")
+(set -x; seth send "${SAI_TAP?}" "cash()")

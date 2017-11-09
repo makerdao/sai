@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 ### sai-pip -- get the gem price feed
 set -e
-jar=$(seth call "${SAI_TUB?}" 'jar()')
-jar_address="0x$(seth --abi-decode 'f()(address)' "$jar")"
-pip=$(seth call "$jar_address" "pip()")
+pip=$(seth call "${SAI_TUB?}" 'pip()')
 echo "0x$(seth --abi-decode 'f()(address)' "$pip")"

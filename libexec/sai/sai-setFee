@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setFee -- update the stability fee
+### Usage: sai setFee <new-fee>
+set -e
+[ $# = 1 ] || sai setFee --usage
+ray=$(sai ray -h "$1")
+echo >&2 "Setting fee to $ray..."
+ray=$(sai ray "$1")
+(set -x; seth send "${SAI_MOM?}" "setFee(uint256)" "$ray")

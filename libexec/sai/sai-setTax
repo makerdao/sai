@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setTax -- update the stability fee
+### Usage: sai setTax <new-tax>
+set -e
+[ $# = 1 ] || sai setTax --usage
+ray=$(sai ray -h "$1")
+echo >&2 "Setting tax to $ray..."
+ray=$(sai ray "$1")
+(set -x; seth send "${SAI_MOM?}" "setTax(uint256)" "$ray")

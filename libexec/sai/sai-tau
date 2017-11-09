@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 ### sai-tau -- get the time of last prod
 set -e
-tip=$(seth call "${SAI_TUB?}" 'tip()')
-tip_address="0x$(seth --abi-decode 'f()(address)' "$tip")"
-time=$(seth call "$tip_address" "tau()")
+vox=$(seth call "${SAI_TUB?}" 'vox()')
+vox_address="0x$(seth --abi-decode 'f()(address)' "$vox")"
+time=$(seth call "$vox_address" "tau()")
 time_unix=$(seth --to-dec "$time")
 echo "$time_unix"

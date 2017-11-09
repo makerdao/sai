@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### sai-setTubGap -- update the spread on `join` and `exit`
+### Usage: sai setTubGap <new-gap>
+set -e
+[ $# = 1 ] || sai setTubGap --usage
+wad=$(sai wad -h "$1")
+echo >&2 "Setting tubGap to $wad..."
+wad=$(sai wad "$1")
+(set -x; seth send "${SAI_MOM?}" "setTubGap(uint256)" "$wad")

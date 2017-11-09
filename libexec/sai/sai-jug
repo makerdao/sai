@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-jug -- get the sai / sin tracker
-set -e
-jug=$(seth call "${SAI_TUB?}" 'jug()')
-echo "0x$(seth --abi-decode 'f()(address)' "$jug")"

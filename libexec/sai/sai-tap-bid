@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-tap-bid -- get the price of skr in sai for boom
-set -e
-wad=$(seth call "${SAI_TAP?}" "bid()")
-sai wad -h "$wad"

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-### sai-jar -- get the collateral vault
-set -e
-[ $# -gt 0 ] && exec "${0##*/}-$1" "${@:2}"
-jar=$(seth call "${SAI_TUB?}" 'jar()')
-echo "0x$(seth --abi-decode 'f()(address)' "$jar")"
