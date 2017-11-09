@@ -2,21 +2,19 @@
 set -ex
 trap 'echo "VALIDATION FAILED"' ERR
 
-export SAI_TUB=0xe819300b6f3d0625632b47196233fe6671a59891
-export SAI_TAP=0x897c798c096d44e511a275153da9de6139ebc249
-export SAI_TOP=0x92bfd0e786e284429c96cf6a6e4a3ecf46fb3e9a
 export SAI_MULTISIG=0x2305576962e33102b01d8f3dfda2fa640137b15e
 
 # feed oracle
-test $(sai pip)     = 0x729d19f657bd0614b4985cf1d82531c67569197b
+test $(sai pip)     = 
+test $(sai pep)     = 
 
 # risk parameters
 test $(sai hat)     = $(sai wad -h 100000000.0)
 test $(sai mat)     = $(sai ray -h 1.50)
 test $(sai axe)     = $(sai ray -h 1.20)
 test $(sai tax)     = $(sai ray -h 1.0)
-test $(sai tap gap) = $(sai wad -h 0.95)
-test $(sai jar gap) = $(sai wad -h 1.0)
+test $(sai tapGap)  = $(sai wad -h 0.95)
+test $(sai tubGap)  = $(sai wad -h 1.0)
 test $(sai way)     = $(sai ray -h 1.0)
 
 # multisig members
@@ -29,15 +27,68 @@ test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "dB33dFD3D61308C33C6320
 test $(seth call $SAI_MULTISIG 'isMember(address)(bool)' "61Bf84D5aB026F58c873F86Ff0DFcA82b55733Ae") = true
 
 # multisig permissions
-export SAI_MOM=$(seth call ${SAI_TOP} 'authority()(address)')
-test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TAP $(seth calldata 'calk(uint256)')) = true
-test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TOP $(seth calldata 'cage(uint256)')) = true
-test $(seth call $SAI_MOM 'canCall(address,address,bytes4)(bool)' $SAI_MULTISIG $SAI_TOP $(seth calldata 'cage()')) = true
+test $SAI_MULTISIG = $SAI_CAGE_AUTH
 
 # reference timestamp
 export SAI_VOX="$(seth call $SAI_TUB 'vox()(address)')"
 era=$((16#$(seth call $SAI_VOX 'era()(uint64)')))
 timestamp=$(seth block latest timestamp)
 test $era = $timestamp
+
+# ownership dropped
+objects="$SAI_VOX
+$SAI_TUB
+$SAI_TAP
+$SAI_TOP
+$SAI_SAI
+$SAI_SIN
+$SAI_SKR
+$SAI_DAD
+$SAI_MOM
+"
+for object in $objects; do
+    test "0x$(seth call $object 'owner()(address)')" = "0x0000000000000000000000000000000000000000"
+done
+
+# 'tap' has access to 'tub'
+test "0x$(seth call $SAI_TAP 'tub()(address)')" = $SAI_TUB
+
+# validate permissions
+test "0x$(seth call $SAI_VOX "authority()(address)")" = $SAI_DAD
+test "0x$(seth call $SAI_TUB "authority()(address)")" = $SAI_DAD
+test "0x$(seth call $SAI_TAP "authority()(address)")" = $SAI_DAD
+test "0x$(seth call $SAI_TOP "authority()(address)")" = $SAI_DAD
+
+test "0x$(seth call $SAI_SAI "authority()(address)")" = $SAI_DAD
+test "0x$(seth call $SAI_SIN "authority()(address)")" = $SAI_DAD
+test "0x$(seth call $SAI_SKR "authority()(address)")" = $SAI_DAD
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TOP $SAI_TUB $(seth calldata 'cage(uint256,uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TOP $SAI_TUB $(seth calldata 'flow()')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TOP $SAI_TAP $(seth calldata 'cage(uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SKR $(seth calldata 'mint(address,uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SKR $(seth calldata 'burn(address,uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SAI $(seth calldata 'mint(address,uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SAI $(seth calldata 'burn(address,uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SIN $(seth calldata 'mint(uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SIN $(seth calldata 'burn(uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TAP $SAI_SAI $(seth calldata 'burn(uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TAP $SAI_SIN $(seth calldata 'burn(uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TAP $SAI_SKR $(seth calldata 'mint(uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TAP $SAI_SKR $(seth calldata 'burn(uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TAP $SAI_SKR $(seth calldata 'burn(address,uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_MOM $SAI_VOX $(seth calldata 'mold(bytes32,uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_MOM $SAI_TUB $(seth calldata 'mold(bytes32,uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_MOM $SAI_TAP $(seth calldata 'mold(bytes32,uint256)')) = true
+
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_CAGE_AUTH $SAI_TOP $(seth calldata 'cage(uint256)')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_CAGE_AUTH $SAI_TOP $(seth calldata 'cage()')) = true
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_CAGE_AUTH $SAI_TOP $(seth calldata 'setCooldown(uint256)')) = true
 
 echo "VALIDATION OK"
