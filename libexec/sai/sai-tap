@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-set -e
-[ $# = 0 ] && exec sai --help
-exec "${0##*/}-$1" "${@:2}"

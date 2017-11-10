@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-s2s -- get the skr per sai rate (for boom and bust)
 set -e
-wad=$(seth call "${SAI_TAP?}" "s2s()")
-sai wad -h "$wad"
+ray=$(seth call "${SAI_TAP?}" "s2s()")
+sai ray -h "$ray"
