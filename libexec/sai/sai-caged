@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### sai-caged -- get time of cage event (= 0 if system is not caged)
+set -e
+echo "$(seth --to-dec $(seth call "${SAI_TOP?}" 'caged()'))"

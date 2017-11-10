@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 ### sai-fit -- get the gem per skr settlement price
 set -e
-wad=$(seth call "${SAI_TUB?}" "fit()")
-sai wad -h "$wad"
+ray=$(seth call "${SAI_TUB?}" "fit()")
+sai ray -h "$ray"

@@ -73,6 +73,7 @@ Read commands:
 
    air             get the amount of backing collateral
    axe             get the liquidation penalty
+   caged           get time of cage event (= 0 if system is not caged)
    chi             get the internal debt price
    cup             show the cup info
    fee             get the governance fee
@@ -88,6 +89,7 @@ Read commands:
    lad             get the owner of a cup
    mat             get the liquidation ratio
    off             get the cage flag
+   out             get the post cage exit flag
    par             get the accrued holder fee (ref per sai)
    per             get the current entry price (gem per skr)
    pie             get the amount of raw collateral
@@ -131,6 +133,7 @@ Commands:
    exit            sell SKR for gems
    free            remove excess SKR collateral from a cup
    give            transfer ownership of a cup
+   heal            cancel debt
    help            print help about sai(1) or one of its subcommands
    join            buy SKR for gems
    lock            post additional SKR collateral to a cup
@@ -204,9 +207,9 @@ $ token balance $(sai sai) $ETH_FROM
 $ sai --cup 62 cup														
 cup id 62...
 lad: 0x(...)
+ink: 1.500000000000000000
 tab: 89.000000000000000000
 rap: 0.000000000000000000
-ink: 1.500000000000000000
 
 # We can check whether the cup is still safe
 # (ie. whether the value of collateral locked is high enough)
@@ -228,9 +231,9 @@ $ token balance $(sai sai) $ETH_FROM
 $ sai --cup 62 cup
 cup id 62...
 lad: 0x(...)
+ink: 0.400000000000000000
 tab: 30.000000000000000000
 rap: 0.000000000000000000
-ink: 0.400000000000000000
 
 # We can also `wipe` and `free` outstanding balances of SAI and SKR by calling `shut`
 $ sai --cup 62 shut
@@ -239,9 +242,9 @@ Closing cup 62...
 $ sai --cup 62 cup
 cup id 62...
 lad: 0x0000000000000000000000000000000000000000
+ink: 0.000000000000000000
 tab: 0.000000000000000000
 rap: 0.000000000000000000
-ink: 0.000000000000000000
 
 # Exit the system by exchanging SKR back to GEM (W-ETH)
 $ sai exit 2.2

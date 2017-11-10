@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### sai-heal -- cancel debt
+set -e
+(set -x; seth send "${SAI_TAP?}" "heal()")

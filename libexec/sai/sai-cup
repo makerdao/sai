@@ -5,6 +5,6 @@ set -e
 [ ! -z "$SAI_CUP" ] || sai cup --usage
 echo >&2 "cup id $((${SAI_CUP?}))..."
 echo "lad: $(sai lad)"
+echo "ink: $(sai ink)"
 echo "tab: $(sai tab)"
 echo "rap: $(sai rap)"
-echo "ink: $(sai ink)"

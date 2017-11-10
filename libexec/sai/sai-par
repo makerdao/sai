@@ -3,5 +3,5 @@
 set -e
 vox=$(seth call "${SAI_TUB?}" 'vox()')
 vox_address="0x$(seth --abi-decode 'f()(address)' "$vox")"
-wad=$(seth call "$vox_address" "par()")
-sai wad -h "$wad"
+ray=$(seth call "$vox_address" "par()")
+sai ray -h "$ray"
