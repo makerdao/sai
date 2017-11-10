@@ -41,8 +41,6 @@ SAI_MOM=$(dapp create SaiMom $SAI_TUB $SAI_TAP $SAI_VOX)
 
 SAI_DAD=$(seth receipt $DADtx contractAddress)
 
-seth send $SAI_TUB "mold(bytes32,uint256)" $(seth --to-bytes32 $(seth --from-ascii 'hat')) $(seth --to-uint256 $(seth --to-wei 100000000 ETH))
-
 export SETH_ASYNC=yes
 
 seth send $SAI_VOX "setAuthority(address)" $SAI_DAD
