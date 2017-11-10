@@ -203,7 +203,7 @@ $ token balance $(sai sai) $ETH_FROM
 89.000000000000000000
 
 # We can examine the cup details, `tab` and `ink` representing
-# the amount of debts and the amount of collateral respectively
+# the amount of debt and the amount of collateral respectively
 $ sai --cup 62 cup														
 cup id 62...
 lad: 0x(...)
