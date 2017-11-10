@@ -21,9 +21,6 @@ contract SaiMom is DSThing {
         tap = tap_;
         vox = vox_;
     }
-    function mold(bytes32 param, uint val) public note auth {
-        tub.mold(param, val);
-    }
     // Debt ceiling
     function setHat(uint wad) public note auth {
         tub.mold("hat", wad);
