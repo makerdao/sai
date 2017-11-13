@@ -16,6 +16,7 @@ contract DaiVox is DSThing {
     uint256  public  tau;
 
     function DaiVox(uint256 par) public {
+        require(par != 0);
         _par = fix = par;
         _way = how = RAY;
         tau  = era();

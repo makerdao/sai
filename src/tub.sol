@@ -304,7 +304,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     //------------------------------------------------------------------
 
     function cage(uint fit_, uint jam) public note auth {
-        require(!off);
+        require(!off && fit_ != 0);
         off = true;
         fit = fit_;         // ref per skr
         gem.transfer(tap, jam);

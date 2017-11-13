@@ -45,7 +45,7 @@ contract SaiTop is DSThing {
     // Important consideration: the gems associated with free skr can
     // be tapped to make sai whole.
     function cage(uint price) public note auth {
-        require(!tub.off());
+        require(!tub.off() && price != 0);
         caged = era();
 
         tub.drip();  // collect remaining fees
