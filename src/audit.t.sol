@@ -78,7 +78,7 @@ contract Audit is SaiTestBase {
     // This test is confusing, draw doesn't fail due a division by zero, it fails because of these two rules:
     // - require(!off);
     // - require(safe(cup));
-    // function testCageDiv0()) public {
+    // function testTOBSaiCageDiv0()) public {
     //     mom.setMat(ray(1 ether));
     //     tub.join(10 ether);
     //     var cup = tub.open();
@@ -93,7 +93,7 @@ contract Audit is SaiTestBase {
     //     tub.draw(cup, 1 ether);
     // }
     
-    function testCageDiv0() public {
+    function testTOBSaiCageDiv0() public {
         mom.setMat(ray(1 ether));
         tub.join(10 ether);
         var cup = tub.open();
