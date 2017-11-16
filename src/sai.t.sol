@@ -164,6 +164,7 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(this, skr, bytes4(keccak256('burn(uint256)')));
         dad.permit(this, skr, bytes4(keccak256('mint(address,uint256)')));
         dad.permit(this, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(this, tub, bytes4(keccak256("cage(uint256,uint256)")));
 
         dad.setOwner(0);
     }
