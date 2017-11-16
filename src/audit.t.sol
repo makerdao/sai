@@ -102,6 +102,21 @@ contract Audit is SaiTestBase {
         top.cage(0);
     }
 
+    function testTOBSaiCageDiv0Bite() public {
+        mom.setMat(ray(1 ether));
+        tub.join(10 ether);
+        var cup = tub.open();
+        tub.lock(cup, 10 ether);
+
+        // set fit to 0
+        tub.cage(0, 0 ether);
+
+        assertEq(tub.fit(), 0);
+
+        // trigger the division by zero
+        tub.bite(cup);
+    }
+
     function testTOBSai010() public {
         gem.mint(1000 ether);
         sai.mint(100 ether);
