@@ -2237,6 +2237,19 @@ contract FeeTest is SaiTestBase {
         warp(1 days);
         assertEq(tub.rap(cup),  5.125 ether);
     }
+    function testFeeWipeShut() public {
+        var cup = feeSetup();
+        warp(1 days);
+        tub.shut(cup);
+    }
+    function testFeeWipeShutEmpty() public {
+        feeSetup();
+        var cup = tub.open();
+        tub.join(100 ether);
+        tub.lock(cup, 100 ether);
+        warp(1 days);
+        tub.shut(cup);
+    }
 }
 
 contract FeeTaxTest is SaiTestBase {
