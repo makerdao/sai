@@ -115,7 +115,13 @@ contract SaiTap is DSThing {
     }
     function vent() public note {
         require(off);
+
+        // TODO: maybe this is vulnerable to rounding mismatch. Just
+        // accumulate the sai instead, or burn on cash.  Then all the
+        // sin from post-cage liquidation will just remain in the tap
+        // forever.
         heal();
+
         skr.burn(fog());
     }
 }

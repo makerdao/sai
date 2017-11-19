@@ -132,6 +132,7 @@ contract SaiTestBase is DSTest, DSMath {
         dad.permit(tub, sai, bytes4(keccak256('mint(address,uint256)')));
         dad.permit(tub, sai, bytes4(keccak256('burn(address,uint256)')));
 
+        dad.permit(tub, sin, bytes4(keccak256('mint(address,uint256)')));
         dad.permit(tub, sin, bytes4(keccak256('mint(uint256)')));
         dad.permit(tub, sin, bytes4(keccak256('burn(uint256)')));
 
@@ -321,10 +322,8 @@ contract SaiTubTest is SaiTestBase {
         tub.lock(cup, 10 ether);
 
         assertEq(sai.balanceOf(this),  0 ether);
-        assertEq(sin.balanceOf(tub),   0 ether);
         tub.draw(cup, 10 ether);
         assertEq(sai.balanceOf(this), 10 ether);
-        assertEq(sin.balanceOf(tub),  10 ether);
     }
     function testWipe() public {
         mom.setMat(ray(1 ether));
@@ -334,10 +333,8 @@ contract SaiTubTest is SaiTestBase {
         tub.draw(cup, 10 ether);
 
         assertEq(sai.balanceOf(this), 10 ether);
-        assertEq(sin.balanceOf(tub),  10 ether);
         tub.wipe(cup, 5 ether);
         assertEq(sai.balanceOf(this),  5 ether);
-        assertEq(sin.balanceOf(tub),   5 ether);
     }
     function testUnsafe() public {
         tub.join(10 ether);
@@ -372,12 +369,12 @@ contract SaiTubTest is SaiTestBase {
         mark(1 ether / 2);       // 125% collateralisation
         assertTrue(!tub.safe(cup));
 
-        assertEq(tub.ice(),    4 ether);
+        assertEq(tub.din(),    4 ether);
         assertEq(tub.tab(cup), 4 ether);
         assertEq(tap.fog(),    0 ether);
         assertEq(tap.woe(),    0 ether);
         tub.bite(cup);
-        assertEq(tub.ice(),    0 ether);
+        assertEq(tub.din(),    0 ether);
         assertEq(tub.tab(cup), 0 ether);
         assertEq(tap.fog(),    8 ether);
         assertEq(tap.woe(),    4 ether);
@@ -470,8 +467,7 @@ contract CageTest is SaiTestBase {
         mark(1 ether);
         top.cage();
 
-        var woe = sin.balanceOf(tub);
-        assertEq(woe, 5 ether);             // all good debt now bad debt
+        assertEq(tub.din(),      5 ether);  // debt remains in tub
         assertEq(wad(top.fix()), 1 ether);  // sai redeems 1:1 with gem
         assertEq(wad(tub.fit()), 1 ether);  // skr redeems 1:1 with gem just before pushing gem to tub
 
@@ -1130,12 +1126,12 @@ contract CageTest is SaiTestBase {
         // the remaining gem can be claimed only if the cup skr is burned
         assertEq(tub.air(), 5 ether);
         assertEq(tap.fog(), 0 ether);
-        assertEq(tub.ice(), 5 ether);
+        assertEq(tub.din(), 5 ether);
         assertEq(tap.woe(), 0 ether);
         tub.bite(cup);
         assertEq(tub.air(), 0 ether);
         assertEq(tap.fog(), 5 ether);
-        assertEq(tub.ice(), 0 ether);
+        assertEq(tub.din(), 0 ether);
         assertEq(tap.woe(), 5 ether);
 
         tap.vent();
@@ -1622,11 +1618,11 @@ contract TaxTest is SaiTestBase {
     function testTaxJoy() public {
         var cup = taxSetup();
         assertEq(tub.tab(cup), 100 ether);
-        assertEq(tub.ice(),    100 ether);
+        assertEq(tub.din(),    100 ether);
         assertEq(tap.joy(),      0 ether);
         warp(1 days);
         assertEq(tub.tab(cup), 105 ether);
-        assertEq(tub.ice(),    105 ether);
+        assertEq(tub.din(),    105 ether);
         assertEq(tap.joy(),      5 ether);
     }
     function testTaxDraw() public {
@@ -1690,11 +1686,11 @@ contract TaxTest is SaiTestBase {
         mom.setAxe(ray(1.4 ether));
         mom.setTax(ray(1.000000001547126 ether));
         // log_named_uint('tab', tub.tab(cup));
-        // log_named_uint('sin', sin.balanceOf(tub));
+        // log_named_uint('sin', tub.din());
         for (uint i=0; i<=50; i++) {
             warp(10);
             // log_named_uint('tab', tub.tab(cup));
-            // log_named_uint('sin', sin.balanceOf(tub));
+            // log_named_uint('sin', tub.din());
         }
         uint256 debtAfterWarp = rmul(100 ether, rpow(tub.tax(), 510));
         assertEq(tub.tab(cup), debtAfterWarp);
@@ -1745,10 +1741,10 @@ contract TaxTest is SaiTestBase {
 
         var owe = tub.tab(cup);
         assertEq(owe, 105 ether);
-        assertEq(tub.ice(), owe);
+        assertEq(tub.din(), owe);
         assertEq(tap.woe(), 0);
         tub.bite(cup);
-        assertEq(tub.ice(), 0);
+        assertEq(tub.din(), 0);
         assertEq(tap.woe(), owe);
 
         assertEq(tap.joy(), 5 ether);
@@ -2141,11 +2137,11 @@ contract FeeTest is SaiTestBase {
     // Unpaid fees do not accumulate as sin
     function testFeeIce() public {
         var cup = feeSetup();
-        assertEq(tub.ice(),    100 ether);
+        assertEq(tub.din(),    100 ether);
         assertEq(tub.tab(cup), 100 ether);
         assertEq(tub.rap(cup),   0 ether);
         warp(1 days);
-        assertEq(tub.ice(),    100 ether);
+        assertEq(tub.din(),    100 ether);
         assertEq(tub.tab(cup), 100 ether);
         assertEq(tub.rap(cup),   5 ether);
     }
@@ -2283,7 +2279,7 @@ contract FeeTaxTest is SaiTestBase {
         assertEq(tub.tab(cup), 100 ether);
         assertEq(tub.rap(cup),   0 ether);
 
-        assertEq(tub.ice(),    100 ether);
+        assertEq(tub.din(),    100 ether);
         assertEq(tap.joy(),      0 ether);
 
         warp(1 days);
@@ -2291,7 +2287,7 @@ contract FeeTaxTest is SaiTestBase {
         assertEq(tub.tab(cup), 105 ether);
         assertEq(tub.rap(cup),   5.25 ether);
 
-        assertEq(tub.ice(),    105 ether);
+        assertEq(tub.din(),    105 ether);
         assertEq(tap.joy(),      5 ether);
     }
     function testFeeTaxDraw() public {

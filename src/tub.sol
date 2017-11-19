@@ -47,6 +47,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     uint256  public  rho;  // Time of last drip
     uint256         _chi;  // Accumulated Tax Rates
     uint256         _rhi;  // Accumulated Tax + Fee Rates
+    uint256  public  rum;  // Total normalised debt
 
     uint256                   public  cupi;
     mapping (bytes32 => Cup)  public  cups;
@@ -71,9 +72,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         return sub(rmul(cups[cup].irk, rhi()), tab(cup));
     }
 
-    // Good debt
-    function ice() public view returns (uint) {
-        return sin.balanceOf(this);
+    // Total CDP Debt
+    function din() public returns (uint) {
+        return rmul(rum, chi());
     }
     // Backing collateral
     function air() public view returns (uint) {
@@ -188,14 +189,16 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         if (tax != RAY) {  // optimised
             inc = rpow(tax, age);
+            var din_ = din();
             _chi = rmul(_chi, inc);
-            lend(tap, sub(rmul(ice(), inc), ice()));
+            sai.mint(tap, sub(din(), din_));
         }
 
         // optimised
         if (fee != RAY) inc = rmul(inc, rpow(fee, age));
         if (inc != RAY) _rhi = rmul(_rhi, inc);
     }
+
 
     //--CDP-risk-indicator----------------------------------------------
 
@@ -211,16 +214,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         return pro >= min;
     }
 
-    //--Anti-corruption-aliases-----------------------------------------
-
-    function lend(address dst, uint wad) internal {
-        sin.mint(wad);
-        sai.mint(dst, wad);
-    }
-    function mend(address src, uint wad) internal {
-        sai.burn(src, wad);
-        sin.burn(wad);
-    }
 
     //--CDP-operations--------------------------------------------------
 
@@ -254,11 +247,12 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(msg.sender == cups[cup].lad);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
+        rum = add(rum, rdiv(wad, chi()));
         cups[cup].irk = add(cups[cup].irk, rdiv(wad, rhi()));
-        lend(cups[cup].lad, wad);
+        sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
-        require(sin.totalSupply() <= hat);
+        require(sai.totalSupply() <= hat);
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
@@ -267,8 +261,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
+        rum = sub(rum, rdiv(wad, chi()));
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
-        mend(msg.sender, wad);
+        sai.burn(msg.sender, wad);
 
         var (val, ok) = pep.peek();
         if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
@@ -286,7 +281,8 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         // Take on all of the debt, except unpaid fees
         var rue = tab(cup);
-        sin.push(tap, rue);
+        sin.mint(tap, rue);
+        rum = sub(rum, cups[cup].art);
         cups[cup].art = 0;
         cups[cup].irk = 0;
 

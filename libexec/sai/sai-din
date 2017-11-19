@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-din -- get the debt backed by CDPs
+set -e
+wad=$(seth call "${SAI_TUB?}" "din()")
+sai wad -h "$wad"

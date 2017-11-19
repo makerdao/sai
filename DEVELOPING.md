@@ -248,12 +248,13 @@ Some important features of `cage`:
 The `top` also serves as a useful frontend entrypoint to the system, as it
 links to all other components.
 
-### `drip`, `art` and `chi`: Dynamic Fee Accumulation
+### `drip`, `rum`, `art` and `chi`: Dynamic Fee Accumulation
 
 In a simpler system with no interest rates, we could denominate CDP debt,
 the `tab`, directly in `sin`. However with non zero interest, `tab` is a
-dynamic quantity, computed from `art`, a per CDP debt unit, and `chi`,
-the price of this debt unit in `sin`.
+dynamic quantity, computed from `art`, a rate-normalised per-CDP debt unit,
+and `chi`, the product of accumulated rates that converts `art` into a real
+debt amount.
 
 ```
 tab(cdp) = cdp.art * chi

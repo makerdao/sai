@@ -54,13 +54,13 @@ contract SaiTop is DSThing {
         fit = rmul(wmul(price, tub.vox().par()), tub.per());
         // Most gems we can get per sai is the full balance of the tub.
         // If there is no sai issued, we should still be able to cage.
-        if (sin.totalSupply() == 0) {
+        if (sai.totalSupply() == 0) {
             fix = rdiv(WAD, price);
         } else {
-            fix = min(rdiv(WAD, price), rdiv(tub.pie(), sin.totalSupply()));
+            fix = min(rdiv(WAD, price), rdiv(tub.pie(), sai.totalSupply()));
         }
 
-        tub.cage(fit, rmul(fix, sin.totalSupply()));
+        tub.cage(fit, rmul(fix, sai.totalSupply()));
         tap.cage(fix);
 
         tap.vent();    // burn pending sale skr
@@ -72,7 +72,7 @@ contract SaiTop is DSThing {
 
     function flow() public note {
         require(tub.off());
-        var empty = tub.ice() == 0 && tap.fog() == 0;
+        var empty = tub.din() == 0 && tap.fog() == 0;
         var ended = era() > caged + cooldown;
         require(empty || ended);
         tub.flow();
