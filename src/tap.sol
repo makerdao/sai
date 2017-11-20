@@ -108,9 +108,8 @@ contract SaiTap is DSThing {
         off = true;
         fix = fix_;
     }
-    function cash() public note {
+    function cash(uint wad) public note {
         require(off);
-        var wad = sai.balanceOf(msg.sender);
         sai.pull(msg.sender, wad);
         tub.gem().transfer(msg.sender, rmul(wad, fix));
     }

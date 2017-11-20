@@ -59,7 +59,7 @@ contract FakePerson {
     }
 
     function cash() public {
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
     }
 }
 
@@ -570,7 +570,7 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(tub),   5 ether);
         assertEq(gem.balanceOf(tap),   5 ether);
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
         assertEq(gem.balanceOf(this),  95 ether);
@@ -606,7 +606,7 @@ contract CageTest is SaiTestBase {
         tap.vent();
         top.flow();
         assertEq(skr.balanceOf(this), 25 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         tub.exit(uint256(skr.balanceOf(this)));
         assertEq(gem.balanceOf(this), 100 ether);
         assertEq(sai.balanceOf(this),   0 ether);
@@ -625,7 +625,7 @@ contract CageTest is SaiTestBase {
         mark(1 ether);
         top.cage();
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         tub.exit(uint256(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this), 0 ether);
         uint256 gemBySAI = 5 ether; // Adding 5 gem from 5 sai
@@ -662,7 +662,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),  20 ether);
 
@@ -706,7 +706,7 @@ contract CageTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -740,7 +740,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this),  20 ether);
         assertEq(gem.balanceOf(this),  70 ether);
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
 
         tub.bite(cup);
@@ -764,7 +764,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 20 ether);
         assertEq(gem.balanceOf(this), 70 ether);
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
         tub.exit(uint256(skr.balanceOf(this)));
         assertEq(skr.balanceOf(this),   0 ether);
@@ -799,7 +799,7 @@ contract CageTest is SaiTestBase {
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(skr.balanceOf(this),  0 ether);
         assertEq(gem.balanceOf(this), 90 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(skr.balanceOf(this),   0 ether);
 
@@ -831,7 +831,7 @@ contract CageTest is SaiTestBase {
 
         assertEq(sai.balanceOf(this),  5 ether);
         assertEq(gem.balanceOf(this), 70 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),  0 ether);
         // returns 20 gems, taken from the free skr,
         // sai is made whole
@@ -894,7 +894,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 95 ether); // free skr
         assertEq(skr.balanceOf(tub), 0); // locked skr
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
 
         assertEq(sai.balanceOf(this), 0);
         assertEq(gem.balanceOf(this), 5 ether);
@@ -947,7 +947,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 90 ether); // free skr
         assertEq(skr.balanceOf(tub), 0); // locked skr
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
 
         assertEq(sai.balanceOf(this), 0);
         assertEq(gem.balanceOf(this), 10 ether);
@@ -1000,7 +1000,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 90 ether); // free skr
         assertEq(skr.balanceOf(tub), 0); // locked skr
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
 
         assertEq(sai.balanceOf(this), 0);
         assertEq(gem.balanceOf(this), 20 ether);
@@ -1053,7 +1053,7 @@ contract CageTest is SaiTestBase {
         assertEq(skr.balanceOf(this), 90 ether); // free skr
         assertEq(skr.balanceOf(tub), 0); // locked skr
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
 
         assertEq(sai.balanceOf(this), 0);
         assertEq(gem.balanceOf(this), 100 ether);
@@ -1087,7 +1087,7 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(tap), rmul(5 ether, top.fix())); // Needed to payout 5 sai
         assertEq(gem.balanceOf(tub), sub(10 ether, rmul(5 ether, top.fix())));
 
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
 
         assertEq(sai.balanceOf(this),     0 ether);
         assertEq(sai.balanceOf(person), 2.5 ether);
@@ -1123,7 +1123,7 @@ contract CageTest is SaiTestBase {
 
         // now we can cash in our sai
         assertEq(sai.balanceOf(this), 5 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this), 0 ether);
         assertEq(gem.balanceOf(this), 97 ether);
 
@@ -1721,7 +1721,7 @@ contract TaxTest is SaiTestBase {
 
         assertEq(sai.balanceOf(this),  100 ether);
         assertEq(gem.balanceOf(this), 1000 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(sai.balanceOf(this),    0 ether);
         assertEq(gem.balanceOf(this), 1010 ether);
     }
@@ -1826,7 +1826,7 @@ contract WayTest is SaiTestBase {
         assertEq(gem.balanceOf(this), 1000 ether);
         assertEq(sai.balanceOf(this),  100 ether);
         assertEq(sai.balanceOf(tap),     0 ether);
-        tap.cash();
+        tap.cash(sai.balanceOf(this));
         assertEq(gem.balanceOf(this), 1020 ether);
         assertEq(sai.balanceOf(this),   0 ether);
         assertEq(sai.balanceOf(tap),  100 ether);
