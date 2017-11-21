@@ -32,7 +32,7 @@ Sai uses the following tokens:
 - `gem`: underlying collateral (wrapped ether, in practice)
 - `skr`: abstracted collateral claim
 - `sai`: stablecoin
-- `sin`: anticoin, created and destroyed 1:1 with `sai`
+- `sin`: anticoin, created when the system takes on debt
 
 Sai has the following core components:
 
@@ -140,7 +140,7 @@ to unsafe:
 
 <img src="https://user-images.githubusercontent.com/5028/30519068-6c871ed2-9be1-11e7-83df-3cbda6a49e3b.png" width="600" />
 
-- `bite`: liquidate CDP (zeros `art`, decreases `ink`, transfers `sin` to `pit`)
+- `bite`: liquidate CDP (zeros `art`, decreases `ink`, mints `sin` to `tap`)
 
 Unsafe CDPs need to be liquidated. When a `cup` is not `safe`, anyone
 can perform `bite(cup)`, which takes on all CDP debt and confiscates
@@ -151,8 +151,8 @@ There are other possible implementations of `bite`, e.g. only taking
 sufficient collateral to just transition the CDP to safe, but the
 described implementation is chosen for simplicity.
 
-`bite` transfers the `sin` associated with the CDP to the `pit` - the
-liquidator vault.
+`bite` mints the `sin` associated with the CDP to the `tap` - the
+liquidator.
 
 ---
 
@@ -254,7 +254,8 @@ In a simpler system with no interest rates, we could denominate CDP debt,
 the `tab`, directly in `sin`. However with non zero interest, `tab` is a
 dynamic quantity, computed from `art`, a rate-normalised per-CDP debt unit,
 and `chi`, the product of accumulated rates that converts `art` into a real
-debt amount.
+debt amount. `rum` is the total `art` across all CDPs, and can be used
+to determine the total debt backed by CDPs, `din`.
 
 ```
 tab(cdp) = cdp.art * chi
