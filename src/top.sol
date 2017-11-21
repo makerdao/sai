@@ -52,8 +52,13 @@ contract SaiTop is DSThing {
         tap.heal();  // absorb any pending fees
 
         fit = rmul(wmul(price, tub.vox().par()), tub.per());
-        // most gems we can get per sai is the full balance
-        fix = min(rdiv(WAD, price), rdiv(tub.pie(), sin.totalSupply()));
+        // Most gems we can get per sai is the full balance of the tub.
+        // If there is no sai issued, we should still be able to cage.
+        if (sin.totalSupply() == 0) {
+            fix = rdiv(WAD, price);
+        } else {
+            fix = min(rdiv(WAD, price), rdiv(tub.pie(), sin.totalSupply()));
+        }
 
         tub.cage(fit, rmul(fix, sin.totalSupply()));
         tap.cage(fix);
