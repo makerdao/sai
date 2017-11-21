@@ -271,6 +271,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     function shut(bytes32 cup) public note {
         require(!off);
+        require(msg.sender == cups[cup].lad);
         if (tab(cup) != 0) wipe(cup, tab(cup));
         if (ink(cup) != 0) free(cup, ink(cup));
         delete cups[cup];
