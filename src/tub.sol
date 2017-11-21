@@ -271,7 +271,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         mend(msg.sender, wad);
 
         var (val, ok) = pep.peek();
-        if (ok) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
+        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
     function shut(bytes32 cup) public note {
