@@ -73,6 +73,7 @@ test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_
 test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SAI $(seth calldata 'mint(address,uint256)')) = true
 test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SAI $(seth calldata 'burn(address,uint256)')) = true
 
+test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SIN $(seth calldata 'mint(address,uint256)')) = true
 test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SIN $(seth calldata 'mint(uint256)')) = true
 test $(seth call $SAI_DAD "canCall(address,address,bytes4)(bool)" $SAI_TUB $SAI_SIN $(seth calldata 'burn(uint256)')) = true
 

@@ -62,6 +62,7 @@ seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SKR $(seth --
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
 
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
 seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
 
