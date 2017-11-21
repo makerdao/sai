@@ -129,8 +129,8 @@ to unsafe:
 
 ![Draw | Wipe](https://user-images.githubusercontent.com/5028/30463893-97a6aef4-9a22-11e7-9a65-3055ad05b8d6.png)
 
-- `draw`: create Sai (increases `art`)
-- `wipe`: return Sai (decreases `art`)
+- `draw`: create Sai (increases `art`, `rum`)
+- `wipe`: return Sai (decreases `art`, `rum`)
 
 ---
 
@@ -181,11 +181,12 @@ burned.
 
 <img src="https://user-images.githubusercontent.com/5028/30517887-924bec1c-9bc1-11e7-8c25-6d73a1c48340.png" width="500" />
 
-`bust` is really two functions in one: collateral sell off, and
-inflate and sell. When `fog` is non zero it is sold in return for Sai,
-which is used to cancel out the bad debt, `woe`. If `fog` is zero but
-the `tap` has a net Sin balance, then SKR is minted and sold in return
-for Sai, up to the point that the net Sin balance is zero.
+`bust` is really two functions in one: collateral sell off (aka `flip`),
+and inflate and sell (aka `flop`). When `fog` is non zero it is sold in
+return for Sai, which is used to cancel out the bad debt, `woe`. If
+`fog` is zero but the `tap` has a net Sin balance, then SKR is minted
+and sold in return for Sai, up to the point that the net Sin balance is
+zero.
 
 ![Bust](https://user-images.githubusercontent.com/5028/30517888-9287dd76-9bc1-11e7-8726-6b21843e27a5.png)
 
@@ -268,6 +269,24 @@ The `chi` abstraction allows us to compute the per CDP debt, and the
 total unprocessed revenue, with varying `tax`, in constant time.
 
 <img src="https://user-images.githubusercontent.com/5028/30517890-928d0094-9bc1-11e7-936c-544f5bc4d197.png" width="600" />
+
+## Governance Fee
+
+This version of Sai (aka Dai v1) is collectively governed by the holders of
+a token, `gov`. The specifics of the governance mechanism are
+out of scope for this document. The `gov` token is also used to pay usage
+fees: the `fee` is similar to the `tax`, and causes the `rhi` accumulator to
+increase relative to `chi`. The difference between `rhi` and `chi` can be
+used to determine the total outstanding fee, the `rap`. Fees are paid on
+`wipe`, and the amount payable is scaled with the amount wiped.
+
+Fees are paid in `gov`, but the outstanding fee is denominated in Sai.
+Therefore we need a price feed for `gov`: this is the `pep`. The mechanism
+in `wipe` is meant to be robust against failure of the `pep` feed.
+
+Importantly, unpaid fees _are not_ used to determine a CDPs safety (this may
+change in a future release).
+
 
 ## Auth setup
 
