@@ -105,6 +105,7 @@ contract SaiTap is DSThing {
     //------------------------------------------------------------------
 
     function cage(uint fix_) public note auth {
+        require(!off);
         off = true;
         fix = fix_;
     }
