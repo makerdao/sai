@@ -219,7 +219,8 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     function open() public note returns (bytes32 cup) {
         require(!off);
-        cup = bytes32(++cupi);
+        cupi = add(cupi, 1);
+        cup = bytes32(cupi);
         cups[cup].lad = msg.sender;
         LogNewCup(msg.sender, cup);
     }
