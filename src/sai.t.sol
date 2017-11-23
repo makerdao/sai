@@ -55,7 +55,7 @@ contract FakePerson {
     function FakePerson(SaiTap _tap) public {
         tap = _tap;
         sai = tap.sai();
-        sai.trust(tap, true);
+        sai.approve(tap);
     }
 
     function cash() public {
@@ -197,13 +197,13 @@ contract SaiTestBase is DSTest, DSMath {
 
         configureAuth();
 
-        sai.trust(tub, true);
-        skr.trust(tub, true);
-        gem.trust(tub, true);
-        gov.trust(tub, true);
+        sai.approve(tub);
+        skr.approve(tub);
+        gem.approve(tub);
+        gov.approve(tub);
 
-        sai.trust(tap, true);
-        skr.trust(tap, true);
+        sai.approve(tap);
+        skr.approve(tap);
 
         mark(1 ether);
         mark(gov, 1 ether);

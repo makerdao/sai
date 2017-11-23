@@ -37,7 +37,7 @@ contract TubTest is DSTest, DSThing {
 		tap = new SaiTap();
 		tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap, 0x123);
 
-		//Set whitelist authority 
+		//Set whitelist authority
 		skr.setAuthority(dad);
 
 		//Permit tub to 'mint' and 'burn' SKR
@@ -45,9 +45,11 @@ contract TubTest is DSTest, DSThing {
 		dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
 
 		//Allow tub to mint, burn, and transfer gem/skr without approval
-		gem.trust(tub, true);
-		skr.trust(tub, true);
-		sai.trust(tub, true);gem.mint(6 ether);
+		gem.approve(tub);
+		skr.approve(tub);
+		sai.approve(tub);
+
+		gem.mint(6 ether);
 
 		//Verify initial token balances
 		assertEq(gem.balanceOf(this), 6 ether);
