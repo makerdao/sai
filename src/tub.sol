@@ -157,12 +157,12 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function join(uint wad) public note {
         require(!off);
-        gem.transferFrom(msg.sender, this, ask(wad));
+        require(gem.transferFrom(msg.sender, this, ask(wad)));
         skr.mint(msg.sender, wad);
     }
     function exit(uint wad) public note {
         require(!off || out);
-        gem.transfer(msg.sender, bid(wad));
+        require(gem.transfer(msg.sender, bid(wad)));
         skr.burn(msg.sender, wad);
     }
 
@@ -305,7 +305,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off && fit_ != 0);
         off = true;
         fit = fit_;         // ref per skr
-        gem.transfer(tap, jam);
+        require(gem.transfer(tap, jam));
     }
     function flow() public note auth {
         require(off);
