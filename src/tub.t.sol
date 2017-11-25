@@ -85,10 +85,10 @@ contract TubTest is DSTest, DSThing {
 
     function testGap() public {
         assertEq(tub.gap(), WAD);
-        tub.mold('gap', 2);
-        assertEq(tub.gap(), 2);
-        tub.mold('gap', wmul(WAD,10));
-        assertEq(tub.gap(), wmul(WAD, 10));
+        tub.mold('gap', 2 ether);
+        assertEq(tub.gap(), 2 ether);
+        tub.mold('gap', wmul(WAD, 10 ether));
+        assertEq(tub.gap(), wmul(WAD, 10 ether));
     }
 
     function testAsk() public {

@@ -133,11 +133,11 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     function mold(bytes32 param, uint val) public note auth {
         if      (param == 'hat') hat = val;
-        else if (param == 'mat') mat = val;
+        else if (param == 'mat') { require(val >= RAY); mat = val; }
         else if (param == 'tax') { require(val >= RAY); drip(); tax = val; }
         else if (param == 'fee') { require(val >= RAY); drip(); fee = val; }
-        else if (param == 'axe') axe = val;
-        else if (param == 'gap') gap = val;
+        else if (param == 'axe') { require(val >= RAY); axe = val; }
+        else if (param == 'gap') { require(val >= WAD); gap = val; }
         else return;
     }
 
