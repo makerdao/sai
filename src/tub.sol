@@ -305,6 +305,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off && fit_ != 0);
         off = true;
         axe = RAY;
+        gap = WAD;
         fit = fit_;         // ref per skr
         require(gem.transfer(tap, jam));
     }
