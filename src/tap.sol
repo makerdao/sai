@@ -109,20 +109,23 @@ contract SaiTap is DSThing {
         off = true;
         fix = fix_;
     }
+
     function cash(uint wad) public note {
         require(off);
-        sai.pull(msg.sender, wad);
+        sai.pull(msg.sender, wad); // XXX: do sai.burn here instead
         require(tub.gem().transfer(msg.sender, rmul(wad, fix)));
     }
+
+    // XXX: add tests for mock
+    function mock(uint wad) public note {
+        require(off);
+        sai.mint(msg.sender, wad);
+        require(tub.gem().transferFrom(msg.sender, this, rmul(wad, fix)));
+    }
+
     function vent() public note {
         require(off);
-
-        // TODO: maybe this is vulnerable to rounding mismatch. Just
-        // accumulate the sai instead, or burn on cash.  Then all the
-        // sin from post-cage liquidation will just remain in the tap
-        // forever.
         heal();
-
         skr.burn(fog());
     }
 }
