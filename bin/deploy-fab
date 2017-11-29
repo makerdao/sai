@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -ex
+
+export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
+export ETH_GAS=${ETH_GAS:-"3500000"}
+export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
+
+dapp build
+
+export SETH_ASYNC=yes
+
+
+TOK_FABtx=$(dapp create TokFab)
+VOX_FABtx=$(dapp create VoxFab)
+TAP_FABtx=$(dapp create TapFab)
+TUB_FABtx=$(dapp create TubFab)
+TOP_FABtx=$(dapp create TopFab)
+MOM_FABtx=$(dapp create MomFab)
+DAD_FABtx=$(dapp create DadFab)
+
+export SETH_ASYNC=no
+
+TOK_FAB=$(seth receipt $TOK_FABtx contractAddress)
+VOX_FAB=$(seth receipt $VOX_FABtx contractAddress)
+TAP_FAB=$(seth receipt $TAP_FABtx contractAddress)
+TUB_FAB=$(seth receipt $TUB_FABtx contractAddress)
+TOP_FAB=$(seth receipt $TOP_FABtx contractAddress)
+MOM_FAB=$(seth receipt $MOM_FABtx contractAddress)
+DAD_FAB=$(seth receipt $DAD_FABtx contractAddress)
+
+cat > load-fab-$(seth chain) << EOF
+#!/bin/bash
+
+# fab deployment on $(seth chain) from $(git rev-parse HEAD)
+# $(date)
+
+export TOK_FAB=$TOK_FAB
+export VOX_FAB=$VOX_FAB
+export TAP_FAB=$TAP_FAB
+export TUB_FAB=$TUB_FAB
+export TOP_FAB=$TOP_FAB
+export MOM_FAB=$MOM_FAB
+export DAD_FAB=$DAD_FAB
+EOF

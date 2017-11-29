@@ -1,0 +1,106 @@
+#!/usr/bin/env bash
+set -ex
+
+export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
+export ETH_GAS=${ETH_GAS:-"3500000"}
+export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
+
+dapp build
+
+export SETH_ASYNC=yes
+
+test -z $SAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
+test -z $SAI_GOV && GOVtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'GOV')))
+SAItx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'DAI')))
+SINtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SIN')))
+SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
+test -z $SAI_PIP && PIPtx=$(dapp create DSValue)
+test -z $SAI_PEP && PEPtx=$(dapp create DSValue)
+VOXtx=$(dapp create SaiVox)
+TAPtx=$(dapp create SaiTap)
+
+DADtx=$(dapp create DSGuard)
+
+export SETH_ASYNC=no
+
+test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
+test -z $SAI_GOV && SAI_GOV=$(seth receipt $GOVtx contractAddress)
+SAI_SAI=$(seth receipt $SAItx contractAddress)
+SAI_SIN=$(seth receipt $SINtx contractAddress)
+SAI_SKR=$(seth receipt $SKRtx contractAddress)
+test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
+test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
+SAI_VOX=$(seth receipt $VOXtx contractAddress)
+SAI_TAP=$(seth receipt $TAPtx contractAddress)
+test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
+SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_VOX $SAI_TAP $SAI_PIT)
+SAI_TOP=$(dapp create SaiTop $SAI_TUB $SAI_TAP)
+seth send $SAI_TAP 'turn(address)' $SAI_TUB
+
+SAI_MOM=$(dapp create SaiMom $SAI_TUB $SAI_TAP $SAI_VOX)
+
+SAI_DAD=$(seth receipt $DADtx contractAddress)
+
+export SETH_ASYNC=yes
+
+seth send $SAI_VOX "setAuthority(address)" $SAI_DAD
+seth send $SAI_TUB "setAuthority(address)" $SAI_DAD
+seth send $SAI_TAP "setAuthority(address)" $SAI_DAD
+seth send $SAI_TOP "setAuthority(address)" $SAI_DAD
+
+seth send $SAI_SAI "setAuthority(address)" $SAI_DAD
+seth send $SAI_SIN "setAuthority(address)" $SAI_DAD
+seth send $SAI_SKR "setAuthority(address)" $SAI_DAD
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TUB $(seth --to-bytes32 $(seth calldata 'cage(uint256,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TUB $(seth --to-bytes32 $(seth calldata 'flow()'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TAP $(seth --to-bytes32 $(seth calldata 'cage(uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_VOX $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TUB $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TAP $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
+
+test -z $SAI_CAGE_AUTH && SAI_CAGE_AUTH=$ETH_FROM
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage(uint256)'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage()'))
+seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'setCooldown(uint256)'))
+
+cat > load-env-$(seth chain) << EOF
+#!/bin/bash
+
+# sai deployment on $(seth chain) from $(git rev-parse HEAD)
+# $(date)
+
+export SAI_GEM=$SAI_GEM
+export SAI_GOV=$SAI_GOV
+export SAI_SAI=$SAI_SAI
+export SAI_SIN=$SAI_SIN
+export SAI_SKR=$SAI_SKR
+export SAI_PIP=$SAI_PIP
+export SAI_PEP=$SAI_PEP
+export SAI_DAD=$SAI_DAD
+export SAI_MOM=$SAI_MOM
+export SAI_VOX=$SAI_VOX
+export SAI_PIT=$SAI_PIT
+export SAI_CAGE_AUTH=$SAI_CAGE_AUTH
+export SAI_TUB=$SAI_TUB
+export SAI_TAP=$SAI_TAP
+export SAI_TOP=$SAI_TOP
+EOF
