@@ -34,16 +34,7 @@ contract SaiTap is DSThing {
     }
 
 
-    function SaiTap() public {
-        gap = WAD;
-    }
-
-    function mold(bytes32 param, uint val) public note auth {
-        if (param == 'gap') gap = val;
-    }
-
-    // Associate with tub
-    function turn(SaiTub tub_) public note auth {
+    function SaiTap(SaiTub tub_) public {
         tub = tub_;
 
         sai = tub.sai();
@@ -51,6 +42,12 @@ contract SaiTap is DSThing {
         skr = tub.skr();
 
         vox = tub.vox();
+
+        gap = WAD;
+    }
+
+    function mold(bytes32 param, uint val) public note auth {
+        if (param == 'gap') gap = val;
     }
 
     // Cancel debt

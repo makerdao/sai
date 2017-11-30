@@ -96,7 +96,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSValue  pip_,
         DSValue  pep_,
         SaiVox   vox_,
-        address  tap_,
         address  pit_
     ) public {
         gem = gem_;
@@ -111,7 +110,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         pip = pip_;
         pep = pep_;
         vox = vox_;
-        tap = tap_;
 
         axe = RAY;
         mat = RAY;
@@ -151,6 +149,13 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function setVox(SaiVox vox_) public note auth {
         vox = vox_;
+    }
+
+    //--Tap-setter------------------------------------------------------
+    function turn(address tap_) public note {
+        require(tap  == 0);
+        require(tap_ != 0);
+        tap = tap_;
     }
 
     //--Collateral-wrapper----------------------------------------------
