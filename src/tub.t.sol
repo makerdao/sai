@@ -8,10 +8,9 @@ import 'ds-guard/guard.sol';
 import "ds-test/test.sol";
 
 contract TubTest is DSTest, DSThing {
-
-    SaiTub tub;
-    SaiTap tap;
-    SaiVox vox;
+    address tap;
+    SaiTub  tub;
+    SaiVox  vox;
 
     DSGuard dad;
 
@@ -34,8 +33,9 @@ contract TubTest is DSTest, DSThing {
         pep = new DSValue();
         dad = new DSGuard();
         vox = new SaiVox();
-        tap = new SaiTap();
-        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap, 0x123);
+        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, 0x123);
+        tap = 0x456;
+        tub.turn(tap);
 
         //Set whitelist authority
         skr.setAuthority(dad);
@@ -57,6 +57,10 @@ contract TubTest is DSTest, DSThing {
         assertEq(skr.totalSupply(), 0 ether);
 
         assert(!tub.off());
+    }
+
+    function testFailTurnAgain() public {
+        tub.turn(0x789);
     }
 
     function testPie() public {

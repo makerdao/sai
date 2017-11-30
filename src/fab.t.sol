@@ -50,9 +50,9 @@ contract FabTest is DSTest {
         sin = tokFab.newTok(dad, 'SIN');
         skr = tokFab.newTok(dad, 'SKR');
         vox = voxFab.newVox(dad);
-        tap = tapFab.newTap(dad, sai, sin, skr);
-        tub = tubFab.newTub(dad, sai, sin, skr, gem, gov, pip, pep, vox, tap, pit);
-        tapFab.turn(tap, tub);
+        tub = tubFab.newTub(dad, sai, sin, skr, gem, gov, pip, pep, vox, pit);
+        tap = tapFab.newTap(dad, tub);
+        tub.turn(tap);
         top = topFab.newTop(dad, tub, tap);
         mom = momFab.newMom(dad, tub, tap, vox);
     }

@@ -37,10 +37,9 @@ contract DevTub is SaiTub, TestWarp {
         DSValue  pip_,
         DSValue  pep_,
         SaiVox   vox_,
-        address  tap_,
         address  pit_
     ) public
-      SaiTub(sai_, sin_, skr_, gem_, gov_, pip_, pep_, vox_, tap_, pit_) {}
+      SaiTub(sai_, sin_, skr_, gem_, gov_, pip_, pep_, vox_, pit_) {}
 }
 
 contract DevTop is SaiTop, TestWarp {
@@ -186,10 +185,10 @@ contract SaiTestBase is DSTest, DSMath {
 
         pit = address(0x123);
 
-        tap = new SaiTap();
-        tub = new DevTub(sai, sin, skr, gem, gov, tag, pep, vox, tap, pit);
+        tub = new DevTub(sai, sin, skr, gem, gov, tag, pep, vox, pit);
+        tap = new SaiTap(tub);
+        tub.turn(tap);
         top = new DevTop(tub, tap);
-        tap.turn(tub);
 
         dad = new DSGuard();
 

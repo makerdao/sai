@@ -29,27 +29,22 @@ contract VoxFab is FabEvents {
 }
 
 contract TapFab is FabEvents {
-    function newTap(DSGuard dad, DSToken sai, DSToken sin, DSToken skr) public returns (SaiTap tap) {
-        tap = new SaiTap();
+    function newTap(DSGuard dad, SaiTub tub) public returns (SaiTap tap) {
+        tap = new SaiTap(tub);
         LogContractCreated(tap);
-        dad.permit(tap, sai, bytes4(keccak256('burn(uint256)')));
-        dad.permit(tap, sin, bytes4(keccak256('burn(uint256)')));
+        dad.permit(tap, tub.sai(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(tap, tub.sin(), bytes4(keccak256('burn(uint256)')));
 
-        dad.permit(tap, skr, bytes4(keccak256('mint(uint256)')));
-        dad.permit(tap, skr, bytes4(keccak256('burn(uint256)')));
-        dad.permit(tap, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(tap, tub.skr(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(tap, tub.skr(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(tap, tub.skr(), bytes4(keccak256('burn(address,uint256)')));
         tap.setAuthority(dad);
-    }
-
-    function turn(SaiTap tap, SaiTub tub) public {
-        tap.turn(tub);
-        tap.setOwner(0);
     }
 }
 
 contract TubFab is FabEvents {
-    function newTub(DSGuard dad, DSToken sai, DSToken sin, DSToken skr, DSToken gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, SaiTap tap, address pit) public returns (SaiTub tub) {
-        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, tap, pit);
+    function newTub(DSGuard dad, DSToken sai, DSToken sin, DSToken skr, DSToken gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
+        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
         LogContractCreated(tub);
         dad.permit(tub, skr, bytes4(keccak256('mint(address,uint256)')));
         dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
@@ -98,4 +93,4 @@ contract DadFab is FabEvents {
         dad.setAuthority(dad);
         dad.setOwner(0);
     }
-} 
+}
