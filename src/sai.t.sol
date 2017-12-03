@@ -33,14 +33,12 @@ contract DevTub is SaiTub, TestWarp {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
-        DSToken  gov_,
         DSValue  pip_,
-        DSValue  pep_,
         SaiVox   vox_,
         address  tap_,
-        address  pit_
+        address  pot_
     ) public
-      SaiTub(sai_, sin_, skr_, gem_, gov_, pip_, pep_, vox_, tap_, pit_) {}
+      SaiTub(sai_, sin_, skr_, gem_, pip_, vox_, tap_, pot_) {}
 }
 
 contract DevTop is SaiTop, TestWarp {
@@ -77,7 +75,7 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  skr;
     DSToken  gov;
 
-    address  pit;
+    address  pot;
 
     DSValue  tag;
     DSValue  pep;
@@ -178,16 +176,13 @@ contract SaiTestBase is DSTest, DSMath {
 
         skr = new DSToken("SKR");
 
-        gov = new DSToken("GOV");
-
         tag = new DSValue();
-        pep = new DSValue();
         vox = new DevVox();
 
-        pit = address(0x123);
+        pot = address(0x123);
 
         tap = new SaiTap();
-        tub = new DevTub(sai, sin, skr, gem, gov, tag, pep, vox, tap, pit);
+        tub = new DevTub(sai, sin, skr, gem, tag, vox, tap, pot);
         top = new DevTop(tub, tap);
         tap.turn(tub);
 
@@ -2187,10 +2182,10 @@ contract FeeTest is SaiTestBase {
         warp(1 days);
 
         assertEq(gov.balanceOf(this), 100 ether);
-        assertEq(gov.balanceOf(pit),    0 ether);
+        assertEq(gov.balanceOf(pot),    0 ether);
         tub.wipe(cup, 50 ether);
         assertEq(gov.balanceOf(this),  95 ether);
-        assertEq(gov.balanceOf(pit),    5 ether);
+        assertEq(gov.balanceOf(pot),    5 ether);
     }
     function testFeeWipeAll() public {
         var cup = feeSetup();

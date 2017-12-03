@@ -194,6 +194,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         // optimised
         if (fee != RAY) inc = rmul(inc, rpow(fee, age));
         if (inc != RAY) _rhi = rmul(_rhi, inc);
+
+        // TODO   sai.push(pot, ???);
     }
 
 
