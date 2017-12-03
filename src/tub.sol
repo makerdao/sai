@@ -23,20 +23,17 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    DSToken  public  gov;  // Governance token
-
     SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
-    DSValue  public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
-    address  public  pit;  // Governance Vault
+    address  public  pot;  // Sai Revenue Address (MKR auto buy/burn)
 
     uint256  public  axe;  // Liquidation penalty
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
-    uint256  public  tax;  // Stability fee
-    uint256  public  fee;  // Governance fee
+    uint256  public  tax;  // Stability fee      CAUTION: see `fee`
+    uint256  public  fee;  // Governance fee     CAUTION: see `tax`
     uint256  public  gap;  // Join-Exit Spread
 
     bool     public  off;  // Cage flag
@@ -92,12 +89,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
-        DSToken  gov_,
         DSValue  pip_,
-        DSValue  pep_,
         SaiVox   vox_,
         address  tap_,
-        address  pit_
+        address  pot_
     ) public {
         gem = gem_;
         skr = skr_;
@@ -105,11 +100,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai = sai_;
         sin = sin_;
 
-        gov = gov_;
-        pit = pit_;
+        pot = pot_;
 
         pip = pip_;
-        pep = pep_;
         vox = vox_;
         tap = tap_;
 
@@ -178,6 +171,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         return _rhi;
     }
     function drip() public note {
+
+        // TODO somewhere in drip body all the `owe` from `wipe`
+        // gets cleared to `pot`
+
         if (off) return;
 
         var rho_ = era();
@@ -197,6 +194,8 @@ contract SaiTub is DSThing, SaiTubEvents {
         // optimised
         if (fee != RAY) inc = rmul(inc, rpow(fee, age));
         if (inc != RAY) _rhi = rmul(_rhi, inc);
+
+        // TODO   sai.push(pot, ???);
     }
 
 
@@ -266,8 +265,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 
-        var (val, ok) = pep.peek();
-        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
+        // `owe` left in tub?
     }
 
     function shut(bytes32 cup) public note {
