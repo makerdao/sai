@@ -27,7 +27,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
-    DSValue  public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
     address  public  pit;  // Governance Vault
@@ -94,7 +93,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         ERC20    gem_,
         DSToken  gov_,
         DSValue  pip_,
-        DSValue  pep_,
         SaiVox   vox_,
         address  tap_,
         address  pit_
@@ -109,7 +107,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         pit = pit_;
 
         pip = pip_;
-        pep = pep_;
         vox = vox_;
         tap = tap_;
 
@@ -261,13 +258,13 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
+        // TODO something in these 4 lines is deleted
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 
-        var (val, ok) = pep.peek();
-        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
+        gov.push(pit, owe);
     }
 
     function shut(bytes32 cup) public note {
