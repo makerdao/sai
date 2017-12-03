@@ -171,6 +171,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         return _rhi;
     }
     function drip() public note {
+
+        // TODO somewhere in drip body all the `owe` from `wipe`
+        // gets cleared to `pot`
+
         if (off) return;
 
         var rho_ = era();
