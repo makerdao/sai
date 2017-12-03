@@ -23,19 +23,17 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  skr;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
-    DSToken  public  gov;  // Governance token
-
     SaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
 
     address  public  tap;  // Liquidator
-    address  public  pit;  // Governance Vault
+    address  public  pot;  // Sai Revenue Address (MKR auto buy/burn)
 
     uint256  public  axe;  // Liquidation penalty
     uint256  public  hat;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
-    uint256  public  tax;  // Stability fee
-    uint256  public  fee;  // Governance fee
+    uint256  public  tax;  // Stability fee      CAUTION: see `fee`
+    uint256  public  fee;  // Governance fee     CAUTION: see `tax`
     uint256  public  gap;  // Join-Exit Spread
 
     bool     public  off;  // Cage flag
@@ -91,11 +89,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  sin_,
         DSToken  skr_,
         ERC20    gem_,
-        DSToken  gov_,
         DSValue  pip_,
         SaiVox   vox_,
         address  tap_,
-        address  pit_
+        address  pot_
     ) public {
         gem = gem_;
         skr = skr_;
@@ -103,8 +100,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai = sai_;
         sin = sin_;
 
-        gov = gov_;
-        pit = pit_;
+        pot = pot_;
 
         pip = pip_;
         vox = vox_;
@@ -258,13 +254,12 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
-        // TODO something in these 4 lines is deleted
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
         cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 
-        gov.push(pit, owe);
+        // `owe` left in tub?
     }
 
     function shut(bytes32 cup) public note {
