@@ -69,7 +69,40 @@ Excess collateral contained within a single `cup` can be reclaimed with
 
 ### `sai` glossary (`sai help`)
 ```
-Read commands:
+Actions:
+
+   bite            initiate liquidation of an undercollateral cup
+   boom            buy some amount of sai to process joy (surplus)
+   bust            sell some amount of sai to process woe (bad debt)
+   cage            lock the system and initiate settlement
+   cash            cash in sai balance for gems after cage
+   cupi            get the last cup id
+   cups            list cups created by you
+   draw            issue the specified amount of sai stablecoins
+   drip            recalculate the internal debt price
+   exit            sell SKR for gems
+   free            remove excess SKR collateral from a cup
+   give            transfer ownership of a cup
+   heal            cancel debt
+   help            print help about sai(1) or one of its subcommands
+   join            buy SKR for gems
+   lock            post additional SKR collateral to a cup
+   open            create a new cup (collateralized debt position)
+   prod            recalculate the accrued holder fee (par)
+   safe            determine if a cup is safe
+   setAxe          update the liquidation penalty
+   setFee          update the governance fee
+   setHat          update the debt ceiling
+   setMat          update the liquidation ratio
+   setTapGap       update the spread on `boom` and `bust`
+   setTax          update the stability fee
+   setTubGap       update the spread on `join` and `exit`
+   setWay          update the holder fee (interest rate)
+   shut            close a cup
+   vent            process a caged tub
+   wipe            repay some portion of your existing sai debt
+   
+Vars, Getters, Utils:
 
    air             get the amount of backing collateral
    axe             get the liquidation penalty
@@ -119,38 +152,7 @@ Read commands:
    way             get the holder fee (interest rate)
    woe             get the amount of bad debt
 
-Commands:
 
-   bite            initiate liquidation of an undercollateral cup
-   boom            buy some amount of sai to process joy (surplus)
-   bust            sell some amount of sai to process woe (bad debt)
-   cage            lock the system and initiate settlement
-   cash            cash in sai balance for gems after cage
-   cupi            get the last cup id
-   cups            list cups created by you
-   draw            issue the specified amount of sai stablecoins
-   drip            recalculate the internal debt price
-   exit            sell SKR for gems
-   free            remove excess SKR collateral from a cup
-   give            transfer ownership of a cup
-   heal            cancel debt
-   help            print help about sai(1) or one of its subcommands
-   join            buy SKR for gems
-   lock            post additional SKR collateral to a cup
-   open            create a new cup (collateralized debt position)
-   prod            recalculate the accrued holder fee (par)
-   safe            determine if a cup is safe
-   setAxe          update the liquidation penalty
-   setFee          update the governance fee
-   setHat          update the debt ceiling
-   setMat          update the liquidation ratio
-   setTapGap       update the spread on `boom` and `bust`
-   setTax          update the stability fee
-   setTubGap       update the spread on `join` and `exit`
-   setWay          update the holder fee (interest rate)
-   shut            close a cup
-   vent            process a caged tub
-   wipe            repay some portion of your existing sai debt
 ```
 
 ### Sample interaction using `sai`
