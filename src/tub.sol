@@ -46,7 +46,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     uint256  public  rho;  // Time of last drip
     uint256         _chi;  // Accumulated Tax Rates
-    uint256         _rhi;  // Accumulated Tax + Fee Rates
     uint256  public  rum;  // Total normalised debt
 
     uint256                   public  cupi;
@@ -56,7 +55,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         address  lad;      // CDP owner
         uint256  ink;      // Locked collateral (in SKR)
         uint256  art;      // Outstanding normalised debt (tax only)
-        uint256  irk;      // Outstanding normalised debt
     }
 
     function lad(bytes32 cup) public view returns (address) {
@@ -67,9 +65,6 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function tab(bytes32 cup) public returns (uint) {
         return rmul(cups[cup].art, chi());
-    }
-    function rap(bytes32 cup) public returns (uint) {
-        return sub(rmul(cups[cup].irk, rhi()), tab(cup));
     }
 
     // Total CDP Debt
@@ -116,11 +111,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         axe = RAY;
         mat = RAY;
         tax = RAY;
-        fee = RAY;
         gap = WAD;
 
         _chi = RAY;
-        _rhi = RAY;
 
         rho = era();
     }
@@ -135,7 +128,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         if      (param == 'hat') hat = val;
         else if (param == 'mat') { require(val >= RAY); mat = val; }
         else if (param == 'tax') { require(val >= RAY); drip(); tax = val; }
-        else if (param == 'fee') { require(val >= RAY); drip(); fee = val; }
+        else if (param == 'fee') { require(val <= RAY); drip(); fee = val; }
         else if (param == 'axe') { require(val >= RAY); axe = val; }
         else if (param == 'gap') { require(val >= WAD); gap = val; }
         else return;
@@ -173,10 +166,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         drip();
         return _chi;
     }
-    function rhi() public returns (uint) {
-        drip();
-        return _rhi;
-    }
     function drip() public note {
         if (off) return;
 
@@ -185,18 +174,13 @@ contract SaiTub is DSThing, SaiTubEvents {
         if (age == 0) return;    // optimised
         rho = rho_;
 
-        var inc = RAY;
+        if (tax == RAY) return;  // optimised
 
-        if (tax != RAY) {  // optimised
-            inc = rpow(tax, age);
-            var din_ = din();
-            _chi = rmul(_chi, inc);
-            sai.mint(tap, sub(din(), din_));
-        }
-
-        // optimised
-        if (fee != RAY) inc = rmul(inc, rpow(fee, age));
-        if (inc != RAY) _rhi = rmul(_rhi, inc);
+        var inc = rpow(tax, age);
+        var din_ = din();
+        _chi = rmul(_chi, inc);
+        sai.mint(tap, rmul(sub(RAY, fee), sub(din(), din_)));
+        sai.mint(pit, rmul(fee, sub(din(), din_)));
     }
 
 
@@ -249,7 +233,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         rum = add(rum, rdiv(wad, chi()));
-        cups[cup].irk = add(cups[cup].irk, rdiv(wad, rhi()));
         sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
@@ -259,15 +242,9 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         require(msg.sender == cups[cup].lad);
 
-        var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
-
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
-        cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
-
-        var (val, ok) = pep.peek();
-        if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
     function shut(bytes32 cup) public note {
@@ -286,7 +263,6 @@ contract SaiTub is DSThing, SaiTubEvents {
         sin.mint(tap, rue);
         rum = sub(rum, cups[cup].art);
         cups[cup].art = 0;
-        cups[cup].irk = 0;
 
         // Amount owed in SKR, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
