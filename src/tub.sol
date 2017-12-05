@@ -141,6 +141,18 @@ contract SaiTub is DSThing, SaiTubEvents {
         else return;
     }
 
+    //--Price-feed-setters----------------------------------------------
+
+    function setPip(DSValue pip_) public note auth {
+        pip = pip_;
+    }
+    function setPep(DSValue pep_) public note auth {
+        pep = pep_;
+    }
+    function setVox(SaiVox vox_) public note auth {
+        vox = vox_;
+    }
+
     //--Collateral-wrapper----------------------------------------------
 
     // Wrapper ratio (gem per skr)
