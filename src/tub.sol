@@ -232,7 +232,6 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     function lock(bytes32 cup, uint wad) public note {
         require(!off);
-        require(msg.sender == cups[cup].lad);
         cups[cup].ink = add(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
     }
@@ -257,7 +256,6 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
-        require(msg.sender == cups[cup].lad);
 
         var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
