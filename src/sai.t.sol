@@ -840,6 +840,30 @@ contract CageTest is SaiTestBase {
         assertEq(sai.totalSupply(), 0);
         assertEq(skr.totalSupply(), 0);
     }
+    function testCashSafeOverCollatAndMock() public {
+        testCashSafeOverCollat();
+        gem.approve(tap, uint(-1));
+        tap.mock(5 ether);
+        assertEq(sai.balanceOf(this), 5 ether);
+        assertEq(gem.balanceOf(this), 95 ether);
+        assertEq(gem.balanceOf(tap), 5 ether);
+    }
+    function testCashSafeOverCollatWithFreeSkrAndMock() public {
+        testCashSafeOverCollatWithFreeSkr();
+        gem.approve(tap, uint(-1));
+        tap.mock(5 ether);
+        assertEq(sai.balanceOf(this), 5 ether);
+        assertEq(gem.balanceOf(this), 95 ether);
+        assertEq(gem.balanceOf(tap), 5 ether);
+    }
+    function testFailCashSafeOverCollatWithFreeSkrExitBeforeBailAndMock() public {
+        testFailCashSafeOverCollatWithFreeSkrExitBeforeBail();
+        gem.approve(tap, uint(-1));
+        tap.mock(5 ether);
+        assertEq(sai.balanceOf(this), 5 ether);
+        assertEq(gem.balanceOf(this), 95 ether);
+        assertEq(gem.balanceOf(tap), 5 ether);
+    }
 
     function testThreeCupsOverCollat() public {
         var cup = cageSetup();
