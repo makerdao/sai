@@ -5,7 +5,7 @@ import "ds-test/test.sol";
 import "ds-math/math.sol";
 
 import 'ds-token/token.sol';
-import 'ds-guard/guard.sol';
+import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './mom.sol';
@@ -81,7 +81,7 @@ contract SaiTestBase is DSTest, DSMath {
 
     DSValue  tag;
     DSValue  pep;
-    DSGuard  dad;
+    DSRoles  dad;
 
     function ray(uint256 wad) internal pure returns (uint256) {
         return wad * 10 ** 9;
@@ -103,6 +103,11 @@ contract SaiTestBase is DSTest, DSMath {
         top.warp(age);
     }
 
+    // TODO move to DSThing
+    function S(string s) returns (bytes4) {
+        return bytes4(keccak256(s));
+    }
+
     function configureAuth() public {
         vox.setAuthority(dad);
         tub.setAuthority(dad);
@@ -122,49 +127,42 @@ contract SaiTestBase is DSTest, DSMath {
         sin.setOwner(0);
         skr.setOwner(0);
 
-        dad.permit(top, tub, bytes4(keccak256("cage(uint256,uint256)")));
-        dad.permit(top, tub, bytes4(keccak256("flow()")));
-        dad.permit(top, tap, bytes4(keccak256("cage(uint256)")));
+        var SYS = 0; // sai system contracts, only call each other
+        var TOP = 1;
+        var MOM = 2;
 
-        dad.permit(tub, skr, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.setRootUser(this, true); // test harness convenience
+        dad.setUserRole(top, TOP, true);
+        dad.setUserRole(mom, MOM, true);
+        dad.setUserRole(vox, SYS, true);
+        dad.setUserRole(tub, SYS, true);
+        dad.setUserRole(tap, SYS, true);
+        // dad.setUserRole(sai, SYS, true);   no calls?
+        // dad.setUserRole(sin, SYS, true);
+        // dad.setUserRole(skr, SYS, true);
 
-        dad.permit(tub, sai, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(tub, sai, bytes4(keccak256('burn(address,uint256)')));
+        dad.setRoleCapability(TOP, tub, S('cage(uint256,uint256)'));
+        dad.setRoleCapability(TOP, tub, S('flow()'));
+        dad.setRoleCapability(TOP, tub, S('cage(uint256)'));
 
-        dad.permit(tub, sin, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(tub, sin, bytes4(keccak256('mint(uint256)')));
-        dad.permit(tub, sin, bytes4(keccak256('burn(uint256)')));
+        dad.setCapabilityRoles(MOM, vox, S('mold(bytes32,uint256)'));
+        dad.setCapabilityRoles(MOM, tub, S('mold(bytes32,uint256)'));
+        dad.setCapabilityRoles(MOM, tap, S('mold(bytes32,uint256)'));
 
-        dad.permit(tap, sai, bytes4(keccak256('burn(uint256)')));
-        dad.permit(tap, sin, bytes4(keccak256('burn(uint256)')));
+        dad.setRoleCapability(SYS, skr, S('mint(address,uint256)'));
+        dad.setRoleCapability(SYS, skr, S('mint(uint256)'));
+        dad.setRoleCapability(SYS, skr, S('burn(address,uint256)'));
+        dad.setRoleCapability(SYS, skr, S('burn(uint256)'));   // TODO actually public?
 
-        dad.permit(tap, skr, bytes4(keccak256('mint(uint256)')));
-        dad.permit(tap, skr, bytes4(keccak256('burn(uint256)')));
-        dad.permit(tap, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.setRoleCapability(SYS, sai, S('mint(address,uint256)'));
+        dad.setRoleCapability(SYS, sai, S('mint(uint256)'));
+        dad.setRoleCapability(SYS, sai, S('burn(address,uint256)'));
+        dad.setRoleCapability(SYS, sai, S('burn(uint256)'));
 
-        // mom controls
-        dad.permit(mom, vox, bytes4(keccak256("mold(bytes32,uint256)")));
-        dad.permit(mom, tub, bytes4(keccak256("mold(bytes32,uint256)")));
-        dad.permit(mom, tap, bytes4(keccak256("mold(bytes32,uint256)")));
-
-        dad.permit(this, top, bytes4(keccak256("cage(uint256)")));
-        dad.permit(this, top, bytes4(keccak256("cage()")));
-        dad.permit(this, top, bytes4(keccak256("setCooldown(uint256)")));
-
-        // convenience in tests
-        dad.permit(this, sai, bytes4(keccak256('mint(uint256)')));
-        dad.permit(this, sai, bytes4(keccak256('burn(uint256)')));
-        dad.permit(this, sai, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(this, sai, bytes4(keccak256('burn(address,uint256)')));
-        dad.permit(this, sin, bytes4(keccak256('mint(uint256)')));
-        dad.permit(this, sin, bytes4(keccak256('burn(uint256)')));
-        dad.permit(this, sin, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(this, sin, bytes4(keccak256('burn(address,uint256)')));
-        dad.permit(this, skr, bytes4(keccak256('mint(uint256)')));
-        dad.permit(this, skr, bytes4(keccak256('burn(uint256)')));
-        dad.permit(this, skr, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(this, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.setRoleCapability(SYS, sin, S('mint(address,uint256)'));
+        dad.setRoleCapability(SYS, sin, S('mint(uint256)'));
+        dad.setRoleCapability(SYS, sin, S('burn(address,uint256)'));
+        dad.setRoleCapability(SYS, sin, S('burn(uint256)'));
 
         dad.setOwner(0);
     }
@@ -191,7 +189,7 @@ contract SaiTestBase is DSTest, DSMath {
         top = new DevTop(tub, tap);
         tap.turn(tub);
 
-        dad = new DSGuard();
+        dad = new DSRoles();
 
         mom = new SaiMom(tub, tap, vox);
 
