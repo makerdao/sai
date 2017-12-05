@@ -104,7 +104,7 @@ contract SaiTestBase is DSTest, DSMath {
     }
 
     // TODO move to DSThing
-    function S(string s) returns (bytes4) {
+    function S(string s) public pure returns (bytes4) {
         return bytes4(keccak256(s));
     }
 
