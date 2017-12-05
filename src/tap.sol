@@ -114,6 +114,11 @@ contract SaiTap is DSThing {
         sai.burn(msg.sender, wad);
         require(tub.gem().transfer(msg.sender, rmul(wad, fix)));
     }
+    function mock(uint wad) public note {
+        require(off);
+        sai.mint(msg.sender, wad);
+        require(tub.gem().transferFrom(msg.sender, this, rmul(wad, fix)));
+    }
     function vent() public note {
         require(off);
         skr.burn(fog());
