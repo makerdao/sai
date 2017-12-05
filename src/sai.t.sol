@@ -143,7 +143,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         dad.setRoleCapability(TOP, tub, S('cage(uint256,uint256)'), true);
         dad.setRoleCapability(TOP, tub, S('flow()'), true);
-        dad.setRoleCapability(TOP, tub, S('cage(uint256)'), true);
+        dad.setRoleCapability(TOP, tap, S('cage(uint256)'), true);
 
         dad.setRoleCapability(MOM, vox, S('mold(bytes32,uint256)'), true);
         dad.setRoleCapability(MOM, tub, S('mold(bytes32,uint256)'), true);
