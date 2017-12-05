@@ -17,7 +17,6 @@ SKRtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'SKR')))
 test -z $SAI_TAG && TAGtx=$(dapp create DSValue)
 test -z $SAI_PEP && PEPtx=$(dapp create DSValue)
 VOXtx=$(dapp create SaiVox)
-TAPtx=$(dapp create SaiTap)
 
 DADtx=$(dapp create DSRoles)
 
@@ -31,11 +30,11 @@ SAI_SKR=$(seth receipt $SKRtx contractAddress)
 test -z $SAI_TAG && SAI_TAG=$(seth receipt $TAGtx contractAddress)
 test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
 SAI_VOX=$(seth receipt $VOXtx contractAddress)
-SAI_TAP=$(seth receipt $TAPtx contractAddress)
 test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
-SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_GOV $SAI_TAG $SAI_PEP $SAI_VOX $SAI_TAP $SAI_PIT)
+SAI_TUB=$(dapp create SaiTub $SAI_SAI $SAI_SIN $SAI_SKR $SAI_GEM $SAI_GOV $SAI_TAG $SAI_PEP $SAI_VOX $SAI_PIT)
+SAI_TAP=$(dapp create SaiTap $SAI_TUB)
+seth send $SAI_TUB 'turn(address)' $SAI_TAP
 SAI_TOP=$(dapp create SaiTop $SAI_TUB $SAI_TAP)
-seth send $SAI_TAP 'turn(address)' $SAI_TUB
 
 SAI_MOM=$(dapp create SaiMom $SAI_TUB $SAI_TAP $SAI_VOX)
 
