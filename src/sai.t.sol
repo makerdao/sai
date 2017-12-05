@@ -127,9 +127,9 @@ contract SaiTestBase is DSTest, DSMath {
         sin.setOwner(0);
         skr.setOwner(0);
 
-        var SYS = 0; // sai system contracts, only call each other
-        var TOP = 1;
-        var MOM = 2;
+        uint8 SYS = 0; // sai system contracts, only call each other
+        uint8 TOP = 1;
+        uint8 MOM = 2;
 
         dad.setRootUser(this, true); // test harness convenience
         dad.setUserRole(top, TOP, true);
@@ -141,28 +141,28 @@ contract SaiTestBase is DSTest, DSMath {
         // dad.setUserRole(sin, SYS, true);
         // dad.setUserRole(skr, SYS, true);
 
-        dad.setRoleCapability(TOP, tub, S('cage(uint256,uint256)'));
-        dad.setRoleCapability(TOP, tub, S('flow()'));
-        dad.setRoleCapability(TOP, tub, S('cage(uint256)'));
+        dad.setRoleCapability(TOP, tub, S('cage(uint256,uint256)'), true);
+        dad.setRoleCapability(TOP, tub, S('flow()'), true);
+        dad.setRoleCapability(TOP, tub, S('cage(uint256)'), true);
 
-        dad.setCapabilityRoles(MOM, vox, S('mold(bytes32,uint256)'));
-        dad.setCapabilityRoles(MOM, tub, S('mold(bytes32,uint256)'));
-        dad.setCapabilityRoles(MOM, tap, S('mold(bytes32,uint256)'));
+        dad.setRoleCapability(MOM, vox, S('mold(bytes32,uint256)'), true);
+        dad.setRoleCapability(MOM, tub, S('mold(bytes32,uint256)'), true);
+        dad.setRoleCapability(MOM, tap, S('mold(bytes32,uint256)'), true);
 
-        dad.setRoleCapability(SYS, skr, S('mint(address,uint256)'));
-        dad.setRoleCapability(SYS, skr, S('mint(uint256)'));
-        dad.setRoleCapability(SYS, skr, S('burn(address,uint256)'));
-        dad.setRoleCapability(SYS, skr, S('burn(uint256)'));   // TODO actually public?
+        dad.setRoleCapability(SYS, skr, S('mint(address,uint256)'), true);
+        dad.setRoleCapability(SYS, skr, S('mint(uint256)'), true);
+        dad.setRoleCapability(SYS, skr, S('burn(address,uint256)'), true);
+        dad.setRoleCapability(SYS, skr, S('burn(uint256)'), true);   // TODO actually public?
 
-        dad.setRoleCapability(SYS, sai, S('mint(address,uint256)'));
-        dad.setRoleCapability(SYS, sai, S('mint(uint256)'));
-        dad.setRoleCapability(SYS, sai, S('burn(address,uint256)'));
-        dad.setRoleCapability(SYS, sai, S('burn(uint256)'));
+        dad.setRoleCapability(SYS, sai, S('mint(address,uint256)'), true);
+        dad.setRoleCapability(SYS, sai, S('mint(uint256)'), true);
+        dad.setRoleCapability(SYS, sai, S('burn(address,uint256)'), true);
+        dad.setRoleCapability(SYS, sai, S('burn(uint256)'), true);
 
-        dad.setRoleCapability(SYS, sin, S('mint(address,uint256)'));
-        dad.setRoleCapability(SYS, sin, S('mint(uint256)'));
-        dad.setRoleCapability(SYS, sin, S('burn(address,uint256)'));
-        dad.setRoleCapability(SYS, sin, S('burn(uint256)'));
+        dad.setRoleCapability(SYS, sin, S('mint(address,uint256)'), true);
+        dad.setRoleCapability(SYS, sin, S('mint(uint256)'), true);
+        dad.setRoleCapability(SYS, sin, S('burn(address,uint256)'), true);
+        dad.setRoleCapability(SYS, sin, S('burn(uint256)'), true);
 
         dad.setOwner(0);
     }
