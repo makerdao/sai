@@ -19,7 +19,7 @@ test -z $SAI_PEP && PEPtx=$(dapp create DSValue)
 VOXtx=$(dapp create SaiVox)
 TAPtx=$(dapp create SaiTap)
 
-DADtx=$(dapp create DSGuard)
+DADtx=$(dapp create DSRoles)
 
 export SETH_ASYNC=no
 
@@ -43,6 +43,13 @@ SAI_DAD=$(seth receipt $DADtx contractAddress)
 
 export SETH_ASYNC=yes
 
+SYS_ROLE=0
+TOP_ROLE=1
+MOM_ROLE=2
+CAGE_ROLE=3
+
+test -z $SAI_CAGE_AUTH && SAI_CAGE_AUTH=$ETH_FROM
+
 seth send $SAI_VOX "setAuthority(address)" $SAI_DAD
 seth send $SAI_TUB "setAuthority(address)" $SAI_DAD
 seth send $SAI_TAP "setAuthority(address)" $SAI_DAD
@@ -52,35 +59,39 @@ seth send $SAI_SAI "setAuthority(address)" $SAI_DAD
 seth send $SAI_SIN "setAuthority(address)" $SAI_DAD
 seth send $SAI_SKR "setAuthority(address)" $SAI_DAD
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TUB $(seth --to-bytes32 $(seth calldata 'cage(uint256,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TUB $(seth --to-bytes32 $(seth calldata 'flow()'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TOP $SAI_TAP $(seth --to-bytes32 $(seth calldata 'cage(uint256)'))
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_TOP $TOP_ROLE true
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_MOM $MOM_ROLE true
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_VOX $SYS_ROLE true
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_TUB $SYS_ROLE true
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_TAP $SYS_ROLE true
+seth send $SAI_DAD "setUserRole(address,uint8,bool)" $SAI_CAGE_AUTH $CAGE_ROLE true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $TOP_ROLE $SAI_TUB $(seth calldata 'cage(uint256,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $TOP_ROLE $SAI_TUB $(seth calldata 'flow()') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $TOP_ROLE $SAI_TAP $(seth calldata 'cage(uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $MOM_ROLE $SAI_VOX $(seth calldata 'mold(bytes32,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $MOM_ROLE $SAI_TUB $(seth calldata 'mold(bytes32,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $MOM_ROLE $SAI_TAP $(seth calldata 'mold(bytes32,uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(address,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TUB $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SKR $(seth calldata 'mint(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SKR $(seth calldata 'mint(uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SKR $(seth calldata 'burn(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SKR $(seth calldata 'burn(uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SAI $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SIN $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SAI $(seth calldata 'mint(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SAI $(seth calldata 'mint(uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SAI $(seth calldata 'burn(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SAI $(seth calldata 'burn(uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'mint(uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_TAP $SAI_SKR $(seth --to-bytes32 $(seth calldata 'burn(address,uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SIN $(seth calldata 'mint(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SIN $(seth calldata 'mint(uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SIN $(seth calldata 'burn(address,uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $SYS_ROLE $SAI_SIN $(seth calldata 'burn(uint256)') true
 
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_VOX $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TUB $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_MOM $SAI_TAP $(seth --to-bytes32 $(seth calldata 'mold(bytes32,uint256)'))
-
-test -z $SAI_CAGE_AUTH && SAI_CAGE_AUTH=$ETH_FROM
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage(uint256)'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'cage()'))
-seth send $SAI_DAD "permit(address,address,bytes32)" $SAI_CAGE_AUTH $SAI_TOP $(seth --to-bytes32 $(seth calldata 'setCooldown(uint256)'))
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $CAGE_ROLE $SAI_TOP $(seth calldata 'cage(uint256)') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $CAGE_ROLE $SAI_TOP $(seth calldata 'cage()') true
+seth send $SAI_DAD "setRoleCapability(uint8,address,bytes4,bool)" $CAGE_ROLE $SAI_TOP $(seth calldata 'setCooldown(uint256)') true
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
