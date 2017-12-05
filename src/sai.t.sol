@@ -608,8 +608,6 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         assertEq(sai.totalSupply(), 0);
-        assertEq(sin.totalSupply(), 0);
-
         assertEq(skr.totalSupply(), 0);
     }
     function testFailCashSafeOverCollatWithFreeSkrExitBeforeBail() public {
@@ -689,7 +687,6 @@ contract CageTest is SaiTestBase {
         tap.vent();
         assertEq(skr.totalSupply(), 0);
         assertEq(sai.totalSupply(), 0);
-        assertEq(sin.totalSupply(), 0);
     }
     function testCashAtCollat() public {
         var cup = cageSetup();
@@ -721,7 +718,6 @@ contract CageTest is SaiTestBase {
         tap.vent();
         assertEq(skr.totalSupply(), 0);
         assertEq(sai.totalSupply(), 0);
-        assertEq(sin.totalSupply(), 0);
     }
     function testCashAtCollatFreeSkr() public {
         var cup = cageSetup();
@@ -814,7 +810,6 @@ contract CageTest is SaiTestBase {
         tap.vent();
         assertEq(skr.totalSupply(), 0);
         assertEq(sai.totalSupply(), 0);
-        assertEq(sin.totalSupply(), 0);
     }
     function testCashUnderCollatFreeSkr() public {
         var cup = cageSetup();
@@ -844,8 +839,6 @@ contract CageTest is SaiTestBase {
         assertEq(gem.balanceOf(tub),    0 ether);
 
         assertEq(sai.totalSupply(), 0);
-        assertEq(sin.totalSupply(), 0);
-
         assertEq(skr.totalSupply(), 0);
     }
 
@@ -1134,7 +1127,6 @@ contract CageTest is SaiTestBase {
 
         tap.vent();
         assertEq(tap.fog(), 0 ether);
-        assertEq(tap.woe(), 0 ether);
 
         // now this remaining 1 skr will claim all the remaining 3 ether.
         // this is why exiting early is bad if you want to maximise returns.
@@ -1744,11 +1736,7 @@ contract TaxTest is SaiTestBase {
         tub.bite(cup);
         assertEq(tub.din(), 0);
         assertEq(tap.woe(), owe);
-
         assertEq(tap.joy(), 5 ether);
-        tap.vent();
-        assertEq(tap.joy(),   0 ether);
-        assertEq(tap.woe(), 100 ether);
     }
 }
 
@@ -1823,7 +1811,7 @@ contract WayTest is SaiTestBase {
         tap.cash(sai.balanceOf(this));
         assertEq(gem.balanceOf(this), 1020 ether);
         assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(sai.balanceOf(tap),  100 ether);
+        assertEq(sai.balanceOf(tap),    0 ether);
     }
 
     // `boom` and `bust` as par is now needed to determine
