@@ -13,3 +13,6 @@
 [submodule "lib/ds-guard"]
 	path = lib/ds-guard
 	url = https://github.com/dapphub/ds-guard
+[submodule "lib/ds-roles"]
+	path = lib/ds-roles
+	url = http://github.com/dapphub/ds-roles
