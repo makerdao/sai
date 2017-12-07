@@ -44,7 +44,7 @@ Sai has the following core components:
 Sai is configured by the following 'risk parameters':
 
 - `way`: Sai reference price drift
-- `hat`: Debt ceiling
+- `cap`: Debt ceiling
 - `mat`: Liquidation ratio
 - `tax`: Stability fee
 - `axe`: Liquidation penalty
@@ -333,7 +333,7 @@ Script output gist
 - `top`: top-level system manager
 
 - `way`: which way the target price is heading
-- `hat`: upper limit of Sai issuance
+- `cap`: upper limit of Sai issuance
 - `mat`: lower limit of collateralisation
 - `tax`: continually paid by CDP holders
 - `axe`: penalty applied to bad CDP holders

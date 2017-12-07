@@ -30,10 +30,10 @@ CHAIN=$(seth chain)
 . load-env-$CHAIN
 
 ##### configure risk params
-# mat = 1.5 axe = 1.2 hat = 100,000,000 gap = 1 [but configurable, +/- 5%] 
+# mat = 1.5 axe = 1.2 cap = 100,000,000 gap = 1 [but configurable, +/- 5%]
 # tax = way = 1 [default]
 
-seth send $SAI_MOM "setHat(uint256)" $(seth --to-uint256 $(seth --to-wei 100000000 ETH))
+seth send $SAI_MOM "setCap(uint256)" $(seth --to-uint256 $(seth --to-wei 100000000 ETH))
 seth send $SAI_MOM "setMat(uint256)" $(seth --to-uint256 $(seth --to-wei 1500000000 ETH))
 seth send $SAI_MOM "setAxe(uint256)" $(seth --to-uint256 $(seth --to-wei 1200000000 ETH))
 

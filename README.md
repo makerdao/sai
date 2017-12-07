@@ -92,7 +92,7 @@ Actions:
    safe            determine if a cup is safe
    setAxe          update the liquidation penalty
    setFee          update the governance fee
-   setHat          update the debt ceiling
+   setCap          update the debt ceiling
    setMat          update the liquidation ratio
    setTapGap       update the spread on `boom` and `bust`
    setTax          update the stability fee
@@ -115,7 +115,7 @@ Vars, Getters, Utils:
    fog             get the amount of skr pending liquidation
    gem             get the collateral token
    gov             get the governance token
-   hat             get the debt ceiling
+   cap             get the debt ceiling
    ice             get the good debt
    ink             get the amount of skr collateral locked in a cup
    joy             get the amount of surplus sai

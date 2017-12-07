@@ -33,7 +33,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     address  public  pit;  // Governance Vault
 
     uint256  public  axe;  // Liquidation penalty
-    uint256  public  hat;  // Debt ceiling
+    uint256  public  cap;  // Debt ceiling
     uint256  public  mat;  // Liquidation ratio
     uint256  public  tax;  // Stability fee
     uint256  public  fee;  // Governance fee
@@ -130,7 +130,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     //--Risk-parameter-config-------------------------------------------
 
     function mold(bytes32 param, uint val) public note auth {
-        if      (param == 'hat') hat = val;
+        if      (param == 'cap') cap = val;
         else if (param == 'mat') { require(val >= RAY); mat = val; }
         else if (param == 'tax') { require(val >= RAY); drip(); tax = val; }
         else if (param == 'fee') { require(val >= RAY); drip(); fee = val; }
@@ -269,7 +269,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
-        require(sai.totalSupply() <= hat);
+        require(sai.totalSupply() <= cap);
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
