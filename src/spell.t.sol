@@ -11,7 +11,7 @@ import 'ds-token/token.sol';
 
 contract Target is DSThing {
     bool public ouch;
-    function poke() auth {
+    function poke() public auth {
         ouch = true;
     }
 }
@@ -20,18 +20,18 @@ contract SpellTest is DSTest {
     Target t;
     DSChief c;
     DSSpell s;
-    function setUp() {
+    function setUp() public {
         var gov = new DSToken("GOV");
         var iou = new DSToken("IOU");
         t = new Target();
         c = new DSChief(gov, iou, 1);
     }
-    function testRootCall() {
+    function testRootCall() public {
         // poke() sig: 0x18178358
         bytes data = [0x18, 0x17, 0x83, 0x58];
         s = new Spell(t, 0, data);
     }
-    function testRoleChange() {
+    function testRoleChange() public {
         require(false);
         // setUserRole(address,uint8,bool) sig:
         // TODO complex packing
