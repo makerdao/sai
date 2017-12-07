@@ -178,7 +178,7 @@ contract SaiTestBase is DSTest, DSMath {
         mark(1 ether);
         mark(gov, 1 ether);
 
-        mom.setHat(20 ether);
+        mom.setCap(20 ether);
     }
 }
 
@@ -226,11 +226,11 @@ contract SaiTubTest is SaiTestBase {
     }
     function testMold() public {
         var setAxe = bytes4(keccak256('setAxe(uint256)'));
-        var setHat = bytes4(keccak256('setHat(uint256)'));
+        var setCap = bytes4(keccak256('setCap(uint256)'));
         var setMat = bytes4(keccak256('setMat(uint256)'));
 
-        assertTrue(mom.call(setHat, 0 ether));
-        assertTrue(mom.call(setHat, 5 ether));
+        assertTrue(mom.call(setCap, 0 ether));
+        assertTrue(mom.call(setCap, 5 ether));
 
         assertTrue(!mom.call(setAxe, ray(2 ether)));
         assertTrue( mom.call(setMat, ray(2 ether)));
@@ -383,7 +383,7 @@ contract SaiTubTest is SaiTestBase {
         tub.free(cup, 3 ether);  // 175% -- fails
     }
     function testFailDrawOverDebtCeiling() public {
-        mom.setHat(4 ether);
+        mom.setCap(4 ether);
         tub.join(10 ether);
         var cup = tub.open();
         tub.lock(cup, 10 ether);
@@ -391,7 +391,7 @@ contract SaiTubTest is SaiTestBase {
         tub.draw(cup, 5 ether);
     }
     function testDebtCeiling() public {
-        mom.setHat(5 ether);
+        mom.setCap(5 ether);
         mom.setMat(ray(2 ether));  // require 200% collat
         tub.join(10 ether);
         var cup = tub.open();
@@ -415,7 +415,7 @@ contract SaiTubTest is SaiTestBase {
 contract CageTest is SaiTestBase {
     // ensure cage sets the settle prices right
     function cageSetup() public returns (bytes32) {
-        mom.setHat(5 ether);            // 5 sai debt ceiling
+        mom.setCap(5 ether);            // 5 sai debt ceiling
         mark(1 ether);   // price 1:1 gem:ref
         mom.setMat(ray(2 ether));       // require 200% collat
         tub.join(10 ether);
@@ -1152,7 +1152,7 @@ contract LiquidationTest is SaiTestBase {
         return wdiv(min, jam);
     }
     function testLiq() public {
-        mom.setHat(100 ether);
+        mom.setCap(100 ether);
         mark(2 ether);
 
         tub.join(10 ether);
@@ -1185,7 +1185,7 @@ contract LiquidationTest is SaiTestBase {
         return wdiv(pro, con);
     }
     function testCollat() public {
-        mom.setHat(100 ether);
+        mom.setCap(100 ether);
         mark(2 ether);
 
         tub.join(10 ether);
@@ -1213,7 +1213,7 @@ contract LiquidationTest is SaiTestBase {
     }
 
     function testBustMint() public {
-        mom.setHat(100 ether);
+        mom.setCap(100 ether);
         mom.setMat(ray(wdiv(3 ether, 2 ether)));  // 150% liq limit
         mark(2 ether);
 
@@ -1260,7 +1260,7 @@ contract LiquidationTest is SaiTestBase {
         assertEq(skr.totalSupply(), 12 ether);
     }
     function testBustNoMint() public {
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
         mom.setMat(ray(2 ether));    // 200% liq limit
         mom.setAxe(ray(1.5 ether));  // 150% liq penalty
         mark(20 ether);
@@ -1585,7 +1585,7 @@ contract TaxTest is SaiTestBase {
         mark(10 ether);
         gem.mint(1000 ether);
 
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
         mom.setTax(1000000564701133626865910626);  // 5% / day
         cup = tub.open();
         tub.join(100 ether);
@@ -1741,7 +1741,7 @@ contract WayTest is SaiTestBase {
         mark(10 ether);
         gem.mint(1000 ether);
 
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
 
         cup = tub.open();
         tub.join(100 ether);
@@ -1993,7 +1993,7 @@ contract GasTest is SaiTestBase {
         mark(1 ether);
         gem.mint(1000 ether);
 
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
 
         cup = tub.open();
         tub.join(1000 ether);
@@ -2090,7 +2090,7 @@ contract FeeTest is SaiTestBase {
         gem.mint(1000 ether);
         gov.mint(100 ether);
 
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
         mom.setFee(1000000564701133626865910626);  // 5% / day
 
         // warp(1 days);  // make chi,rhi != 1
@@ -2183,11 +2183,11 @@ contract FeeTest is SaiTestBase {
         var owe = tub.rap(cup);
         assertEq(owe, 5 ether);
 
-        var ( , , art, irk) = tub.cups(cup);
+        var ( , , art, ire) = tub.cups(cup);
         assertEq(art, 100 ether);
-        assertEq(irk, 100 ether);
+        assertEq(ire, 100 ether);
         assertEq(rdiv(wad, tub.chi()), art);
-        assertEq(rdiv(add(wad, owe), tub.rhi()), irk);
+        assertEq(rdiv(add(wad, owe), tub.rhi()), ire);
 
         assertEq(tub.rap(cup),   5 ether);
         assertEq(tub.tab(cup), 100 ether);
@@ -2237,7 +2237,7 @@ contract FeeTaxTest is SaiTestBase {
         gem.mint(1000 ether);
         gov.mint(100 ether);
 
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
         mom.setFee(1000000564701133626865910626);  // 5% / day
         mom.setTax(1000000564701133626865910626);  // 5% / day
 
@@ -2297,11 +2297,11 @@ contract FeeTaxTest is SaiTestBase {
         var owe = tub.rap(cup);
         assertEq(owe, 5.25 ether);
 
-        var ( , , art, irk) = tub.cups(cup);
+        var ( , , art, ire) = tub.cups(cup);
         assertEq(art, 100 ether);
-        assertEq(irk, 100 ether);
+        assertEq(ire, 100 ether);
         assertEq(rdiv(wad, tub.chi()), art);
-        assertEq(rdiv(add(wad, owe), tub.rhi()), irk);
+        assertEq(rdiv(add(wad, owe), tub.rhi()), ire);
 
         sai.mint(5 ether);  // need to magic up some extra sai to pay tax
 
@@ -2315,7 +2315,7 @@ contract FeeTaxTest is SaiTestBase {
 
 contract AxeTest is SaiTestBase {
     function axeSetup() public returns (bytes32) {
-        mom.setHat(1000 ether);
+        mom.setCap(1000 ether);
         mark(1 ether);
         mom.setMat(ray(2 ether));       // require 200% collat
         tub.join(20 ether);

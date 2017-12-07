@@ -9,7 +9,7 @@ test $(sai pip)     =
 test $(sai pep)     = 
 
 # risk parameters
-test $(sai hat)     = $(sai wad -h 100000000.0)
+test $(sai cap)     = $(sai wad -h 100000000.0)
 test $(sai mat)     = $(sai ray -h 1.50)
 test $(sai axe)     = $(sai ray -h 1.20)
 test $(sai tax)     = $(sai ray -h 1.0)

@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-### sai-setHat -- update the debt ceiling
-### Usage: sai setHat <new-hat>
-set -e
-[ $# = 1 ] || sai setHat --usage
-wad=$(sai wad -h "$1")
-echo >&2 "Setting hat to $wad..."
-wad=$(sai wad "$1")
-(set -x; seth send "${SAI_MOM?}" "setHat(uint256)" "$wad")

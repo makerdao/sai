@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### sai-cap -- get the debt ceiling
+set -e
+wad=$(seth call "${SAI_TUB?}" "cap()")
+sai wad -h "$wad"

@@ -22,8 +22,8 @@ contract SaiMom is DSThing {
         vox = vox_;
     }
     // Debt ceiling
-    function setHat(uint wad) public note auth {
-        tub.mold("hat", wad);
+    function setCap(uint wad) public note auth {
+        tub.mold("cap", wad);
     }
     // Liquidation ratio
     function setMat(uint ray) public note auth {

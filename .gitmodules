@@ -19,3 +19,9 @@
 [submodule "lib/ds-auth"]
 	path = lib/ds-auth
 	url = git@github.com:dapphub/ds-auth.git
+[submodule "lib/ds-chief"]
+	path = lib/ds-chief
+	url = https://github.com/dapphub/ds-chief
+[submodule "lib/ds-spell"]
+	path = lib/ds-spell
+	url = https://github.com/dapphub/ds-spell
