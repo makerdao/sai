@@ -3,6 +3,8 @@
 // Testing using a `DSSpell` as the `hat` in a `DSChief` for one-off
 // root calls or role changes.
 
+pragma solidity ^0.4.19;
+
 import 'ds-test/test.sol';
 
 import 'ds-spell/spell.sol';
@@ -28,12 +30,12 @@ contract SpellTest is DSTest {
     }
     function testRootCall() public {
         // poke() sig: 0x18178358
-        bytes data = [0x18, 0x17, 0x83, 0x58];
-        s = new Spell(t, 0, data);
+        bytes memory data = hex"18178358";
+        s = new DSSpell(t, 0, data);
     }
-    function testRoleChange() public {
-        require(false);
-        // setUserRole(address,uint8,bool) sig:
-        // TODO complex packing
-    }
+    // function testRoleChange() public {
+        // require(false);
+        // // setUserRole(address,uint8,bool) sig:
+        // // TODO complex packing
+    // }
 }
