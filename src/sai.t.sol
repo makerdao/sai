@@ -71,9 +71,21 @@ contract DevTopFab {
 }
 
 contract DevDadFab {
-    function newDad() public returns (DSRoles dad) {
-        dad = new DSRoles();
-        dad.setRootUser(DaiFab(msg.sender).owner(), true); // test harness convenience
+    function newDad() public returns (DSGuard dad) {
+        dad = new DSGuard();
+        // convenience in tests
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('burn(address,uint256)')));
         dad.setOwner(msg.sender);
     }
 }
@@ -154,7 +166,9 @@ contract SaiTestBase is DSTest, DSMath {
         daiFab.makeTokens();
         daiFab.makeVoxTub(gem, gov, pip, pep, pit);
         daiFab.makeTapTop();
-        daiFab.configAuth(this, this);
+        DSRoles authority = new DSRoles();
+        authority.setRootUser(this, true);
+        daiFab.configAuth(authority);
 
         sai = DSToken(daiFab.sai());
         sin = DSToken(daiFab.sin());

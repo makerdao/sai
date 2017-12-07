@@ -55,7 +55,9 @@ contract BinTest is DSTest {
         log_named_uint('Make Tap Top', startGas - endGas);
 
         startGas = msg.gas;
-        daiFab.configAuth(this, this);
+        DSRoles authority = new DSRoles();
+        authority.setRootUser(this, true);
+        daiFab.configAuth(authority);
         endGas = msg.gas;
         log_named_uint('Config Auth', startGas - endGas);
     }

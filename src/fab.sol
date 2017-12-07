@@ -2,6 +2,7 @@ pragma solidity ^0.4.18;
 
 import "ds-auth/auth.sol";
 import 'ds-token/token.sol';
+import 'ds-guard/guard.sol';
 import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
@@ -50,49 +51,26 @@ contract MomFab {
 }
 
 contract DadFab {
-    function newDad() public returns (DSRoles dad) {
-        dad = new DSRoles();
+    function newDad() public returns (DSGuard dad) {
+        dad = new DSGuard();
         dad.setOwner(msg.sender);
     }
 }
 
-contract TokFabInterface {
+contract Interface {
     function newTok(bytes32) public returns (address);
-}
-
-contract VoxFabInterface {
     function newVox() public returns (address);
-}
-
-contract TubFabInterface {
     function newTub(address, address, address, address, address, address, address, address, address) public returns (address);
-}
-
-contract TapFabInterface {
     function newTap(address) public returns (address);
-}
-
-contract TubInterface {
     function turn (address) public;
-}
-
-contract TopFabInterface {
     function newTop(address, address) public returns (address);
-}
-
-contract MomFabInterface {
     function newMom(address, address, address) public returns (address);
-}
-
-contract DadFabInterface {
     function newDad() public returns (address);
-}
-
-contract AuthInterface {
     function setAuthority(address) public;
     function setOwner(address) public;
-    function setUserRole(address, uint8, bool) public;
-    function setRoleCapability(uint8, address, bytes4, bool) public;
+    // function setUserRole(address, uint8, bool) public;
+    // function setRoleCapability(uint8, address, bytes4, bool) public;
+    function permit(address, address, bytes32) public;
 }
 
 contract DaiFab is DSAuth {
@@ -130,9 +108,9 @@ contract DaiFab is DSAuth {
         require(sai == 0x0 &&
                 sin == 0x0 &&
                 skr == 0x0);
-        sai = TokFabInterface(tokFab).newTok('sai');
-        sin = TokFabInterface(tokFab).newTok('sin');
-        skr = TokFabInterface(tokFab).newTok('skr');
+        sai = Interface(tokFab).newTok('sai');
+        sin = Interface(tokFab).newTok('sin');
+        skr = Interface(tokFab).newTok('skr');
     }
 
 
@@ -145,92 +123,77 @@ contract DaiFab is DSAuth {
                 pip != 0x0 &&
                 pep != 0x0 &&
                 pit != 0x0);
-        vox = VoxFabInterface(voxFab).newVox();
-        tub = TubFabInterface(tubFab).newTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
+        vox = Interface(voxFab).newVox();
+        tub = Interface(tubFab).newTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
     }
 
     function makeTapTop() public auth {
         require(tub != 0x0 &&
                 vox != 0x0);
-        tap = TapFabInterface(tapFab).newTap(tub);
-        TubInterface(tub).turn(tap);
-        top = TopFabInterface(topFab).newTop(tub, tap);
+        tap = Interface(tapFab).newTap(tub);
+        Interface(tub).turn(tap);
+        top = Interface(topFab).newTop(tub, tap);
     }
 
     function S(string s) internal pure returns (bytes4) {
         return bytes4(keccak256(s));
     }
 
-    function configAuth(address momAddress, address cageAddress) public auth {
+    function configAuth(address authority) public auth {
         require(vox != 0x0 &&
                 tub != 0x0 &&
                 tap != 0x0 &&
                 top != 0x0 &&
-                momAddress != 0x0 &&
-                cageAddress != 0x0);
+                authority != 0x0);
 
-        mom = MomFabInterface(momFab).newMom(tub, tap, vox);
-        dad = DadFabInterface(dadFab).newDad();
+        mom = Interface(momFab).newMom(tub, tap, vox);
+        dad = Interface(dadFab).newDad();
 
-        AuthInterface(vox).setAuthority(dad);
-        AuthInterface(tub).setAuthority(dad);
-        AuthInterface(tap).setAuthority(dad);
-        AuthInterface(top).setAuthority(dad);
+        Interface(vox).setAuthority(dad);
+        Interface(vox).setOwner(0);
+        Interface(tub).setAuthority(dad);
+        Interface(tub).setOwner(0);
+        Interface(tap).setAuthority(dad);
+        Interface(tap).setOwner(0);
+        Interface(sai).setAuthority(dad);
+        Interface(sai).setOwner(0);
+        Interface(sin).setAuthority(dad);
+        Interface(sin).setOwner(0);
+        Interface(skr).setAuthority(dad);
+        Interface(skr).setOwner(0);
 
-        AuthInterface(sai).setAuthority(dad);
-        AuthInterface(sin).setAuthority(dad);
-        AuthInterface(skr).setAuthority(dad);
+        Interface(top).setAuthority(authority);
+        Interface(top).setOwner(0);
+        Interface(mom).setAuthority(authority);
+        Interface(mom).setOwner(0);
 
-        AuthInterface(vox).setOwner(0);
-        AuthInterface(tub).setOwner(0);
-        AuthInterface(tap).setOwner(0);
-        AuthInterface(top).setOwner(0);
+        Interface(dad).permit(top, tub, S("cage(uint256,uint256)"));
+        Interface(dad).permit(top, tub, S("flow()"));
+        Interface(dad).permit(top, tap, S("cage(uint256)"));
 
-        AuthInterface(sai).setOwner(0);
-        AuthInterface(sin).setOwner(0);
-        AuthInterface(skr).setOwner(0);
+        Interface(dad).permit(tub, skr, S('mint(address,uint256)'));
+        Interface(dad).permit(tub, skr, S('burn(address,uint256)'));
 
-        AuthInterface(mom).setOwner(momAddress);
+        Interface(dad).permit(tub, sai, S('mint(address,uint256)'));
+        Interface(dad).permit(tub, sai, S('burn(address,uint256)'));
 
-        uint8 SYS = 0;
-        uint8 TOP = 1;
-        uint8 MOM = 2;
-        uint8 CAGE = 3;
+        Interface(dad).permit(tub, sin, S('mint(address,uint256)'));
+        Interface(dad).permit(tub, sin, S('mint(uint256)'));
+        Interface(dad).permit(tub, sin, S('burn(uint256)'));
 
-        AuthInterface(dad).setUserRole(top, TOP, true);
-        AuthInterface(dad).setUserRole(vox, SYS, true);
-        AuthInterface(dad).setUserRole(tub, SYS, true);
-        AuthInterface(dad).setUserRole(tap, SYS, true);
-        AuthInterface(dad).setUserRole(mom, MOM, true);
-        AuthInterface(dad).setUserRole(cageAddress, CAGE, true);
+        Interface(dad).permit(tap, sai, S('mint(address,uint256)'));
+        Interface(dad).permit(tap, sai, S('burn(uint256)'));
+        Interface(dad).permit(tap, sai, S('burn(address,uint256)'));
+        Interface(dad).permit(tap, sin, S('burn(uint256)'));
 
-        AuthInterface(dad).setRoleCapability(TOP, tub, S('cage(uint256,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(TOP, tub, S('flow()'), true);
-        AuthInterface(dad).setRoleCapability(TOP, tap, S('cage(uint256)'), true);
+        Interface(dad).permit(tap, skr, S('mint(uint256)'));
+        Interface(dad).permit(tap, skr, S('burn(uint256)'));
+        Interface(dad).permit(tap, skr, S('burn(address,uint256)'));
 
-        AuthInterface(dad).setRoleCapability(SYS, skr, S('mint(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, skr, S('mint(uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, skr, S('burn(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, skr, S('burn(uint256)'), true);
+        Interface(dad).permit(mom, vox, S("mold(bytes32,uint256)"));
+        Interface(dad).permit(mom, tub, S("mold(bytes32,uint256)"));
+        Interface(dad).permit(mom, tap, S("mold(bytes32,uint256)"));
 
-        AuthInterface(dad).setRoleCapability(SYS, sai, S('mint(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sai, S('mint(uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sai, S('burn(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sai, S('burn(uint256)'), true);
-
-        AuthInterface(dad).setRoleCapability(SYS, sin, S('mint(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sin, S('mint(uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sin, S('burn(address,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(SYS, sin, S('burn(uint256)'), true);
-
-        AuthInterface(dad).setRoleCapability(MOM, vox, S('mold(bytes32,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(MOM, tub, S('mold(bytes32,uint256)'), true);
-        AuthInterface(dad).setRoleCapability(MOM, tap, S('mold(bytes32,uint256)'), true);
-
-        AuthInterface(dad).setRoleCapability(CAGE, top, S('cage(uint256)'), true);
-        AuthInterface(dad).setRoleCapability(CAGE, top, S('cage()'), true);
-        AuthInterface(dad).setRoleCapability(CAGE, top, S('setCooldown(uint256)'), true);
-
-        AuthInterface(dad).setOwner(0);
+        Interface(dad).setOwner(0);
     }
 }

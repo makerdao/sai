@@ -21,15 +21,18 @@ test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
 test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
 test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
 
-DAI_FAB=$(dapp create Deployer $TOK_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
+DAI_FAB=$(dapp create DaiFab $TOK_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
 
-test -z $SAI_MOM_AUTH && SAI_MOM_AUTH=$ETH_FROM
-test -z $SAI_CAGE_AUTH && SAI_CAGE_AUTH=$ETH_FROM
+if [ -z $SAI_ADM ]
+then
+    SAI_ADM=$(dapp create DSRoles)
+    seth send $SAI_ADM 'setRootUser(address,bool)' $ETH_FROM true
+fi
 
-seth send $DAI_FAB 'deployTokens()'
-seth send $DAI_FAB 'deployVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
-seth send $DAI_FAB 'deployTapTop()'
-seth send $DAI_FAB 'deployAuth(address, address)' $SAI_MOM_AUTH $SAI_CAGE_AUTH
+seth send $DAI_FAB 'makeTokens()'
+seth send $DAI_FAB 'makeVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
+seth send $DAI_FAB 'makeTapTop()'
+seth send $DAI_FAB 'configAuth(address)' $SAI_ADM
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
@@ -42,8 +45,7 @@ export SAI_GOV=$SAI_GOV
 export SAI_PIP=$SAI_PIP
 export SAI_PEP=$SAI_PEP
 export SAI_PIT=$SAI_PIT
-export SAI_MOM_AUTH=$SAI_MOM_AUTH
-export SAI_CAGE_AUTH=$SAI_CAGE_AUTH
+export SAI_ADM=$SAI_ADM
 export SAI_SAI=0x$(seth call $DAI_FAB 'sai()(address)')
 export SAI_SIN=0x$(seth call $DAI_FAB 'sin()(address)')
 export SAI_SKR=0x$(seth call $DAI_FAB 'skr()(address)')
