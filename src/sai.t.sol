@@ -10,7 +10,6 @@ import 'ds-value/value.sol';
 
 import './mom.sol';
 import './fab.sol';
-import './bin.sol';
 
 contract TestWarp is DSNote {
     uint256  _era;
@@ -74,7 +73,7 @@ contract DevTopFab {
 contract DevDadFab {
     function newDad() public returns (DSRoles dad) {
         dad = new DSRoles();
-        dad.setRootUser(Deployer(msg.sender).owner(), true); // test harness convenience
+        dad.setRootUser(DaiFab(msg.sender).owner(), true); // test harness convenience
         dad.setOwner(msg.sender);
     }
 }
@@ -143,7 +142,7 @@ contract SaiTestBase is DSTest, DSMath {
         MomFab momFab = new MomFab();
         DevDadFab dadFab = new DevDadFab();
 
-        Deployer deployer = new Deployer(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
+        DaiFab daiFab = new DaiFab(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
 
         gem = new DSToken('GEM');
         gem.mint(100 ether);
@@ -152,20 +151,20 @@ contract SaiTestBase is DSTest, DSMath {
         pep = new DSValue();
         pit = address(0x123);
 
-        deployer.deployTokens();
-        deployer.deployVoxTub(gem, gov, pip, pep, pit);
-        deployer.deployTapTop();
-        deployer.deployAuth(this, this);
+        daiFab.makeTokens();
+        daiFab.makeVoxTub(gem, gov, pip, pep, pit);
+        daiFab.makeTapTop();
+        daiFab.configAuth(this, this);
 
-        sai = DSToken(deployer.sai());
-        sin = DSToken(deployer.sin());
-        skr = DSToken(deployer.skr());
-        vox = DevVox(deployer.vox());
-        tub = DevTub(deployer.tub());
-        tap = SaiTap(deployer.tap());
-        top = DevTop(deployer.top());
-        mom = SaiMom(deployer.mom());
-        dad = DSRoles(deployer.dad());
+        sai = DSToken(daiFab.sai());
+        sin = DSToken(daiFab.sin());
+        skr = DSToken(daiFab.skr());
+        vox = DevVox(daiFab.vox());
+        tub = DevTub(daiFab.tub());
+        tap = SaiTap(daiFab.tap());
+        top = DevTop(daiFab.top());
+        mom = SaiMom(daiFab.mom());
+        dad = DSRoles(daiFab.dad());
 
         sai.approve(tub);
         skr.approve(tub);

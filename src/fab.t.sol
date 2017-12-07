@@ -2,7 +2,6 @@ pragma solidity ^0.4.18;
 
 import "ds-test/test.sol";
 import './fab.sol';
-import './bin.sol';
 
 contract BinTest is DSTest {
     TokFab tokFab;
@@ -13,23 +12,13 @@ contract BinTest is DSTest {
     MomFab momFab;
     DadFab dadFab;
 
-    Deployer deployer;
+    DaiFab daiFab;
 
     DSToken gem;
     DSToken gov;
     DSValue pip;
     DSValue pep;
     address pit;
-    // DSToken sai;
-    // DSToken sin;
-    // DSToken skr;
-
-    // SaiVox vox;
-    // SaiTap tap;
-    // SaiTub tub;
-    // SaiTop top;
-    // SaiMom mom;
-    // DSGuard dad;
 
     function setUp() public {
         tokFab = new TokFab();
@@ -40,7 +29,7 @@ contract BinTest is DSTest {
         momFab = new MomFab();
         dadFab = new DadFab();
 
-        deployer = new Deployer(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
+        daiFab = new DaiFab(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
 
         gem = new DSToken('GEM');
         gov = new DSToken('GOV');
@@ -49,25 +38,25 @@ contract BinTest is DSTest {
         pit = address(0x123);
     }
 
-    function testDeploy() public {
+    function testMake() public {
         uint startGas = msg.gas;
-        deployer.deployTokens();
+        daiFab.makeTokens();
         uint endGas = msg.gas;
-        log_named_uint('Deploy Tokens', startGas - endGas);
+        log_named_uint('Make Tokens', startGas - endGas);
 
         startGas = msg.gas;
-        deployer.deployVoxTub(gem, gov, pip, pep, pit);
+        daiFab.makeVoxTub(gem, gov, pip, pep, pit);
         endGas = msg.gas;
-        log_named_uint('Deploy Vox Tub', startGas - endGas);
+        log_named_uint('Make Vox Tub', startGas - endGas);
 
         startGas = msg.gas;
-        deployer.deployTapTop();
+        daiFab.makeTapTop();
         endGas = msg.gas;
-        log_named_uint('Deploy Tap Top', startGas - endGas);
+        log_named_uint('Make Tap Top', startGas - endGas);
 
         startGas = msg.gas;
-        deployer.deployAuth(this, this);
+        daiFab.configAuth(this, this);
         endGas = msg.gas;
-        log_named_uint('Deploy Auth', startGas - endGas);
+        log_named_uint('Config Auth', startGas - endGas);
     }
 }
