@@ -16,3 +16,6 @@
 [submodule "lib/ds-roles"]
 	path = lib/ds-roles
 	url = http://github.com/dapphub/ds-roles
+[submodule "lib/ds-chief"]
+	path = lib/ds-chief
+	url = https://github.com/dapphub/ds-chief
