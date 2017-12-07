@@ -2,7 +2,7 @@
 set -ex
 
 export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
-export ETH_GAS=${ETH_GAS:-"6000000"}
+export ETH_GAS=${ETH_GAS:-"3500000"}
 export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
 
 dapp build
@@ -21,12 +21,15 @@ test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
 test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
 test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
 
-BIN=$(dapp create Deployer $TOK_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
+DEPLOYER=$(dapp create Deployer $TOK_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
 
-seth send $BIN 'deployTokens()'
-seth send $BIN 'deployVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
-seth send $BIN 'deployTapTop()'
-seth send $BIN 'deployAuth()'
+test -z $SAI_MOM_AUTH && SAI_MOM_AUTH=$ETH_FROM
+test -z $SAI_CAGE_AUTH && SAI_CAGE_AUTH=$ETH_FROM
+
+seth send $DEPLOYER 'deployTokens()'
+seth send $DEPLOYER 'deployVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
+seth send $DEPLOYER 'deployTapTop()'
+seth send $DEPLOYER 'deployAuth(address, address)' $SAI_MOM_AUTH $SAI_CAGE_AUTH
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
@@ -39,14 +42,15 @@ export SAI_GOV=$SAI_GOV
 export SAI_PIP=$SAI_PIP
 export SAI_PEP=$SAI_PEP
 export SAI_PIT=$SAI_PIT
-export SAI_SAI=0x$(seth call $BIN 'sai()(address)')
-export SAI_SIN=0x$(seth call $BIN 'sin()(address)')
-export SAI_SKR=0x$(seth call $BIN 'skr()(address)')
-export SAI_DAD=0x$(seth call $BIN 'dad()(address)')
-export SAI_MOM=0x$(seth call $BIN 'mom()(address)')
-export SAI_VOX=0x$(seth call $BIN 'vox()(address)')
-# export SAI_CAGE_AUTH=$SAI_CAGE_AUTH
-export SAI_TUB=0x$(seth call $BIN 'tub()(address)')
-export SAI_TAP=0x$(seth call $BIN 'tap()(address)')
-export SAI_TOP=0x$(seth call $BIN 'top()(address)')
+export SAI_MOM_AUTH=$SAI_MOM_AUTH
+export SAI_CAGE_AUTH=$SAI_CAGE_AUTH
+export SAI_SAI=0x$(seth call $DEPLOYER 'sai()(address)')
+export SAI_SIN=0x$(seth call $DEPLOYER 'sin()(address)')
+export SAI_SKR=0x$(seth call $DEPLOYER 'skr()(address)')
+export SAI_DAD=0x$(seth call $DEPLOYER 'dad()(address)')
+export SAI_MOM=0x$(seth call $DEPLOYER 'mom()(address)')
+export SAI_VOX=0x$(seth call $DEPLOYER 'vox()(address)')
+export SAI_TUB=0x$(seth call $DEPLOYER 'tub()(address)')
+export SAI_TAP=0x$(seth call $DEPLOYER 'tap()(address)')
+export SAI_TOP=0x$(seth call $DEPLOYER 'top()(address)')
 EOF

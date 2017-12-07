@@ -16,3 +16,6 @@
 [submodule "lib/ds-roles"]
 	path = lib/ds-roles
 	url = http://github.com/dapphub/ds-roles
+[submodule "lib/ds-auth"]
+	path = lib/ds-auth
+	url = git@github.com:dapphub/ds-auth.git

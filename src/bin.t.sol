@@ -66,7 +66,7 @@ contract BinTest is DSTest {
         log_named_uint('Deploy Tap Top', startGas - endGas);
 
         startGas = msg.gas;
-        deployer.deployAuth();
+        deployer.deployAuth(this, this);
         endGas = msg.gas;
         log_named_uint('Deploy Auth', startGas - endGas);
     }

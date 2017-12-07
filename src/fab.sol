@@ -20,17 +20,17 @@ contract VoxFab {
     }
 }
 
-contract TapFab {
-    function newTap(SaiTub tub) public returns (SaiTap tap) {
-        tap = new SaiTap(tub);
-        tap.setOwner(msg.sender);
-    }
-}
-
 contract TubFab {
     function newTub(DSToken sai, DSToken sin, DSToken skr, DSToken gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
         tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
         tub.setOwner(msg.sender);
+    }
+}
+
+contract TapFab {
+    function newTap(SaiTub tub) public returns (SaiTap tap) {
+        tap = new SaiTap(tub);
+        tap.setOwner(msg.sender);
     }
 }
 
