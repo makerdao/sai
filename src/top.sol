@@ -4,7 +4,7 @@
 // Copyright (C) 2017  Daniel Brockman <daniel@dapphub.com>
 // Copyright (C) 2017  Rain <rainbreak@riseup.net>
 
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "./tub.sol";
 import "./tap.sol";

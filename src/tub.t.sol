@@ -1,6 +1,6 @@
 /// tub.t.sol -- Unit tests for tub.sol
 
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import './tub.sol';
 import './tap.sol';

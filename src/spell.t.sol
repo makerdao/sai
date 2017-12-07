@@ -3,7 +3,7 @@
 // Testing using a `DSSpell` as the `hat` in a `DSChief` for one-off
 // root calls or role changes.
 
-pragma solidity ^0.4.19;
+pragma solidity ^0.4.18;
 
 import 'ds-test/test.sol';
 
