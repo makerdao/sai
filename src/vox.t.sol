@@ -1,4 +1,4 @@
-pragma solidity ^0.4.15;
+pragma solidity ^0.4.18;
 
 import "ds-test/test.sol";
 import "ds-math/math.sol";
