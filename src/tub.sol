@@ -56,7 +56,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         address  lad;      // CDP owner
         uint256  ink;      // Locked collateral (in SKR)
         uint256  art;      // Outstanding normalised debt (tax only)
-        uint256  irk;      // Outstanding normalised debt
+        uint256  ire;      // Outstanding normalised debt
     }
 
     function lad(bytes32 cup) public view returns (address) {
@@ -69,7 +69,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         return rmul(cups[cup].art, chi());
     }
     function rap(bytes32 cup) public returns (uint) {
-        return sub(rmul(cups[cup].irk, rhi()), tab(cup));
+        return sub(rmul(cups[cup].ire, rhi()), tab(cup));
     }
 
     // Total CDP Debt
@@ -265,7 +265,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         rum = add(rum, rdiv(wad, chi()));
-        cups[cup].irk = add(cups[cup].irk, rdiv(wad, rhi()));
+        cups[cup].ire = add(cups[cup].ire, rdiv(wad, rhi()));
         sai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
@@ -278,7 +278,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
-        cups[cup].irk = sub(cups[cup].irk, rdiv(add(wad, owe), rhi()));
+        cups[cup].ire = sub(cups[cup].ire, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 
         var (val, ok) = pep.peek();
@@ -301,7 +301,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         sin.mint(tap, rue);
         rum = sub(rum, cups[cup].art);
         cups[cup].art = 0;
-        cups[cup].irk = 0;
+        cups[cup].ire = 0;
 
         // Amount owed in SKR, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());

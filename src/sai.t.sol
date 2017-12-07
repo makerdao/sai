@@ -2210,11 +2210,11 @@ contract FeeTest is SaiTestBase {
         var owe = tub.rap(cup);
         assertEq(owe, 5 ether);
 
-        var ( , , art, irk) = tub.cups(cup);
+        var ( , , art, ire) = tub.cups(cup);
         assertEq(art, 100 ether);
-        assertEq(irk, 100 ether);
+        assertEq(ire, 100 ether);
         assertEq(rdiv(wad, tub.chi()), art);
-        assertEq(rdiv(add(wad, owe), tub.rhi()), irk);
+        assertEq(rdiv(add(wad, owe), tub.rhi()), ire);
 
         assertEq(tub.rap(cup),   5 ether);
         assertEq(tub.tab(cup), 100 ether);
@@ -2324,11 +2324,11 @@ contract FeeTaxTest is SaiTestBase {
         var owe = tub.rap(cup);
         assertEq(owe, 5.25 ether);
 
-        var ( , , art, irk) = tub.cups(cup);
+        var ( , , art, ire) = tub.cups(cup);
         assertEq(art, 100 ether);
-        assertEq(irk, 100 ether);
+        assertEq(ire, 100 ether);
         assertEq(rdiv(wad, tub.chi()), art);
-        assertEq(rdiv(add(wad, owe), tub.rhi()), irk);
+        assertEq(rdiv(add(wad, owe), tub.rhi()), ire);
 
         sai.mint(5 ether);  // need to magic up some extra sai to pay tax
 
