@@ -174,6 +174,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     function join(uint wad) public note {
         require(!off);
+        require(ask(wad) > 0);
         require(gem.transferFrom(msg.sender, this, ask(wad)));
         skr.mint(msg.sender, wad);
     }
@@ -262,9 +263,11 @@ contract SaiTub is DSThing, SaiTubEvents {
     function draw(bytes32 cup, uint wad) public note {
         require(!off);
         require(msg.sender == cups[cup].lad);
+        require(rdiv(wad, chi()) > 0);
 
         cups[cup].art = add(cups[cup].art, rdiv(wad, chi()));
         rum = add(rum, rdiv(wad, chi()));
+
         cups[cup].ire = add(cups[cup].ire, rdiv(wad, rhi()));
         sai.mint(cups[cup].lad, wad);
 
@@ -278,6 +281,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
+
         cups[cup].ire = sub(cups[cup].ire, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 

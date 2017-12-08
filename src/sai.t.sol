@@ -1429,22 +1429,6 @@ contract TapTest is SaiTestBase {
 
         tap.bust(51 ether);
     }
-    function testTapBustHealsNetJoy() public {
-        sai.mint(tap, 20 ether);
-        sin.mint(tap, 10 ether);
-
-        tap.bust(0 ether);
-        assertEq(tap.joy(), 10 ether);
-        assertEq(tap.woe(),  0 ether);
-    }
-    function testTapBustHealsNetWoe() public {
-        sai.mint(tap, 10 ether);
-        sin.mint(tap, 20 ether);
-
-        tap.bust(0 ether);
-        assertEq(tap.joy(),  0 ether);
-        assertEq(tap.woe(), 10 ether);
-    }
     function testTapBustFlipHealsNetJoy() public {
         sai.mint(tap, 10 ether);
         sin.mint(tap, 20 ether);
