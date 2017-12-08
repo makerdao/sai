@@ -78,6 +78,8 @@ contract DaiFab is DSAuth {
     SaiMom public mom;
     DSGuard public dad;
 
+    uint8 public step = 0;
+
     function DaiFab(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
         gemFab = gemFab_;
         voxFab = voxFab_;
@@ -89,34 +91,31 @@ contract DaiFab is DSAuth {
     }
 
     function makeTokens() public auth {
-        require(address(sai) == 0x0 &&
-                address(sin) == 0x0 &&
-                address(skr) == 0x0);
+        require(step == 0);
         sai = gemFab.newTok('sai');
         sin = gemFab.newTok('sin');
         skr = gemFab.newTok('skr');
+        step += 1;
     }
 
-
     function makeVoxTub(DSToken gem, DSToken gov, DSValue pip, DSValue pep, address pit) public auth {
-        require(address(sai) != 0x0 &&
-                address(sin) != 0x0 &&
-                address(skr) != 0x0 &&
-                address(gem) != 0x0 &&
-                address(gov) != 0x0 &&
-                address(pip) != 0x0 &&
-                address(pep) != 0x0 &&
-                pit != 0x0);
+        require(step == 1);
+        require(address(gem) != 0x0);
+        require(address(gov) != 0x0);
+        require(address(pip) != 0x0);
+        require(address(pep) != 0x0);
+        require(pit != 0x0);
         vox = voxFab.newVox();
         tub = tubFab.newTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
+        step += 1;
     }
 
     function makeTapTop() public auth {
-        require(address(tub) != 0x0 &&
-                address(vox) != 0x0);
+        require(step == 2);
         tap = tapFab.newTap(tub);
         tub.turn(tap);
         top = topFab.newTop(tub, tap);
+        step += 1;
     }
 
     function S(string s) internal pure returns (bytes4) {
@@ -124,11 +123,8 @@ contract DaiFab is DSAuth {
     }
 
     function configAuth(DSAuthority authority) public auth {
-        require(address(vox) != 0x0 &&
-                address(tub) != 0x0 &&
-                address(tap) != 0x0 &&
-                address(top) != 0x0 &&
-                address(authority) != 0x0);
+        require(step == 3);
+        require(address(authority) != 0x0);
 
         mom = momFab.newMom(tub, tap, vox);
         dad = dadFab.newDad();
@@ -179,5 +175,6 @@ contract DaiFab is DSAuth {
         dad.permit(mom, tap, S("mold(bytes32,uint256)"));
 
         dad.setOwner(0);
+        step += 1;
     }
 }
