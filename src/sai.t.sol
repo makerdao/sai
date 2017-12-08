@@ -154,7 +154,7 @@ contract SaiTestBase is DSTest, DSMath {
         MomFab momFab = new MomFab();
         DevDadFab dadFab = new DevDadFab();
 
-        DaiFab daiFab = new DaiFab(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
+        DaiFab daiFab = new DaiFab(tokFab, VoxFab(voxFab), TubFab(tubFab), tapFab, TopFab(topFab), momFab, DadFab(dadFab));
 
         gem = new DSToken('GEM');
         gem.mint(100 ether);
