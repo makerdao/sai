@@ -7,7 +7,7 @@ export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
 
 dapp build
 
-(test -z $TOK_FAB || test -z $VOX_FAB || test -z $TUB_FAB || test -z $TAP_FAB  || test -z $TOP_FAB || test -z $MOM_FAB || test -z $DAD_FAB) && exit 1
+(test -z $GEM_FAB || test -z $VOX_FAB || test -z $TUB_FAB || test -z $TAP_FAB  || test -z $TOP_FAB || test -z $MOM_FAB || test -z $DAD_FAB) && exit 1
 
 export SETH_ASYNC=yes
 test -z $SAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
@@ -21,7 +21,7 @@ test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
 test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
 test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
 
-DAI_FAB=$(dapp create DaiFab $TOK_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
+DAI_FAB=$(dapp create DaiFab $GEM_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
 
 if [ -z $SAI_ADM ]
 then

@@ -9,7 +9,7 @@ dapp build
 
 export SETH_ASYNC=yes
 
-TOK_FABtx=$(dapp create TokFab)
+GEM_FABtx=$(dapp create GemFab)
 VOX_FABtx=$(dapp create VoxFab)
 TUB_FABtx=$(dapp create TubFab)
 TAP_FABtx=$(dapp create TapFab)
@@ -19,7 +19,7 @@ DAD_FABtx=$(dapp create DadFab)
 
 export SETH_ASYNC=no
 
-TOK_FAB=$(seth receipt $TOK_FABtx contractAddress)
+GEM_FAB=$(seth receipt $GEM_FABtx contractAddress)
 VOX_FAB=$(seth receipt $VOX_FABtx contractAddress)
 TUB_FAB=$(seth receipt $TUB_FABtx contractAddress)
 TAP_FAB=$(seth receipt $TAP_FABtx contractAddress)
@@ -33,7 +33,7 @@ cat > load-fab-$(seth chain) << EOF
 # fab deployment on $(seth chain) from $(git rev-parse HEAD)
 # $(date)
 
-export TOK_FAB=$TOK_FAB
+export GEM_FAB=$GEM_FAB
 export VOX_FAB=$VOX_FAB
 export TAP_FAB=$TAP_FAB
 export TUB_FAB=$TUB_FAB
