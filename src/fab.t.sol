@@ -4,7 +4,7 @@ import "ds-test/test.sol";
 import './fab.sol';
 
 contract BinTest is DSTest {
-    TokFab tokFab;
+    GemFab gemFab;
     VoxFab voxFab;
     TubFab tubFab;
     TapFab tapFab;
@@ -21,7 +21,7 @@ contract BinTest is DSTest {
     address pit;
 
     function setUp() public {
-        tokFab = new TokFab();
+        gemFab = new GemFab();
         voxFab = new VoxFab();
         tubFab = new TubFab();
         tapFab = new TapFab();
@@ -29,7 +29,7 @@ contract BinTest is DSTest {
         momFab = new MomFab();
         dadFab = new DadFab();
 
-        daiFab = new DaiFab(tokFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
+        daiFab = new DaiFab(gemFab, voxFab, tubFab, tapFab, topFab, momFab, dadFab);
 
         gem = new DSToken('GEM');
         gov = new DSToken('GOV');

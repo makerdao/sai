@@ -8,7 +8,7 @@ import 'ds-value/value.sol';
 
 import './mom.sol';
 
-contract TokFab {
+contract GemFab {
     function newTok(bytes32 name) public returns (DSToken token) {
         token = new DSToken(name);
         token.setOwner(msg.sender);
@@ -58,7 +58,7 @@ contract DadFab {
 }
 
 contract DaiFab is DSAuth {
-    TokFab public tokFab;
+    GemFab public gemFab;
     VoxFab public voxFab;
     TapFab public tapFab;
     TubFab public tubFab;
@@ -78,8 +78,8 @@ contract DaiFab is DSAuth {
     SaiMom public mom;
     DSGuard public dad;
 
-    function DaiFab(TokFab tokFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
-        tokFab = tokFab_;
+    function DaiFab(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
+        gemFab = gemFab_;
         voxFab = voxFab_;
         tubFab = tubFab_;
         tapFab = tapFab_;
@@ -92,9 +92,9 @@ contract DaiFab is DSAuth {
         require(address(sai) == 0x0 &&
                 address(sin) == 0x0 &&
                 address(skr) == 0x0);
-        sai = tokFab.newTok('sai');
-        sin = tokFab.newTok('sin');
-        skr = tokFab.newTok('skr');
+        sai = gemFab.newTok('sai');
+        sin = gemFab.newTok('sin');
+        skr = gemFab.newTok('skr');
     }
 
 
