@@ -9,6 +9,7 @@ import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
 import './mom.sol';
+import './fab.sol';
 
 contract TestWarp is DSNote {
     uint256  _era;
@@ -45,7 +46,49 @@ contract DevTub is SaiTub, TestWarp {
 contract DevTop is SaiTop, TestWarp {
     function DevTop(SaiTub tub_, SaiTap tap_) public SaiTop(tub_, tap_) {}
 }
+
 contract DevVox is SaiVox, TestWarp {}
+
+contract DevVoxFab {
+    function newVox() public returns (DevVox vox) {
+        vox = new DevVox();
+        vox.setOwner(msg.sender);
+    }
+}
+
+contract DevTubFab {
+    function newTub(DSToken sai, DSToken sin, DSToken skr, DSToken gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (DevTub tub) {
+        tub = new DevTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
+        tub.setOwner(msg.sender);
+    }
+}
+
+contract DevTopFab {
+    function newTop(DevTub tub, SaiTap tap) public returns (DevTop top) {
+        top = new DevTop(tub, tap);
+        top.setOwner(msg.sender);
+    }
+}
+
+contract DevDadFab {
+    function newDad() public returns (DSGuard dad) {
+        dad = new DSGuard();
+        // convenience in tests
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sai(), bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).sin(), bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('mint(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('burn(uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(DaiFab(msg.sender).owner(), DaiFab(msg.sender).skr(), bytes4(keccak256('burn(address,uint256)')));
+        dad.setOwner(msg.sender);
+    }
+}
 
 contract FakePerson {
     SaiTap  public tap;
@@ -78,7 +121,7 @@ contract SaiTestBase is DSTest, DSMath {
 
     address  pit;
 
-    DSValue  tag;
+    DSValue  pip;
     DSValue  pep;
     DSRoles  dad;
 
@@ -90,7 +133,7 @@ contract SaiTestBase is DSTest, DSMath {
     }
 
     function mark(uint price) internal {
-        tag.poke(bytes32(price));
+        pip.poke(bytes32(price));
     }
     function mark(DSToken tkn, uint price) internal {
         if (tkn == gov) pep.poke(bytes32(price));
@@ -102,97 +145,40 @@ contract SaiTestBase is DSTest, DSMath {
         top.warp(age);
     }
 
-    // TODO move to DSThing
-    function S(string s) public pure returns (bytes4) {
-        return bytes4(keccak256(s));
-    }
-
-    function configureAuth() public {
-        vox.setAuthority(dad);
-        tub.setAuthority(dad);
-        tap.setAuthority(dad);
-        top.setAuthority(dad);
-
-        sai.setAuthority(dad);
-        sin.setAuthority(dad);
-        skr.setAuthority(dad);
-
-        vox.setOwner(0);
-        tub.setOwner(0);
-        tap.setOwner(0);
-        top.setOwner(0);
-
-        sai.setOwner(0);
-        sin.setOwner(0);
-        skr.setOwner(0);
-
-        uint8 SYS = 0; // sai system contracts, only call each other
-        uint8 TOP = 1;
-        uint8 MOM = 2;
-
-        dad.setRootUser(this, true); // test harness convenience
-        dad.setUserRole(top, TOP, true);
-        dad.setUserRole(mom, MOM, true);
-        dad.setUserRole(vox, SYS, true);
-        dad.setUserRole(tub, SYS, true);
-        dad.setUserRole(tap, SYS, true);
-        // dad.setUserRole(sai, SYS, true);   no calls?
-        // dad.setUserRole(sin, SYS, true);
-        // dad.setUserRole(skr, SYS, true);
-
-        dad.setRoleCapability(TOP, tub, S('cage(uint256,uint256)'), true);
-        dad.setRoleCapability(TOP, tub, S('flow()'), true);
-        dad.setRoleCapability(TOP, tap, S('cage(uint256)'), true);
-
-        dad.setRoleCapability(MOM, vox, S('mold(bytes32,uint256)'), true);
-        dad.setRoleCapability(MOM, tub, S('mold(bytes32,uint256)'), true);
-        dad.setRoleCapability(MOM, tap, S('mold(bytes32,uint256)'), true);
-
-        dad.setRoleCapability(SYS, skr, S('mint(address,uint256)'), true);
-        dad.setRoleCapability(SYS, skr, S('mint(uint256)'), true);
-        dad.setRoleCapability(SYS, skr, S('burn(address,uint256)'), true);
-        dad.setRoleCapability(SYS, skr, S('burn(uint256)'), true);   // TODO actually public?
-
-        dad.setRoleCapability(SYS, sai, S('mint(address,uint256)'), true);
-        dad.setRoleCapability(SYS, sai, S('mint(uint256)'), true);
-        dad.setRoleCapability(SYS, sai, S('burn(address,uint256)'), true);
-        dad.setRoleCapability(SYS, sai, S('burn(uint256)'), true);
-
-        dad.setRoleCapability(SYS, sin, S('mint(address,uint256)'), true);
-        dad.setRoleCapability(SYS, sin, S('mint(uint256)'), true);
-        dad.setRoleCapability(SYS, sin, S('burn(address,uint256)'), true);
-        dad.setRoleCapability(SYS, sin, S('burn(uint256)'), true);
-
-        dad.setOwner(0);
-    }
-
     function setUp() public {
-        gem = new DSToken("GEM");
+        GemFab gemFab = new GemFab();
+        DevVoxFab voxFab = new DevVoxFab();
+        DevTubFab tubFab = new DevTubFab();
+        TapFab tapFab = new TapFab();
+        DevTopFab topFab = new DevTopFab();
+        MomFab momFab = new MomFab();
+        DevDadFab dadFab = new DevDadFab();
+
+        DaiFab daiFab = new DaiFab(gemFab, VoxFab(voxFab), TubFab(tubFab), tapFab, TopFab(topFab), momFab, DadFab(dadFab));
+
+        gem = new DSToken('GEM');
         gem.mint(100 ether);
-
-        sai = new DSToken("SAI");
-        sin = new DSToken("SIN");
-
-        skr = new DSToken("SKR");
-
-        gov = new DSToken("GOV");
-
-        tag = new DSValue();
+        gov = new DSToken('GOV');
+        pip = new DSValue();
         pep = new DSValue();
-        vox = new DevVox();
-
         pit = address(0x123);
 
-        tub = new DevTub(sai, sin, skr, gem, gov, tag, pep, vox, pit);
-        tap = new SaiTap(tub);
-        tub.turn(tap);
-        top = new DevTop(tub, tap);
+        daiFab.makeTokens();
+        daiFab.makeVoxTub(gem, gov, pip, pep, pit);
+        daiFab.makeTapTop();
+        DSRoles authority = new DSRoles();
+        authority.setRootUser(this, true);
+        daiFab.configAuth(authority);
 
-        dad = new DSRoles();
-
-        mom = new SaiMom(tub, tap, vox);
-
-        configureAuth();
+        sai = DSToken(daiFab.sai());
+        sin = DSToken(daiFab.sin());
+        skr = DSToken(daiFab.skr());
+        vox = DevVox(daiFab.vox());
+        tub = DevTub(daiFab.tub());
+        tap = SaiTap(daiFab.tap());
+        top = DevTop(daiFab.top());
+        mom = SaiMom(daiFab.mom());
+        dad = DSRoles(daiFab.dad());
 
         sai.approve(tub);
         skr.approve(tub);
