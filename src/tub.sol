@@ -206,10 +206,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         var inc = RAY;
 
         if (tax != RAY) {  // optimised
+            var _chi_ = _chi;
             inc = rpow(tax, age);
-            var din_ = din();
             _chi = rmul(_chi, inc);
-            sai.mint(tap, sub(din(), din_));
+            sai.mint(tap, rmul(sub(_chi, _chi_), rum));
         }
 
         // optimised
