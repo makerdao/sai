@@ -1612,7 +1612,23 @@ contract TaxTest is SaiTestBase {
         warp(1 days);
         assertEq(tub.tab(cup), 110.25 ether);
     }
-    // Tax accumulates as sai surplus, and sin debt
+    // rum doesn't change on drip
+    function testTaxRum() public {
+        taxSetup();
+        assertEq(tub.rum(),    100 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.rum(),    100 ether);
+    }
+    // din increases on drip
+    function testTaxDin() public {
+        taxSetup();
+        assertEq(tub.din(),    100 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.din(),    105 ether);
+    }
+    // Tax accumulates as sai surplus, and CDP debt
     function testTaxJoy() public {
         var cup = taxSetup();
         assertEq(tub.tab(cup), 100 ether);
@@ -1622,6 +1638,58 @@ contract TaxTest is SaiTestBase {
         assertEq(tub.tab(cup), 105 ether);
         assertEq(tub.din(),    105 ether);
         assertEq(tap.joy(),      5 ether);
+    }
+    function testTaxJoy2() public {
+        var cup = taxSetup();
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.din(),    100 ether);
+        assertEq(tap.joy(),      0 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.din(),    105 ether);
+        assertEq(tap.joy(),      5 ether);
+        // now ensure din != rum
+        tub.wipe(cup, 5 ether);
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.din(),    100 ether);
+        assertEq(tap.joy(),      5 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.din(),    105 ether);
+        assertEq(tap.joy(),     10 ether);
+    }
+    function testTaxJoy3() public {
+        var cup = taxSetup();
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.din(),    100 ether);
+        assertEq(tap.joy(),      0 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.din(),    105 ether);
+        assertEq(tap.joy(),      5 ether);
+        // now ensure rum changes
+        tub.wipe(cup, 5 ether);
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.din(),    100 ether);
+        assertEq(tap.joy(),      5 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.din(),    105 ether);
+        assertEq(tap.joy(),     10 ether);
+        // and ensure the last rum != din either
+        tub.wipe(cup, 5 ether);
+        assertEq(tub.tab(cup), 100 ether);
+        assertEq(tub.din(),    100 ether);
+        assertEq(tap.joy(),     10 ether);
+        warp(1 days);
+        tub.drip();
+        assertEq(tub.tab(cup), 105 ether);
+        assertEq(tub.din(),    105 ether);
+        assertEq(tap.joy(),     15 ether);
     }
     function testTaxDraw() public {
         var cup = taxSetup();
