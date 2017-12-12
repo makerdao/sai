@@ -250,6 +250,21 @@ contract SaiTubTest is SaiTestBase {
         assertTrue( mom.call(setAxe, ray(2 ether)));
         assertTrue(!mom.call(setMat, ray(1 ether)));
     }
+    function testPriceFeedSetters() public {
+        var setPip = bytes4(keccak256('setPip(address)'));
+        var setPep = bytes4(keccak256('setPep(address)'));
+        var setVox = bytes4(keccak256('setVox(address)'));
+
+        assertTrue(tub.pip() != address(0x1));
+        assertTrue(tub.pep() != address(0x2));
+        assertTrue(tub.vox() != address(0x3));
+        assertTrue(mom.call(setPip, address(0x1)));
+        assertTrue(mom.call(setPep, address(0x2)));
+        assertTrue(mom.call(setVox, address(0x3)));
+        assertTrue(tub.pip() == address(0x1));
+        assertTrue(tub.pep() == address(0x2));
+        assertTrue(tub.vox() == address(0x3));
+    }
     function testJoinInitial() public {
         assertEq(skr.totalSupply(),     0 ether);
         assertEq(skr.balanceOf(this),   0 ether);

@@ -57,6 +57,18 @@ contract SaiMom is DSThing {
     function setTubGap(uint wad) public note auth {
         tub.mold("gap", wad);
     }
+    // ETH/USD Feed
+    function setPip(DSValue pip_) public note auth {
+        tub.setPip(pip_);
+    }
+    // MKR/USD Feed
+    function setPep(DSValue pep_) public note auth {
+        tub.setPep(pep_);
+    }
+    // TRFM
+    function setVox(SaiVox vox_) public note auth {
+        tub.setVox(vox_);
+    }
     // Boom/Bust Spread
     function setTapGap(uint wad) public note auth {
         tap.mold("gap", wad);
