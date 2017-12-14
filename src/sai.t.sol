@@ -2470,3 +2470,56 @@ contract AxeTest is SaiTestBase {
         assertEq(tub.ink(cup), 10 ether);
     }
 }
+
+contract BigCrashTest is SaiTestBase {
+    function testCrash() public {
+        mom.setCap(100 ether);
+        mom.setMat(ray(1.5 ether));
+        mark(1 ether);
+        tub.join(20 ether);
+
+        var cup = tub.open();
+        tub.lock(cup, 20 ether);
+        tub.draw(cup, 10 ether);  // 200% collat
+
+        // crash the price
+        mark(0.5 ether);
+        tub.bite(cup);
+
+        assertEq(tub.pie(), 20 ether);
+        assertEq(tap.woe(), 10 ether);
+        assertEq(tap.fog(), 20 ether);
+        // now value of the pie == value of woe
+        assertEq(rmul(tub.tag(), tub.pie()), 10 ether);
+
+        // mint infinite skr
+        tap.bust(uint(-1));
+        assertEq(skr.totalSupply(), uint(-1));
+
+        // how much can we exit with
+        assertEq(tub.bid(skr.balanceOf(this)), 0 ether);
+    }
+    function testOverCrash() public {
+        mom.setCap(100 ether);
+        mom.setMat(ray(1.5 ether));
+        mark(1 ether);
+        tub.join(20 ether);
+
+        var cup = tub.open();
+        tub.lock(cup, 20 ether);
+        tub.draw(cup, 10 ether);  // 200% collat
+
+        // crash the price
+        mark(0.25 ether);
+        tub.bite(cup);
+
+        assertEq(tub.pie(), 20 ether);
+        assertEq(tap.woe(), 10 ether);
+        // now value of the pie < value of woe
+        assertEq(rmul(tub.tag(), tub.pie()), 5 ether);
+
+        // mint infinite skr
+        tap.bust(uint(-1) - 20 ether);
+        assertEq(skr.totalSupply(), uint(-1));
+    }
+}
