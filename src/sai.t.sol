@@ -2520,3 +2520,17 @@ contract AxeTest is SaiTestBase {
         assertEq(tub.ink(cup), 10 ether);
     }
 }
+
+contract DustTest is SaiTestBase {
+    function testFailLockUnderDust() public {
+        tub.join(1 ether);
+        var cup = tub.open();
+        tub.lock(cup, 0.0049 ether);
+    }
+    function testFailFreeUnderDust() public {
+        tub.join(1 ether);
+        var cup = tub.open();
+        tub.lock(cup, 1 ether);
+        tub.free(cup, 0.995 ether);
+    }
+}

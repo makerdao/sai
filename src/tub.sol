@@ -252,12 +252,14 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         cups[cup].ink = add(cups[cup].ink, wad);
         skr.pull(msg.sender, wad);
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
     function free(bytes32 cup, uint wad) public note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
         skr.push(msg.sender, wad);
         require(safe(cup));
+        require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
 
     function draw(bytes32 cup, uint wad) public note {
