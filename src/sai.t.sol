@@ -237,6 +237,22 @@ contract SaiTubTest is SaiTestBase {
         assertEq( sai.balanceOf(this), 0 ether);
         assertEq( skr.balanceOf(this), 20 ether );
     }
+    function testGive() public {
+        var cup = tub.open();
+        assertEq(tub.lad(cup), this);
+
+        address ali = 0x456;
+        tub.give(cup, ali);
+        assertEq(tub.lad(cup), ali);
+    }
+    function testFailGiveNotLad() public {
+        var cup = tub.open();
+        address ali = 0x456;
+        tub.give(cup, ali);
+
+        address bob = 0x789;
+        tub.give(cup, bob);
+    }
     function testMold() public {
         var setAxe = bytes4(keccak256('setAxe(uint256)'));
         var setCap = bytes4(keccak256('setCap(uint256)'));
