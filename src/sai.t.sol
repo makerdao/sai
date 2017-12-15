@@ -47,11 +47,13 @@ contract DevTop is SaiTop, TestWarp {
     function DevTop(SaiTub tub_, SaiTap tap_) public SaiTop(tub_, tap_) {}
 }
 
-contract DevVox is SaiVox, TestWarp {}
+contract DevVox is SaiVox, TestWarp {
+    function DevVox(uint par_) SaiVox(par_) public {}
+}
 
 contract DevVoxFab {
     function newVox() public returns (DevVox vox) {
-        vox = new DevVox();
+        vox = new DevVox(10 ** 27);
         vox.setOwner(msg.sender);
     }
 }

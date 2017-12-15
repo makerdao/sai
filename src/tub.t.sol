@@ -32,7 +32,7 @@ contract TubTest is DSTest, DSThing {
         pip = new DSValue();
         pep = new DSValue();
         dad = new DSGuard();
-        vox = new SaiVox();
+        vox = new SaiVox(RAY);
         tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, 0x123);
         tap = 0x456;
         tub.turn(tap);

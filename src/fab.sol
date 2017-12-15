@@ -17,7 +17,7 @@ contract GemFab {
 
 contract VoxFab {
     function newVox() public returns (SaiVox vox) {
-        vox = new SaiVox();
+        vox = new SaiVox(10 ** 27);
         vox.setOwner(msg.sender);
     }
 }
