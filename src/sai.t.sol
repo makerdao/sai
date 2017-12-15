@@ -568,6 +568,38 @@ contract CageTest is SaiTestBase {
         assertEq(top.fix(), ray(4 ether));                 // sai redeems 1:4 with gem, 1:1 with ref
     }
 
+    function testCageNoSai() public {
+        var cup = cageSetup();
+        tub.wipe(cup, 5 ether);
+        assertEq(sai.totalSupply(), 0);
+
+        top.cage();
+        assertEq(top.fix(), ray(1 ether));
+    }
+    function testMock() public {
+        cageSetup();
+        top.cage();
+
+        gem.mint(1000 ether);
+        gem.approve(tap);
+        tap.mock(1000 ether);
+        assertEq(sai.balanceOf(this), 1005 ether);
+        assertEq(gem.balanceOf(tap),  1005 ether);
+    }
+    function testMockNoSai() public {
+        var cup = cageSetup();
+        tub.wipe(cup, 5 ether);
+        assertEq(sai.totalSupply(), 0);
+
+        top.cage();
+
+        gem.mint(1000 ether);
+        gem.approve(tap);
+        tap.mock(1000 ether);
+        assertEq(sai.balanceOf(this), 1000 ether);
+        assertEq(gem.balanceOf(tap),  1000 ether);
+    }
+
     // ensure cash returns the expected amount
     function testCashSafeOverCollat() public {
         var cup = cageSetup();
