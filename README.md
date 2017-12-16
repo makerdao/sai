@@ -18,8 +18,8 @@ collateral with `exit`. You will get more or less `gem` tokens for each
 `skr` depending whether the system made a profit or loss while you
 were exposed.
 
-<!-- The oracle updates the GEM:REF price feed. This is the only external
-real-time input to the system. REVIEW THIS!!! -->
+The oracle updates the GEM:REF and GOV:REF price feeds. These are the
+only external real-time input to the system.
 
 `skr` is used as the direct backing collateral for CDPs. A prospective
 issuer can `open` an empty position, `lock` some `skr` and then `draw`
@@ -35,11 +35,12 @@ Under-collateralized CDPs can be liquidated with `bite`. Liquidation is
 immediate: backing `skr` is taken to cover the `sai` debt at the time of
 `bite`, plus a liquidation fee (`axe`); any excess remains in the CDP.
 
-Collected stability fees (`joy`) can be purchased with `boom`, in exchange for
-`skr` at the `s2s` price. This `skr` gets burned which profits all `skr` holders.
-
 `skr` seized from bad CDPs can be purchased with `bust`, in exchange for
 `sai` at the `s2s` price. This `sai` pays down the bad CDP debt.
+
+Any remaining Sai surplus (`joy`) can be purchased with `boom`, in
+exchange for `skr` at the `s2s` price. This `skr` is burned.
+
 
 ### Fees
 
