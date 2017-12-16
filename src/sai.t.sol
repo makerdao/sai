@@ -8,6 +8,7 @@ import 'ds-token/token.sol';
 import 'ds-roles/roles.sol';
 import 'ds-value/value.sol';
 
+import './weth9.sol';
 import './mom.sol';
 import './fab.sol';
 
@@ -115,7 +116,7 @@ contract SaiTestBase is DSTest, DSMath {
 
     SaiMom   mom;
 
-    DSToken  gem;
+    WETH9    gem;
     DSToken  sai;
     DSToken  sin;
     DSToken  skr;
@@ -138,8 +139,8 @@ contract SaiTestBase is DSTest, DSMath {
         pip.poke(bytes32(price));
     }
     function mark(DSToken tkn, uint price) internal {
-        if (tkn == gov) pep.poke(bytes32(price));
-        else if (tkn == gem) mark(price);
+        if (address(tkn) == address(gov)) pep.poke(bytes32(price));
+        else if (address(tkn) == address(gem)) mark(price);
     }
     function warp(uint256 age) internal {
         vox.warp(age);
@@ -158,15 +159,15 @@ contract SaiTestBase is DSTest, DSMath {
 
         DaiFab daiFab = new DaiFab(gemFab, VoxFab(voxFab), TubFab(tubFab), tapFab, TopFab(topFab), momFab, DadFab(dadFab));
 
-        gem = new DSToken('GEM');
-        gem.mint(100 ether);
+        gem = new WETH9();
+        gem.deposit.value(100 ether)();
         gov = new DSToken('GOV');
         pip = new DSValue();
         pep = new DSValue();
         pit = address(0x123);
 
         daiFab.makeTokens();
-        daiFab.makeVoxTub(gem, gov, pip, pep, pit);
+        daiFab.makeVoxTub(ERC20(gem), gov, pip, pep, pit);
         daiFab.makeTapTop();
         DSRoles authority = new DSRoles();
         authority.setRootUser(this, true);
@@ -184,7 +185,7 @@ contract SaiTestBase is DSTest, DSMath {
 
         sai.approve(tub);
         skr.approve(tub);
-        gem.approve(tub);
+        gem.approve(tub, uint(-1));
         gov.approve(tub);
 
         sai.approve(tap);
@@ -582,8 +583,8 @@ contract CageTest is SaiTestBase {
         cageSetup();
         top.cage();
 
-        gem.mint(1000 ether);
-        gem.approve(tap);
+        gem.deposit.value(1000 ether)();
+        gem.approve(tap, uint(-1));
         tap.mock(1000 ether);
         assertEq(sai.balanceOf(this), 1005 ether);
         assertEq(gem.balanceOf(tap),  1005 ether);
@@ -595,8 +596,8 @@ contract CageTest is SaiTestBase {
 
         top.cage();
 
-        gem.mint(1000 ether);
-        gem.approve(tap);
+        gem.deposit.value(1000 ether)();
+        gem.approve(tap, uint(-1));
         tap.mock(1000 ether);
         assertEq(sai.balanceOf(this), 1000 ether);
         assertEq(gem.balanceOf(tap),  1000 ether);
@@ -1645,7 +1646,7 @@ contract TaxTest is SaiTestBase {
     }
     function taxSetup() public returns (bytes32 cup) {
         mark(10 ether);
-        gem.mint(1000 ether);
+        gem.deposit.value(1000 ether)();
 
         mom.setCap(1000 ether);
         mom.setTax(1000000564701133626865910626);  // 5% / day
@@ -1869,7 +1870,7 @@ contract TaxTest is SaiTestBase {
 contract WayTest is SaiTestBase {
     function waySetup() public returns (bytes32 cup) {
         mark(10 ether);
-        gem.mint(1000 ether);
+        gem.deposit.value(1000 ether)();
 
         mom.setCap(1000 ether);
 
@@ -2003,7 +2004,7 @@ contract GapTest is SaiTestBase {
     function setUp() public {
         super.setUp();
 
-        gem.mint(500 ether);
+        gem.deposit.value(500 ether)();
         tub.join(500 ether);
 
         sai.mint(500 ether);
@@ -2087,7 +2088,7 @@ contract GapTest is SaiTestBase {
         assertEq(tub.ask(1 ether), 2.02 ether);
     }
     function testGapJoin() public {
-        gem.mint(100 ether);
+        gem.deposit.value(100 ether)();
 
         mom.setTubGap(1.05 ether);
         var skr_before = skr.balanceOf(this);
@@ -2100,7 +2101,7 @@ contract GapTest is SaiTestBase {
         assertEq(gem_before - gem_after, 105 ether);
     }
     function testGapExit() public {
-        gem.mint(100 ether);
+        gem.deposit.value(100 ether)();
         tub.join(100 ether);
 
         mom.setTubGap(1.05 ether);
@@ -2121,7 +2122,7 @@ contract GasTest is SaiTestBase {
         super.setUp();
 
         mark(1 ether);
-        gem.mint(1000 ether);
+        gem.deposit.value(1000 ether)();
 
         mom.setCap(1000 ether);
 
@@ -2217,7 +2218,7 @@ contract FeeTest is SaiTestBase {
     function feeSetup() public returns (bytes32 cup) {
         mark(10 ether);
         mark(gov, 1 ether / 2);
-        gem.mint(1000 ether);
+        gem.deposit.value(1000 ether)();
         gov.mint(100 ether);
 
         mom.setCap(1000 ether);
@@ -2364,7 +2365,7 @@ contract FeeTaxTest is SaiTestBase {
     function feeSetup() public returns (bytes32 cup) {
         mark(10 ether);
         mark(gov, 1 ether / 2);
-        gem.mint(1000 ether);
+        gem.deposit.value(1000 ether)();
         gov.mint(100 ether);
 
         mom.setCap(1000 ether);

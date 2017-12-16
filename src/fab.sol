@@ -23,7 +23,7 @@ contract VoxFab {
 }
 
 contract TubFab {
-    function newTub(DSToken sai, DSToken sin, DSToken skr, DSToken gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
+    function newTub(DSToken sai, DSToken sin, DSToken skr, ERC20 gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
         tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
         tub.setOwner(msg.sender);
     }
@@ -98,7 +98,7 @@ contract DaiFab is DSAuth {
         step += 1;
     }
 
-    function makeVoxTub(DSToken gem, DSToken gov, DSValue pip, DSValue pep, address pit) public auth {
+    function makeVoxTub(ERC20 gem, DSToken gov, DSValue pip, DSValue pep, address pit) public auth {
         require(step == 1);
         require(address(gem) != 0x0);
         require(address(gov) != 0x0);
