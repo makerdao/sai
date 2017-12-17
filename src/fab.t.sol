@@ -62,6 +62,16 @@ contract BinTest is DSTest {
         log_named_uint('Make Tap Top', startGas - endGas);
 
         startGas = msg.gas;
+        daiFab.configParams();
+        endGas = msg.gas;
+        log_named_uint('Config Params', startGas - endGas);
+
+        startGas = msg.gas;
+        daiFab.verifyParams();
+        endGas = msg.gas;
+        log_named_uint('Verify Params', startGas - endGas);
+
+        startGas = msg.gas;
         daiFab.configAuth(authority);
         endGas = msg.gas;
         log_named_uint('Config Auth', startGas - endGas);

@@ -170,6 +170,8 @@ contract SaiTestBase is DSTest, DSMath {
         daiFab.makeTokens();
         daiFab.makeVoxTub(ERC20(gem), gov, pip, pep, pit);
         daiFab.makeTapTop();
+        daiFab.configParams();
+        daiFab.verifyParams();
         DSRoles authority = new DSRoles();
         authority.setRootUser(this, true);
         daiFab.configAuth(authority);
@@ -196,6 +198,12 @@ contract SaiTestBase is DSTest, DSMath {
         mark(gov, 1 ether);
 
         mom.setCap(20 ether);
+        mom.setAxe(ray(1 ether));
+        mom.setMat(ray(1 ether));
+        mom.setTax(ray(1 ether));
+        mom.setFee(ray(1 ether));
+        mom.setTubGap(1 ether);
+        mom.setTapGap(1 ether);
     }
 }
 
@@ -2131,6 +2139,12 @@ contract GasTest is SaiTestBase {
         gem.deposit.value(1000 ether)();
 
         mom.setCap(1000 ether);
+        mom.setAxe(ray(1 ether));
+        mom.setMat(ray(1 ether));
+        mom.setTax(ray(1 ether));
+        mom.setFee(ray(1 ether));
+        mom.setTubGap(1 ether);
+        mom.setTapGap(1 ether);
 
         cup = tub.open();
         tub.join(1000 ether);

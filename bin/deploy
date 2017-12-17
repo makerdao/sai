@@ -32,6 +32,8 @@ fi
 seth send $DAI_FAB 'makeTokens()'
 seth send $DAI_FAB 'makeVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
 seth send $DAI_FAB 'makeTapTop()'
+seth send $DAI_FAB 'configParams()'
+seth send $DAI_FAB 'verifyParams()'
 seth send $DAI_FAB 'configAuth(address)' $SAI_ADM
 
 cat > load-env-$(seth chain) << EOF

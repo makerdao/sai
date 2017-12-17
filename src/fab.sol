@@ -122,8 +122,52 @@ contract DaiFab is DSAuth {
         return bytes4(keccak256(s));
     }
 
-    function configAuth(DSAuthority authority) public auth {
+    function ray(uint256 wad) internal pure returns (uint256) {
+        return wad * 10 ** 9;
+    }
+
+    // Liquidation Ratio   150%
+    // Liquidation Penalty 13%
+    // Stability Fee       0.05%
+    // PETH Fee            0%
+    // Boom/Bust Spread   -3%
+    // Join/Exit Spread    0%
+    // Debt Ceiling        0
+    function configParams() public auth {
         require(step == 3);
+
+        tub.mold("cap", 0);
+        tub.mold("mat", ray(1.5  ether));
+        tub.mold("axe", ray(1.13 ether));
+        tub.mold("fee", 1000000000158153903837946257);  // 0.5% / year
+        tub.mold("tax", ray(1 ether));
+        tub.mold("gap", 1 ether);
+
+        tap.mold("gap", 0.97 ether);
+
+        step += 1;
+    }
+
+    function verifyParams() public auth {
+        require(step == 4);
+
+        require(tub.cap() == 0);
+        require(tub.mat() == 1500000000000000000000000000);
+        require(tub.axe() == 1130000000000000000000000000);
+        require(tub.fee() == 1000000000158153903837946257);
+        require(tub.tax() == 1000000000000000000000000000);
+        require(tub.gap() == 1000000000000000000);
+
+        require(tap.gap() == 970000000000000000);
+
+        require(vox.par() == 1000000000000000000000000000);
+        require(vox.how() == 0);
+
+        step += 1;
+    }
+
+    function configAuth(DSAuthority authority) public auth {
+        require(step == 5);
         require(address(authority) != 0x0);
 
         mom = momFab.newMom(tub, tap, vox);
