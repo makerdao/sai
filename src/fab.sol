@@ -169,6 +169,7 @@ contract DaiFab is DSAuth {
         dad.permit(tap, skr, S('burn(address,uint256)'));
 
         dad.permit(mom, vox, S("mold(bytes32,uint256)"));
+        dad.permit(mom, vox, S("tune(uint256)"));
         dad.permit(mom, tub, S("mold(bytes32,uint256)"));
         dad.permit(mom, tap, S("mold(bytes32,uint256)"));
         dad.permit(mom, tub, S("setPip(address)"));
