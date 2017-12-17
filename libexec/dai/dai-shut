@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-shut -- close a cup
+### Usage: dai --cup=<id> shut
+set -e
+[ ! -z "$DAI_CUP" ] || dai shut --usage
+echo >&2 "Closing cup $((${DAI_CUP?}))..."
+(set -x; seth send "${DAI_TUB?}" "shut(bytes32)" "$DAI_CUP")

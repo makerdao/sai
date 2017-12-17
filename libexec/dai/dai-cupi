@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-cupi -- get the last cup id
+set -e
+id=$(seth call "${DAI_TUB?}" "cupi()")
+seth --abi-decode 'f()(uint256)' "$id" | seth --to-dec

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### dai-out -- get the post cage exit flag
+set -e
+seth call "${DAI_TUB?}" "out()(bool)"

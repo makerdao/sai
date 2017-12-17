@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### dai-heal -- cancel debt
+set -e
+(set -x; seth send "${DAI_TAP?}" "heal()")

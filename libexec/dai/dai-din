@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-din -- get the debt backed by CDPs
+set -e
+wad=$(seth call "${DAI_TUB?}" "din()")
+dai wad -h "$wad"

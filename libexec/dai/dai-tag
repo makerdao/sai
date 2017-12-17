@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-tag -- get the reference price (ref per peth)
+set -e
+ray=$(seth call "${DAI_TUB?}" "tag()")
+dai ray -h "$ray"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-mat -- get the liquidation ratio
+set -e
+ray=$(seth call "${DAI_TUB?}" "mat()")
+dai ray -h "$ray"

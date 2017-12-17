@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+### dai-tubBid -- get the amount of peth in gem for exit
+set -e
+[ $# = 1 ] || dai tubBid --usage
+wad=$(seth call "${DAI_TUB?}" "bid(uint256)" $(dai wad "$1"))
+dai wad -h "$wad"

@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-### sai-rho -- get the time of last drip
-set -e
-time=$(seth call "${SAI_TUB?}" "rho()")
-time_unix=$(seth --to-dec "$time")
-echo "$time_unix"

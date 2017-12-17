@@ -9,52 +9,52 @@ import "ds-test/test.sol";
 
 contract TubTest is DSTest, DSThing {
     address tap;
-    SaiTub  tub;
-    SaiVox  vox;
+    DaiTub  tub;
+    DaiVox  vox;
 
     DSGuard dad;
 
     DSValue pip;
     DSValue pep;
 
-    DSToken sai;
+    DSToken dai;
     DSToken sin;
-    DSToken skr;
+    DSToken peth;
     DSToken gem;
     DSToken gov;
 
     function setUp() public {
-        sai = new DSToken("SAI");
+        dai = new DSToken("DAI");
         sin = new DSToken("SIN");
-        skr = new DSToken("SKR");
+        peth = new DSToken("PETH");
         gem = new DSToken("GEM");
         gov = new DSToken("GOV");
         pip = new DSValue();
         pep = new DSValue();
         dad = new DSGuard();
-        vox = new SaiVox(RAY);
-        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, 0x123);
+        vox = new DaiVox(RAY);
+        tub = new DaiTub(dai, sin, peth, gem, gov, pip, pep, vox, 0x123);
         tap = 0x456;
         tub.turn(tap);
 
         //Set whitelist authority
-        skr.setAuthority(dad);
+        peth.setAuthority(dad);
 
-        //Permit tub to 'mint' and 'burn' SKR
-        dad.permit(tub, skr, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
+        //Permit tub to 'mint' and 'burn' PETH
+        dad.permit(tub, peth, bytes4(keccak256('mint(address,uint256)')));
+        dad.permit(tub, peth, bytes4(keccak256('burn(address,uint256)')));
 
-        //Allow tub to mint, burn, and transfer gem/skr without approval
+        //Allow tub to mint, burn, and transfer gem/peth without approval
         gem.approve(tub);
-        skr.approve(tub);
-        sai.approve(tub);
+        peth.approve(tub);
+        dai.approve(tub);
 
         gem.mint(6 ether);
 
         //Verify initial token balances
         assertEq(gem.balanceOf(this), 6 ether);
         assertEq(gem.balanceOf(tub), 0 ether);
-        assertEq(skr.totalSupply(), 0 ether);
+        assertEq(peth.totalSupply(), 0 ether);
 
         assert(!tub.off());
     }
@@ -74,7 +74,7 @@ contract TubTest is DSTest, DSThing {
 
     function testPer() public {
         tub.join(5 ether);
-        assertEq(skr.totalSupply(), 5 ether);
+        assertEq(peth.totalSupply(), 5 ether);
         assertEq(tub.per(), rdiv(5 ether, 5 ether));
     }
 
@@ -111,11 +111,11 @@ contract TubTest is DSTest, DSThing {
         tub.join(3 ether);
         assertEq(gem.balanceOf(this), 3 ether);
         assertEq(gem.balanceOf(tub), 3 ether);
-        assertEq(skr.totalSupply(), 3 ether);
+        assertEq(peth.totalSupply(), 3 ether);
         tub.join(1 ether);
         assertEq(gem.balanceOf(this), 2 ether);
         assertEq(gem.balanceOf(tub), 4 ether);
-        assertEq(skr.totalSupply(), 4 ether);
+        assertEq(peth.totalSupply(), 4 ether);
     }
 
     function testExit() public {
@@ -125,30 +125,30 @@ contract TubTest is DSTest, DSThing {
         tub.join(12 ether);
         assertEq(gem.balanceOf(tub), 12 ether);
         assertEq(gem.balanceOf(this), 4 ether);
-        assertEq(skr.totalSupply(), 12 ether);
+        assertEq(peth.totalSupply(), 12 ether);
 
         tub.exit(3 ether);
         assertEq(gem.balanceOf(tub), 9 ether);
         assertEq(gem.balanceOf(this), 7 ether);
-        assertEq(skr.totalSupply(), 9 ether);
+        assertEq(peth.totalSupply(), 9 ether);
 
         tub.exit(7 ether);
         assertEq(gem.balanceOf(tub), 2 ether);
         assertEq(gem.balanceOf(this), 14 ether);
-        assertEq(skr.totalSupply(), 2 ether);
+        assertEq(peth.totalSupply(), 2 ether);
     }
 
     function testCage() public {
         tub.join(5 ether);
         assertEq(gem.balanceOf(tub), 5 ether);
         assertEq(gem.balanceOf(this), 1 ether);
-        assertEq(skr.totalSupply(), 5 ether);
+        assertEq(peth.totalSupply(), 5 ether);
         assert(!tub.off());
 
         tub.cage(tub.per(), 5 ether);
         assertEq(gem.balanceOf(tub), 0 ether);
         assertEq(gem.balanceOf(tap), 5 ether);
-        assertEq(skr.totalSupply(), 5 ether);
+        assertEq(peth.totalSupply(), 5 ether);
         assert(tub.off());
     }
 

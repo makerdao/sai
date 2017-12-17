@@ -22,30 +22,30 @@ pragma solidity ^0.4.18;
 import "./tub.sol";
 import "./tap.sol";
 
-contract SaiTop is DSThing {
-    SaiVox   public  vox;
-    SaiTub   public  tub;
-    SaiTap   public  tap;
+contract DaiTop is DSThing {
+    DaiVox   public  vox;
+    DaiTub   public  tub;
+    DaiTap   public  tap;
 
-    DSToken  public  sai;
+    DSToken  public  dai;
     DSToken  public  sin;
-    DSToken  public  skr;
+    DSToken  public  peth;
     ERC20    public  gem;
 
-    uint256  public  fix;  // sai cage price (gem per sai)
-    uint256  public  fit;  // skr cage price (ref per skr)
+    uint256  public  fix;  // dai cage price (gem per dai)
+    uint256  public  fit;  // peth cage price (ref per peth)
     uint256  public  caged;
     uint256  public  cooldown = 6 hours;
 
-    function SaiTop(SaiTub tub_, SaiTap tap_) public {
+    function DaiTop(DaiTub tub_, DaiTap tap_) public {
         tub = tub_;
         tap = tap_;
 
         vox = tub.vox();
 
-        sai = tub.sai();
+        dai = tub.dai();
         sin = tub.sin();
-        skr = tub.skr();
+        peth = tub.peth();
         gem = tub.gem();
     }
 
@@ -53,10 +53,10 @@ contract SaiTop is DSThing {
         return block.timestamp;
     }
 
-    // force settlement of the system at a given price (sai per gem).
+    // force settlement of the system at a given price (dai per gem).
     // This is nearly the equivalent of biting all cups at once.
-    // Important consideration: the gems associated with free skr can
-    // be tapped to make sai whole.
+    // Important consideration: the gems associated with free peth can
+    // be tapped to make dai whole.
     function cage(uint price) internal {
         require(!tub.off() && price != 0);
         caged = era();
@@ -65,18 +65,18 @@ contract SaiTop is DSThing {
         tap.heal();  // absorb any pending fees
 
         fit = rmul(wmul(price, vox.par()), tub.per());
-        // Most gems we can get per sai is the full balance of the tub.
-        // If there is no sai issued, we should still be able to cage.
-        if (sai.totalSupply() == 0) {
+        // Most gems we can get per dai is the full balance of the tub.
+        // If there is no dai issued, we should still be able to cage.
+        if (dai.totalSupply() == 0) {
             fix = rdiv(WAD, price);
         } else {
-            fix = min(rdiv(WAD, price), rdiv(tub.pie(), sai.totalSupply()));
+            fix = min(rdiv(WAD, price), rdiv(tub.pie(), dai.totalSupply()));
         }
 
-        tub.cage(fit, rmul(fix, sai.totalSupply()));
+        tub.cage(fit, rmul(fix, dai.totalSupply()));
         tap.cage(fix);
 
-        tap.vent();    // burn pending sale skr
+        tap.vent();    // burn pending sale peth
     }
     // cage by reading the last value from the feed for the price
     function cage() public note auth {

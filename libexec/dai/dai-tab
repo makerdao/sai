@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-tab -- get the amount of debt in a cup
+### Usage: dai --cup=<id> tab
+set -e
+[ ! -z "$DAI_CUP" ] || dai tab --usage
+wad=$(seth call "${DAI_TUB?}" "tab(bytes32)" "${DAI_CUP?}")
+dai wad -h "$wad"

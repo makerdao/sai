@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-pip -- get the gem price feed
-set -e
-pip=$(seth call "${SAI_TUB?}" 'pip()')
-echo "0x$(seth --abi-decode 'f()(address)' "$pip")"

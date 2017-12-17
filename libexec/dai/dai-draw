@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+### dai-draw -- issue the specified amount of dai stablecoins
+### Usage: dai --cup=<id> draw <amount-in-dai>
+set -e
+[ $# = 1 ] || dai draw --usage
+[ ! -z "$DAI_CUP" ] || dai draw --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Drawing $wad DAI from cup $((${DAI_CUP?}))..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "draw(bytes32,uint256)" "$DAI_CUP" "$wad")

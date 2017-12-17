@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+### dai-lock -- post additional PETH collateral to a cup
+### Usage: dai --cup=<id> lock <amount-in-peth>
+set -e
+[ $# = 1 ] || dai lock --usage
+[ ! -z "$DAI_CUP" ] || dai lock --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Locking $wad PETH in cup $((${DAI_CUP?}))..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "lock(bytes32,uint256)" "$DAI_CUP" "$wad")

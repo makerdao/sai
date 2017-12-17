@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-tax -- get the stability fee
+set -e
+ray=$(seth call "${DAI_TUB?}" "tax()")
+dai ray -h "$ray"

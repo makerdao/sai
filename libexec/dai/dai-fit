@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-fit -- get the gem per peth settlement price
+set -e
+ray=$(seth call "${DAI_TUB?}" "fit()")
+dai ray -h "$ray"

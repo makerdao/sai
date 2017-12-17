@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setTax -- update the stability fee
+### Usage: dai setTax <new-tax>
+set -e
+[ $# = 1 ] || dai setTax --usage
+ray=$(dai ray -h "$1")
+echo >&2 "Setting tax to $ray..."
+ray=$(dai ray "$1")
+(set -x; seth send "${DAI_MOM?}" "setTax(uint256)" "$ray")

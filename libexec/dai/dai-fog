@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-fog -- get the amount of peth pending liquidation
+set -e
+wad=$(seth call "${DAI_TAP?}" "fog()")
+dai wad -h "$wad"

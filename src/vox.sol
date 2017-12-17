@@ -21,7 +21,7 @@ pragma solidity ^0.4.18;
 
 import "ds-thing/thing.sol";
 
-contract SaiVox is DSThing {
+contract DaiVox is DSThing {
     uint256  _par;
     uint256  _way;
 
@@ -29,7 +29,7 @@ contract SaiVox is DSThing {
     uint256  public  how;
     uint256  public  tau;
 
-    function SaiVox(uint par_) public {
+    function DaiVox(uint par_) public {
         _par = fix = par_;
         _way = RAY;
         tau  = era();

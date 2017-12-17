@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### dai-vent -- process a caged tub
+set -e
+(set -x; seth send "${DAI_TAP?}" "vent()")

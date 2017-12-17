@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-cash -- cash in dai balance for gems after cage
+set -e
+jam=$(token balance "$(dai dai)" "${ETH_FROM?}")
+echo >&2 "Cashing in $jam DAI..."
+wad=$(dai wad $jam)
+(set -x; seth send "${DAI_TAP?}" "cash(uint256)" $wad )

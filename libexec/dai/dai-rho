@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+### dai-rho -- get the time of last drip
+set -e
+time=$(seth call "${DAI_TUB?}" "rho()")
+time_unix=$(seth --to-dec "$time")
+echo "$time_unix"

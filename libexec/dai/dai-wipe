@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+### dai-wipe -- repay some portion of your existing dai debt
+### Usage: dai --cup=<id> wipe <amount-in-dai>
+set -e
+[ $# = 1 ] || dai wipe --usage
+[ ! -z "$DAI_CUP" ] || dai wipe --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Wiping $wad DAI from cup $((${DAI_CUP?}))..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "wipe(bytes32,uint256)" "$DAI_CUP" "$wad")

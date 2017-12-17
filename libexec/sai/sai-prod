@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-### sai-prod -- recalculate the accrued holder fee (par)
-set -e
-vox=$(seth call "${SAI_TUB?}" 'vox()')
-vox_address="0x$(seth --abi-decode 'f()(address)' "$vox")"
-(set -x; seth send "$vox_address" "prod()")

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-boom -- buy some amount of dai to process joy (surplus)
+### Usage: dai boom <amount-in-peth>
+set -e
+[ $# = 1 ] || dai boom --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Buying $wad PETH-worth amount of DAI from the tub in order to process joy..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TAP?}" "boom(uint256)" "$wad")

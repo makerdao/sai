@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-ink -- get the amount of peth collateral locked in a cup
+### Usage: dai --cup=<id> ink
+set -e
+[ ! -z "$DAI_CUP" ] || dai ink --usage
+wad=$(seth call "${DAI_TUB?}" "ink(bytes32)" "${DAI_CUP?}")
+dai wad -h "$wad"

@@ -21,8 +21,8 @@ contract TestWarp is DSNote {
     }
 }
 
-contract DevVox is SaiVox, TestWarp {
-    function DevVox(uint par_) SaiVox(par_) public {}
+contract DevVox is DaiVox, TestWarp {
+    function DevVox(uint par_) DaiVox(par_) public {}
 }
 
 contract VoxTest is DSTest, DSMath {

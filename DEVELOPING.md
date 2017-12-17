@@ -1,13 +1,13 @@
-# Sai Developer Documentation
+# Dai Developer Documentation
 
-This is a developer level guide to the Sai source layout and how the
+This is a developer level guide to the Dai source layout and how the
 different objects relate to each other.
 
 
 ## Introduction
 
-Sai is Simple-Dai, a simplification of the Dai Stablecoin System
-intended for field testing and refining Dai components. Sai has several
+Dai is Simple-Dai, a simplification of the Dai Stablecoin System
+intended for field testing and refining Dai components. Dai has several
 features that distinguish it from Dai:
 
 - trusted price feed
@@ -15,7 +15,7 @@ features that distinguish it from Dai:
 - global settlement
 - liquidations at fixed price (rather than auctions)
 
-This document is an introduction to Sai, aimed at those seeking an
+This document is an introduction to Dai, aimed at those seeking an
 understanding of the Solidity implementation.  We assume knowledge of
 the [white paper], a high level overview of Dai.  A reading of the
 [purple paper], the (in progress) detailed Dai technical specification
@@ -27,23 +27,23 @@ and reference implementation, is strongly encouraged but not required.
 
 ## Overview
 
-Sai uses the following tokens:
+Dai uses the following tokens:
 
 - `gem`: underlying collateral (wrapped ether, in practice)
-- `skr`: abstracted collateral claim
-- `sai`: stablecoin
+- `peth`: abstracted collateral claim
+- `dai`: stablecoin
 - `sin`: anticoin, created when the system takes on debt
 
-Sai has the following core components:
+Dai has the following core components:
 
 - `vox`: target price feed
 - `tub`: CDP record store
 - `tap`: liquidation mechanism
 - `top`: global settlement facilitator
 
-Sai is configured by the following 'risk parameters':
+Dai is configured by the following 'risk parameters':
 
-- `way`: Sai reference price drift
+- `way`: Dai reference price drift
 - `cap`: Debt ceiling
 - `mat`: Liquidation ratio
 - `tax`: Stability fee
@@ -52,42 +52,42 @@ Sai is configured by the following 'risk parameters':
 
 
 
-### `skr`: A Token Wrapper
+### `peth`: A Token Wrapper
 
-`skr` is a token wrapper.
+`peth` is a token wrapper.
 
-- `join`: deposit `gem` in return for `skr`
-- `exit`: claim `gem` with their `skr`.
+- `join`: deposit `gem` in return for `peth`
+- `exit`: claim `gem` with their `peth`.
 
 ![Join-Exit](https://user-images.githubusercontent.com/5028/30517891-928dd4d8-9bc1-11e7-9398-639233d851ae.png)
 
-`skr` is a simple proportional claim on a collateral pool, with the
-initial `gem`<->`skr` exchange ratio being 1:1.  The essential reason
+`peth` is a simple proportional claim on a collateral pool, with the
+initial `gem`<->`peth` exchange ratio being 1:1.  The essential reason
 for this abstraction will be developed later, but for now it is
-sufficient to see `skr` as a token with intrinsic value.
+sufficient to see `peth` as a token with intrinsic value.
 
-The `gem`/`skr` exchange rate is called `per`, and is calculated as the
-total number of deposited `gem` divided by the total supply of SKR.
+The `gem`/`peth` exchange rate is called `per`, and is calculated as the
+total number of deposited `gem` divided by the total supply of PETH.
 
 The reference price of `gem` (in practice, ETHUSD) is provided by the
 `pip`, an external oracle. The `pip` is completely trusted.
 
-The reference price of `skr` is then given by the dynamic `tag`, e.g.
-the price of SKR in USD.
+The reference price of `peth` is then given by the dynamic `tag`, e.g.
+the price of PETH in USD.
 
 
 ### `vox`: Target Price Feed
 
-The `vox` provides the Sai *target price*, given in terms of the
+The `vox` provides the Dai *target price*, given in terms of the
 reference unit, by `par`. For example, `par == 2` with USD as the
-reference unit implies a target price of 2 USD per Sai.
+reference unit implies a target price of 2 USD per Dai.
 
 The target price can vary in time, at a rate given by `way`, which is
 the multiplicative rate of change per second.
 
 The `vox` is the same as that in Dai, but with the sensitivity, `how`,
 set to zero. Adjustments to the target price are made by adjusting the
-rate of change, `way`, directly with `coax`. In future Sai iterations,
+rate of change, `way`, directly with `coax`. In future Dai iterations,
 `how` may be non-zero and `way` adjustments will then follow
 automatically via the feedback mechanism. The `vox` component is subject
 to ongoing economic modelling research.
@@ -99,7 +99,7 @@ The `tub` is the CDP record system.  An individual CDP is called a `cup`
 (i.e. a small container), and has:
 
 - `lad`: an owner
-- `ink`: locked SKR collateral
+- `ink`: locked PETH collateral
 - `art`: debt
 
 It is crucial to know whether a CDP is well collateralised or not:
@@ -122,15 +122,15 @@ to unsafe:
 ![Lock-Free](https://user-images.githubusercontent.com/5028/30517892-928e06ec-9bc1-11e7-91e8-6ae6caae8585.png)
 
 
-- `lock`: deposit SKR collateral (increases `ink`)
-- `free`: withdraw SKR collateral (decreases `ink`)
+- `lock`: deposit PETH collateral (increases `ink`)
+- `free`: withdraw PETH collateral (decreases `ink`)
 
 ---
 
 ![Draw | Wipe](https://user-images.githubusercontent.com/5028/30463893-97a6aef4-9a22-11e7-9a65-3055ad05b8d6.png)
 
-- `draw`: create Sai (increases `art`, `rum`)
-- `wipe`: return Sai (decreases `art`, `rum`)
+- `draw`: create Dai (increases `art`, `rum`)
+- `wipe`: return Dai (decreases `art`, `rum`)
 
 ---
 
@@ -162,86 +162,86 @@ liquidator.
 The `tap` is a liquidator. It has three token balances that determine
 its allowed behaviour:
 
-- `joy`: Sai balance, surplus transferred from `drip`
+- `joy`: Dai balance, surplus transferred from `drip`
 - `woe`: Sin balance, bad debt transferred from `bite`
-- `fog`: SKR balance, collateral pending liquidation
+- `fog`: PETH balance, collateral pending liquidation
 
-and one derived price, `s2s`, which is the price of SKR in Sai. The
-`tap` seeks to minimise all of its token balances. Recall that Sai can
+and one derived price, `s2s`, which is the price of PETH in Dai. The
+`tap` seeks to minimise all of its token balances. Recall that Dai can
 be canceled out with Sin via `heal`.
 
 The `tap` has two acts:
 
-- `boom`: sell Sai in return for SKR (decreases `joy` and `woe`, decreases SKR supply)
-- `bust`: sell SKR in return for Sai (decreases `fog`, increases `joy` and `woe`, can increase SKR supply)
+- `boom`: sell Dai in return for PETH (decreases `joy` and `woe`, decreases PETH supply)
+- `bust`: sell PETH in return for Dai (decreases `fog`, increases `joy` and `woe`, can increase PETH supply)
 
 `boom` is the simpler function and can be thought of as buy and burn.
-Given a net Sai balance, sell the Sai in return for SKR, which is
+Given a net Dai balance, sell the Dai in return for PETH, which is
 burned.
 
 <img src="https://user-images.githubusercontent.com/5028/30517887-924bec1c-9bc1-11e7-8c25-6d73a1c48340.png" width="500" />
 
 `bust` is really two functions in one: collateral sell off (aka `flip`),
 and inflate and sell (aka `flop`). When `fog` is non zero it is sold in
-return for Sai, which is used to cancel out the bad debt, `woe`. If
-`fog` is zero but the `tap` has a net Sin balance, then SKR is minted
-and sold in return for Sai, up to the point that the net Sin balance is
+return for Dai, which is used to cancel out the bad debt, `woe`. If
+`fog` is zero but the `tap` has a net Sin balance, then PETH is minted
+and sold in return for Dai, up to the point that the net Sin balance is
 zero.
 
 ![Bust](https://user-images.githubusercontent.com/5028/30517888-9287dd76-9bc1-11e7-8726-6b21843e27a5.png)
 
 Through `boom` and `bust` we close the feedback loop on the price of
-SKR. When there is surplus Sai, SKR is burned, decreasing the SKR supply
-and increasing `per`, giving SKR holders more GEM per SKR. When there is
-surplus Woe, SKR is inflated, increasing the SKR supply and decreasing
-`per`, giving SKR holders less GEM per SKR.
+PETH. When there is surplus Dai, PETH is burned, decreasing the PETH supply
+and increasing `per`, giving PETH holders more GEM per PETH. When there is
+surplus Woe, PETH is inflated, increasing the PETH supply and decreasing
+`per`, giving PETH holders less GEM per PETH.
 
-The reason for wrapping GEM in SKR is now apparent: *it provides a way
+The reason for wrapping GEM in PETH is now apparent: *it provides a way
 to socialise losses and gains incurred in the operation of the system.*
 
 Two features of this mechanism:
 
-1. Whilst SKR can be inflated significantly, there is a finite limit on
+1. Whilst PETH can be inflated significantly, there is a finite limit on
    the amount of bad debt the system can absorb - given by the value of
    the underlying GEM collateral.
 
-2. There is a negative feedback between `bust` and `bite`: as SKR is
+2. There is a negative feedback between `bust` and `bite`: as PETH is
    inflated it becomes less valuable, reducing the safety level of CDPs.
    Some CDPs will become unsafe and be vulnerable to liquidation,
    creating more bad debt. In an active market, CDP holders will have to
-   be vigilant about the potential for SKR inflation if they are holding
+   be vigilant about the potential for PETH inflation if they are holding
    tightly collateralised CDPs.
 
 
 ### `top`: Global Settlement Manager
 
-A key feature of Sai is the possibility of `cage`: shutting down the
-system and reimbursing Sai holders. This is provided for easy upgrades
-between Sai iterations, and for security in case of implementation flaws
+A key feature of Dai is the possibility of `cage`: shutting down the
+system and reimbursing Dai holders. This is provided for easy upgrades
+between Dai iterations, and for security in case of implementation flaws
 - both in the code and in the design.
 
-An admin can use the `top` to `cage` the system at a specific price (sai
+An admin can use the `top` to `cage` the system at a specific price (dai
 per gem), or by reading the last price from the price feed.
 
 <img src="https://user-images.githubusercontent.com/5028/30519069-6c9ae656-9be1-11e7-9e3f-e75f585024f7.png" width="600" />
 
-First, sufficient real `gem` collateral is taken such that Sai holders
-can redeem their Sai at face value. The `gem` is moved from the `tub` to
-the `tap` and the `tap.cash` function is unlocked for Sai holders to
+First, sufficient real `gem` collateral is taken such that Dai holders
+can redeem their Dai at face value. The `gem` is moved from the `tub` to
+the `tap` and the `tap.cash` function is unlocked for Dai holders to
 call.
 
 ![Cash](https://user-images.githubusercontent.com/5028/30519070-6cc4fd6a-9be1-11e7-92d8-5d965721d8ef.png)
 
-Any remaining `gem` remains in the `tub`. SKR holders can now `exit`.
+Any remaining `gem` remains in the `tub`. PETH holders can now `exit`.
 CDP holders must first `bite` their CDPs (although anyone can do this)
-and then `free` their SKR.
+and then `free` their PETH.
 
 Some important features of `cage`:
 
-- Sai holders are not guaranteed their face value, only preferential payout.
-- *the full real collateral pool is tapped* to make Sai whole. SKR is a
+- Dai holders are not guaranteed their face value, only preferential payout.
+- *the full real collateral pool is tapped* to make Dai whole. PETH is a
   *risk-bearing* token.
-- SKR holders will receive a poor rate if they try to `exit` before all
+- PETH holders will receive a poor rate if they try to `exit` before all
   CDPs are processed by `bite`. To prevent accidental early `exit`,
   `top.flow` is provided, which will only enable `exit` after all CDPs
   are processed, or a timeout has expired.
@@ -272,7 +272,7 @@ total unprocessed revenue, with varying `tax`, in constant time.
 
 ## Governance Fee
 
-This version of Sai (aka Dai v1) is collectively governed by the holders of
+This version of Dai (aka Dai v1) is collectively governed by the holders of
 a token, `gov`. The specifics of the governance mechanism are
 out of scope for this document. The `gov` token is also used to pay usage
 fees: the `fee` is similar to the `tax`, and causes the `rhi` accumulator to
@@ -280,7 +280,7 @@ increase relative to `chi`. The difference between `rhi` and `chi` can be
 used to determine the total outstanding fee, the `rap`. Fees are paid on
 `wipe`, and the amount payable is scaled with the amount wiped.
 
-Fees are paid in `gov`, but the outstanding fee is denominated in Sai.
+Fees are paid in `gov`, but the outstanding fee is denominated in Dai.
 Therefore we need a price feed for `gov`: this is the `pep`. The mechanism
 in `wipe` is meant to be robust against failure of the `pep` feed.
 
@@ -290,12 +290,12 @@ change in a future release).
 
 ## Auth setup
 
-Sai is designed with two authorities, `dad` and `chief`.
+Dai is designed with two authorities, `dad` and `chief`.
 
 - `dad` is a DSGuard, and is used for internal contract-contract
-  permissions, allowing e.g. the `tub` to `mint` and `burn` Sai. `dad`
-  is the authority of the `tub` and `tap`, and also `sai`, `sin` and
-  `skr`.
+  permissions, allowing e.g. the `tub` to `mint` and `burn` Dai. `dad`
+  is the authority of the `tub` and `tap`, and also `dai`, `sin` and
+  `peth`.
 
 - `chief` restricts access to `top` and `mom`, which are the admin
   interfaces to the system. `chief` is intended to be a DSRoles
@@ -304,7 +304,7 @@ Sai is designed with two authorities, `dad` and `chief`.
 
 ## Deployment
 
-Sai is a complex multi-contract system and has a slightly involved
+Dai is a complex multi-contract system and has a slightly involved
 deployment process. The prerequisities to the deployment are:
 
 1. `pip`, a collateral price feed
@@ -316,7 +316,7 @@ deployment process. The prerequisities to the deployment are:
 For testing purposes, `bin/deploy` will create the prerequisites for you
 if you don't supply them.
 
-In addition, Sai utilises on-chain deployers, called fabs, for creating
+In addition, Dai utilises on-chain deployers, called fabs, for creating
 fresh basic components on chain. These are defined in `fab.sol`.
 
 The main contract deployment is defined in `DaiFab`, and requires
@@ -336,12 +336,12 @@ bin/deploy
 
 ### Prices
 
-- `per`: gem per skr
-- `par`: ref per sai
-- `tag`: ref per skr
+- `per`: gem per peth
+- `par`: ref per dai
+- `tag`: ref per peth
 - `pip`: ref per gem
-- `fix`: gem per sai after `cage`
-- `fit`: ref per skr after `cage`
+- `fix`: gem per dai after `cage`
+- `fit`: ref per peth after `cage`
 
 ### Meme Mnemonics
 
@@ -352,15 +352,15 @@ bin/deploy
 - `top`: top-level system manager
 
 - `way`: which way the target price is heading
-- `cap`: upper limit of Sai issuance
+- `cap`: upper limit of Dai issuance
 - `mat`: lower limit of collateralisation
 - `tax`: continually paid by CDP holders
 - `axe`: penalty applied to bad CDP holders
 - `gap`: gap between buy and sell
 
-- `pie`: Real collateral that SKR holders share
+- `pie`: Real collateral that PETH holders share
 - `air`: Abstracted Collateral backing CDPs
 - `ice`: Debt that is locked up with CDPs
 - `fog`: Murky liquidated `air`that we want to get rid of
-- `joy`: SKR holders are happy about this Sai surplus
-- `woe`: SKR holders are sad about this Sin debt
+- `joy`: PETH holders are happy about this Dai surplus
+- `woe`: PETH holders are sad about this Sin debt

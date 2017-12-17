@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-bust -- sell some amount of dai to process woe (bad debt)
+### Usage: dai bust <amount-in-peth>
+set -e
+[ $# = 1 ] || dai bust --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Selling $wad PETH-worth amount of DAI to the tub in order to process woe..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TAP?}" "bust(uint256)" "$wad")

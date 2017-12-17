@@ -21,13 +21,13 @@ pragma solidity ^0.4.18;
 
 import "./tub.sol";
 
-contract SaiTap is DSThing {
-    DSToken  public  sai;
+contract DaiTap is DSThing {
+    DSToken  public  dai;
     DSToken  public  sin;
-    DSToken  public  skr;
+    DSToken  public  peth;
 
-    SaiVox   public  vox;
-    SaiTub   public  tub;
+    DaiVox   public  vox;
+    DaiTub   public  tub;
 
     uint256  public  gap;  // Boom-Bust Spread
     bool     public  off;  // Cage flag
@@ -35,7 +35,7 @@ contract SaiTap is DSThing {
 
     // Surplus
     function joy() public view returns (uint) {
-        return sai.balanceOf(this);
+        return dai.balanceOf(this);
     }
     // Bad debt
     function woe() public view returns (uint) {
@@ -43,16 +43,16 @@ contract SaiTap is DSThing {
     }
     // Collateral pending liquidation
     function fog() public view returns (uint) {
-        return skr.balanceOf(this);
+        return peth.balanceOf(this);
     }
 
 
-    function SaiTap(SaiTub tub_) public {
+    function DaiTap(DaiTub tub_) public {
         tub = tub_;
 
-        sai = tub.sai();
+        dai = tub.dai();
         sin = tub.sin();
-        skr = tub.skr();
+        peth = tub.peth();
 
         vox = tub.vox();
 
@@ -67,39 +67,39 @@ contract SaiTap is DSThing {
     function heal() public note {
         if (joy() == 0 || woe() == 0) return;  // optimised
         var wad = min(joy(), woe());
-        sai.burn(wad);
+        dai.burn(wad);
         sin.burn(wad);
     }
 
-    // Feed price (sai per skr)
+    // Feed price (dai per peth)
     function s2s() public returns (uint) {
-        var tag = tub.tag();    // ref per skr
-        var par = vox.par();    // ref per sai
-        return rdiv(tag, par);  // sai per skr
+        var tag = tub.tag();    // ref per peth
+        var par = vox.par();    // ref per dai
+        return rdiv(tag, par);  // dai per peth
     }
-    // Boom price (sai per skr)
+    // Boom price (dai per peth)
     function bid(uint wad) public returns (uint) {
         return rmul(wad, wmul(s2s(), sub(2 * WAD, gap)));
     }
-    // Bust price (sai per skr)
+    // Bust price (dai per peth)
     function ask(uint wad) public returns (uint) {
         return rmul(wad, wmul(s2s(), gap));
     }
     function flip(uint wad) internal {
         require(ask(wad) > 0);
-        skr.push(msg.sender, wad);
-        sai.pull(msg.sender, ask(wad));
+        peth.push(msg.sender, wad);
+        dai.pull(msg.sender, ask(wad));
         heal();
     }
     function flop(uint wad) internal {
-        skr.mint(sub(wad, fog()));
+        peth.mint(sub(wad, fog()));
         flip(wad);
         require(joy() == 0);  // can't flop into surplus
     }
     function flap(uint wad) internal {
         heal();
-        sai.push(msg.sender, bid(wad));
-        skr.burn(msg.sender, wad);
+        dai.push(msg.sender, bid(wad));
+        peth.burn(msg.sender, wad);
     }
     function bust(uint wad) public note {
         require(!off);
@@ -120,16 +120,16 @@ contract SaiTap is DSThing {
     }
     function cash(uint wad) public note {
         require(off);
-        sai.burn(msg.sender, wad);
+        dai.burn(msg.sender, wad);
         require(tub.gem().transfer(msg.sender, rmul(wad, fix)));
     }
     function mock(uint wad) public note {
         require(off);
-        sai.mint(msg.sender, wad);
+        dai.mint(msg.sender, wad);
         require(tub.gem().transferFrom(msg.sender, this, rmul(wad, fix)));
     }
     function vent() public note {
         require(off);
-        skr.burn(fog());
+        peth.burn(fog());
     }
 }

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setWay -- update the holder fee (interest rate)
+### Usage: dai setWay <new-way>
+set -e
+[ $# = 1 ] || dai setWay --usage
+ray=$(dai ray -h "$1")
+echo >&2 "Setting way to $ray..."
+ray=$(dai ray "$1")
+(set -x; seth send "${DAI_MOM}" "setWay(uint256)" "$ray")

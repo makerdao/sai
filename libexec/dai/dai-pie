@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-pie -- get the amount of raw collateral
+set -e
+wad=$(seth call "${DAI_TUB?}" "pie()")
+dai wad -h "$wad"

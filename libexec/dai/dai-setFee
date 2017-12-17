@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setFee -- update the stability fee
+### Usage: dai setFee <new-fee>
+set -e
+[ $# = 1 ] || dai setFee --usage
+ray=$(dai ray -h "$1")
+echo >&2 "Setting fee to $ray..."
+ray=$(dai ray "$1")
+(set -x; seth send "${DAI_MOM?}" "setFee(uint256)" "$ray")

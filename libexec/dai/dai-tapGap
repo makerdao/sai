@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-tapGap -- get the spread on `boom` and `bust`
+set -e
+wad=$(seth call "${DAI_TAP?}" "gap()")
+dai wad -h "$wad"

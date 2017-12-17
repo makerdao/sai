@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setAxe -- update the liquidation penalty
+### Usage: dai setAxe <new-axe>
+set -e
+[ $# = 1 ] || dai setAxe --usage
+ray=$(dai ray -h "$1")
+echo >&2 "Setting axe to $ray..."
+ray=$(dai ray "$1")
+(set -x; seth send "${DAI_MOM?}" "setAxe(uint256)" "$ray")

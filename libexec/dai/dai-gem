@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-gem -- get the collateral token
+set -e
+gem=$(seth call "${DAI_TUB?}" 'gem()')
+echo "0x$(seth --abi-decode 'f()(address)' "$gem")"

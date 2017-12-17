@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+### dai-cup -- show the cup info
+### Usage: dai --cup=<id> cup
+set -e
+[ ! -z "$DAI_CUP" ] || dai cup --usage
+echo >&2 "cup id $((${DAI_CUP?}))..."
+echo "lad: $(dai lad)"
+echo "ink: $(dai ink)"
+echo "tab: $(dai tab)"
+echo "rap: $(dai rap)"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-pit -- get the liquidator vault
+set -e
+pit=$(seth call "${DAI_TUB?}" 'pit()')
+echo "0x$(seth --abi-decode 'f()(address)' "$pit")"

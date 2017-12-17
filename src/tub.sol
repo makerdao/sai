@@ -25,20 +25,20 @@ import "ds-value/value.sol";
 
 import "./vox.sol";
 
-contract SaiTubEvents {
+contract DaiTubEvents {
     event LogNewCup(address indexed lad, bytes32 cup);
 }
 
-contract SaiTub is DSThing, SaiTubEvents {
-    DSToken  public  sai;  // Stablecoin
-    DSToken  public  sin;  // Debt (negative sai)
+contract DaiTub is DSThing, DaiTubEvents {
+    DSToken  public  dai;  // Stablecoin
+    DSToken  public  sin;  // Debt (negative dai)
 
-    DSToken  public  skr;  // Abstracted collateral
+    DSToken  public  peth;  // Abstracted collateral
     ERC20    public  gem;  // Underlying collateral
 
     DSToken  public  gov;  // Governance token
 
-    SaiVox   public  vox;  // Target price feed
+    DaiVox   public  vox;  // Target price feed
     DSValue  public  pip;  // Reference price feed
     DSValue  public  pep;  // Governance price feed
 
@@ -55,7 +55,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     bool     public  off;  // Cage flag
     bool     public  out;  // Post cage exit
 
-    uint256  public  fit;  // REF per SKR (just before settlement)
+    uint256  public  fit;  // REF per PETH (just before settlement)
 
     uint256  public  rho;  // Time of last drip
     uint256         _chi;  // Accumulated Tax Rates
@@ -67,7 +67,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     struct Cup {
         address  lad;      // CDP owner
-        uint256  ink;      // Locked collateral (in SKR)
+        uint256  ink;      // Locked collateral (in PETH)
         uint256  art;      // Outstanding normalised debt (tax only)
         uint256  ire;      // Outstanding normalised debt
     }
@@ -91,7 +91,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     // Backing collateral
     function air() public view returns (uint) {
-        return skr.balanceOf(this);
+        return peth.balanceOf(this);
     }
     // Raw collateral
     function pie() public view returns (uint) {
@@ -100,21 +100,21 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //------------------------------------------------------------------
 
-    function SaiTub(
-        DSToken  sai_,
+    function DaiTub(
+        DSToken  dai_,
         DSToken  sin_,
-        DSToken  skr_,
+        DSToken  peth_,
         ERC20    gem_,
         DSToken  gov_,
         DSValue  pip_,
         DSValue  pep_,
-        SaiVox   vox_,
+        DaiVox   vox_,
         address  pit_
     ) public {
         gem = gem_;
-        skr = skr_;
+        peth = peth_;
 
-        sai = sai_;
+        dai = dai_;
         sin = sin_;
 
         gov = gov_;
@@ -160,7 +160,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     function setPep(DSValue pep_) public note auth {
         pep = pep_;
     }
-    function setVox(SaiVox vox_) public note auth {
+    function setVox(DaiVox vox_) public note auth {
         vox = vox_;
     }
 
@@ -173,15 +173,15 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--Collateral-wrapper----------------------------------------------
 
-    // Wrapper ratio (gem per skr)
+    // Wrapper ratio (gem per peth)
     function per() public view returns (uint ray) {
-        return skr.totalSupply() == 0 ? RAY : rdiv(pie(), skr.totalSupply());
+        return peth.totalSupply() == 0 ? RAY : rdiv(pie(), peth.totalSupply());
     }
-    // Join price (gem per skr)
+    // Join price (gem per peth)
     function ask(uint wad) public view returns (uint) {
         return rmul(wad, wmul(per(), gap));
     }
-    // Exit price (gem per skr)
+    // Exit price (gem per peth)
     function bid(uint wad) public view returns (uint) {
         return rmul(wad, wmul(per(), sub(2 * WAD, gap)));
     }
@@ -189,12 +189,12 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!off);
         require(ask(wad) > 0);
         require(gem.transferFrom(msg.sender, this, ask(wad)));
-        skr.mint(msg.sender, wad);
+        peth.mint(msg.sender, wad);
     }
     function exit(uint wad) public note {
         require(!off || out);
         require(gem.transfer(msg.sender, bid(wad)));
-        skr.burn(msg.sender, wad);
+        peth.burn(msg.sender, wad);
     }
 
     //--Stability-fee-accumulation--------------------------------------
@@ -222,7 +222,7 @@ contract SaiTub is DSThing, SaiTubEvents {
             var _chi_ = _chi;
             inc = rpow(tax, age);
             _chi = rmul(_chi, inc);
-            sai.mint(tap, rmul(sub(_chi, _chi_), rum));
+            dai.mint(tap, rmul(sub(_chi, _chi_), rum));
         }
 
         // optimised
@@ -233,7 +233,7 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--CDP-risk-indicator----------------------------------------------
 
-    // Abstracted collateral price (ref per skr)
+    // Abstracted collateral price (ref per peth)
     function tag() public view returns (uint wad) {
         return off ? fit : wmul(per(), uint(pip.read()));
     }
@@ -264,13 +264,13 @@ contract SaiTub is DSThing, SaiTubEvents {
     function lock(bytes32 cup, uint wad) public note {
         require(!off);
         cups[cup].ink = add(cups[cup].ink, wad);
-        skr.pull(msg.sender, wad);
+        peth.pull(msg.sender, wad);
         require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
     function free(bytes32 cup, uint wad) public note {
         require(msg.sender == cups[cup].lad);
         cups[cup].ink = sub(cups[cup].ink, wad);
-        skr.push(msg.sender, wad);
+        peth.push(msg.sender, wad);
         require(safe(cup));
         require(cups[cup].ink == 0 || cups[cup].ink > 0.005 ether);
     }
@@ -284,10 +284,10 @@ contract SaiTub is DSThing, SaiTubEvents {
         rum = add(rum, rdiv(wad, chi()));
 
         cups[cup].ire = add(cups[cup].ire, rdiv(wad, rhi()));
-        sai.mint(cups[cup].lad, wad);
+        dai.mint(cups[cup].lad, wad);
 
         require(safe(cup));
-        require(sai.totalSupply() <= cap);
+        require(dai.totalSupply() <= cap);
     }
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
@@ -298,7 +298,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         rum = sub(rum, rdiv(wad, chi()));
 
         cups[cup].ire = sub(cups[cup].ire, rdiv(add(wad, owe), rhi()));
-        sai.burn(msg.sender, wad);
+        dai.burn(msg.sender, wad);
 
         var (val, ok) = pep.peek();
         if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
@@ -322,14 +322,14 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].art = 0;
         cups[cup].ire = 0;
 
-        // Amount owed in SKR, including liquidation penalty
+        // Amount owed in PETH, including liquidation penalty
         var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
 
         if (owe > cups[cup].ink) {
             owe = cups[cup].ink;
         }
 
-        skr.push(tap, owe);
+        peth.push(tap, owe);
         cups[cup].ink = sub(cups[cup].ink, owe);
     }
 
@@ -340,7 +340,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         off = true;
         axe = RAY;
         gap = WAD;
-        fit = fit_;         // ref per skr
+        fit = fit_;         // ref per peth
         require(gem.transfer(tap, jam));
     }
     function flow() public note auth {

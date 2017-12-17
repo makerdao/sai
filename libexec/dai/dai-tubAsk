@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+### dai-tubAsk -- get the amount of peth in gem for join
+set -e
+[ $# = 1 ] || dai tubAsk --usage
+wad=$(seth call "${DAI_TUB?}" "ask(uint256)" $(dai wad "$1"))
+dai wad -h "$wad"
