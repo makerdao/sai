@@ -1,4 +1,9 @@
 
+
+
+_Please note that this document temporarily refers to sai instead of dai and skr instead of peth. These are just different variable names and their functionality is identical to what is described in the latest Dai documentation._
+
+
 `sai` is a simple single-collateral stablecoin that is dependent on a
 trusted oracle address and has a kill-switch.
 
