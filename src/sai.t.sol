@@ -11,6 +11,7 @@ import 'ds-value/value.sol';
 import './weth9.sol';
 import './mom.sol';
 import './fab.sol';
+import './pit.sol';
 
 contract TestWarp is DSNote {
     uint256  _era;
@@ -122,7 +123,7 @@ contract SaiTestBase is DSTest, DSMath {
     DSToken  skr;
     DSToken  gov;
 
-    address  pit;
+    GemPit   pit;
 
     DSValue  pip;
     DSValue  pep;
@@ -164,7 +165,7 @@ contract SaiTestBase is DSTest, DSMath {
         gov = new DSToken('GOV');
         pip = new DSValue();
         pep = new DSValue();
-        pit = address(0x123);
+        pit = new GemPit();
 
         daiFab.makeTokens();
         daiFab.makeVoxTub(ERC20(gem), gov, pip, pep, pit);
@@ -2289,11 +2290,11 @@ contract FeeTest is SaiTestBase {
         var cup = feeSetup();
         warp(1 days);
 
-        assertEq(tub.rap(cup),   5 ether);
+        assertEq(tub.rap(cup),          5 ether);
         assertEq(gov.balanceOf(this), 100 ether);
         tub.wipe(cup, 50 ether);
-        assertEq(tub.tab(cup), 50 ether);
-        assertEq(gov.balanceOf(this), 95 ether);
+        assertEq(tub.tab(cup),         50 ether);
+        assertEq(gov.balanceOf(this),  95 ether);
     }
     function testFeeWipeMoves() public {
         var cup = feeSetup();
@@ -2358,6 +2359,23 @@ contract FeeTest is SaiTestBase {
         tub.lock(cup, 100 ether);
         warp(1 days);
         tub.shut(cup);
+    }
+}
+
+contract PitTest is SaiTestBase {
+    function testPitBurns() public {
+        gov.mint(1 ether);
+        assertEq(gov.balanceOf(pit), 0 ether);
+        gov.push(pit, 1 ether);
+
+        // mock gov authority
+        var guard = new DSGuard();
+        guard.permit(pit, gov, bytes4(keccak256('burn(uint256)')));
+        gov.setAuthority(guard);
+
+        assertEq(gov.balanceOf(pit), 1 ether);
+        pit.burn(gov);
+        assertEq(gov.balanceOf(pit), 0 ether);
     }
 }
 
