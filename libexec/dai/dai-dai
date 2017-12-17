@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-dai -- get the dai token
+set -e
+dai=$(seth call "${DAI_TUB?}" 'dai()')
+echo "0x$(seth --abi-decode 'f()(address)' "$dai")"

@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-### sai-cash -- cash in sai balance for gems after cage
-set -e
-jam=$(token balance "$(sai sai)" "${ETH_FROM?}")
-echo >&2 "Cashing in $jam SAI..."
-wad=$(sai wad $jam)
-(set -x; seth send "${SAI_TAP?}" "cash(uint256)" $wad )

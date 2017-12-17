@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-s2s -- get the peth per dai rate (for boom and bust)
+set -e
+ray=$(seth call "${DAI_TAP?}" "s2s()")
+dai ray -h "$ray"

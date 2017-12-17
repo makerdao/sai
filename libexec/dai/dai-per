@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-per -- get the current entry price (gem per peth)
+set -e
+ray=$(seth call "${DAI_TUB?}" "per()")
+dai ray -h "$ray"

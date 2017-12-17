@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+### dai-tapAsk -- get the amount of peth in dai for bust
+set -e
+[ $# = 1 ] || dai tapAsk --usage
+wad=$(seth call "${DAI_TAP?}" "ask(uint256)" $(dai wad "$1"))
+dai wad -h "$wad"

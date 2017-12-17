@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setMat -- update the liquidation ratio
+### Usage: dai setMat <new-mat>
+set -e
+[ $# = 1 ] || dai setMat --usage
+ray=$(dai ray -h "$1")
+echo >&2 "Setting mat to $ray..."
+ray=$(dai ray "$1")
+(set -x; seth send "${DAI_MOM?}" "setMat(uint256)" "$ray")

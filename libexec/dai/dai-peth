@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-peth -- get the peth token
+set -e
+peth=$(seth call "${DAI_TUB?}" 'peth()')
+echo "0x$(seth --abi-decode 'f()(address)' "$peth")"

@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-exit -- sell PETH for gems
+### Usage: dai exit <amount-in-peth>
+set -e
+[ $# = 1 ] || dai exit --usage
+ink=$(dai wad -h "$1")
+echo >&2 "Sending $ink PETH to TUB..."
+ink=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "exit(uint256)" "$ink")

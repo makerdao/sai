@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-joy -- get the amount of surplus dai
+set -e
+wad=$(seth call "${DAI_TAP?}" "joy()")
+dai wad -h "$wad"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-cap -- get the debt ceiling
+set -e
+wad=$(seth call "${DAI_TUB?}" "cap()")
+dai wad -h "$wad"

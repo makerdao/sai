@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-fee -- get the governance fee
+set -e
+ray=$(seth call "${DAI_TUB?}" "fee()")
+dai ray -h "$ray"

@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-axe -- get the liquidation penalty
-set -e
-ray=$(seth call "${SAI_TUB?}" "axe()")
-sai ray -h "$ray"

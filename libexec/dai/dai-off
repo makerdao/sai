@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### dai-off -- get the cage flag
+set -e
+seth call "${DAI_TUB?}" "off()(bool)"

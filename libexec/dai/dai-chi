@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-chi -- get the internal debt price
+set -e
+ray=$(seth call "${DAI_TUB?}" "chi()")
+dai ray -h "$ray"

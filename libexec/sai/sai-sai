@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-sai -- get the sai token
-set -e
-sai=$(seth call "${SAI_TUB?}" 'sai()')
-echo "0x$(seth --abi-decode 'f()(address)' "$sai")"

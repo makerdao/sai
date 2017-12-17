@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-tubGap -- get the spread on `join` and `exit`
+set -e
+wad=$(seth call "$DAI_TUB" "gap()")
+dai wad -h "$wad"

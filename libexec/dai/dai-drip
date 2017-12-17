@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+### dai-drip -- recalculate the internal debt price
+set -e
+(set -x; seth send "${DAI_TUB?}" "drip()")

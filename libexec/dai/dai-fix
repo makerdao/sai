@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-fix -- get the gem per dai settlement price
+set -e
+ray=$(seth call "${DAI_TOP?}" "fix()")
+dai ray -h "$ray"

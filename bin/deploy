@@ -10,51 +10,51 @@ dapp build
 (test -z $GEM_FAB || test -z $VOX_FAB || test -z $TUB_FAB || test -z $TAP_FAB  || test -z $TOP_FAB || test -z $MOM_FAB || test -z $DAD_FAB) && exit 1
 
 export SETH_ASYNC=yes
-test -z $SAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
-test -z $SAI_GOV && GOVtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'GOV')))
-test -z $SAI_PIP && PIPtx=$(dapp create DSValue)
-test -z $SAI_PEP && PEPtx=$(dapp create DSValue)
+test -z $DAI_GEM && GEMtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'ETH')))
+test -z $DAI_GOV && GOVtx=$(dapp create DSToken $(seth --to-bytes32 $(seth --from-ascii 'GOV')))
+test -z $DAI_PIP && PIPtx=$(dapp create DSValue)
+test -z $DAI_PEP && PEPtx=$(dapp create DSValue)
 export SETH_ASYNC=no
-test -z $SAI_GEM && SAI_GEM=$(seth receipt $GEMtx contractAddress)
-test -z $SAI_GOV && SAI_GOV=$(seth receipt $GOVtx contractAddress)
-test -z $SAI_PIP && SAI_PIP=$(seth receipt $PIPtx contractAddress)
-test -z $SAI_PEP && SAI_PEP=$(seth receipt $PEPtx contractAddress)
-test -z $SAI_PIT && SAI_PIT="0x0000000000000000000000000000000000000123"
+test -z $DAI_GEM && DAI_GEM=$(seth receipt $GEMtx contractAddress)
+test -z $DAI_GOV && DAI_GOV=$(seth receipt $GOVtx contractAddress)
+test -z $DAI_PIP && DAI_PIP=$(seth receipt $PIPtx contractAddress)
+test -z $DAI_PEP && DAI_PEP=$(seth receipt $PEPtx contractAddress)
+test -z $DAI_PIT && DAI_PIT="0x0000000000000000000000000000000000000123"
 
 DAI_FAB=$(dapp create DaiFab $GEM_FAB $VOX_FAB $TUB_FAB $TAP_FAB $TOP_FAB $MOM_FAB $DAD_FAB)
 
-if [ -z $SAI_ADM ]
+if [ -z $DAI_ADM ]
 then
-    SAI_ADM=$(dapp create DSRoles)
-    seth send $SAI_ADM 'setRootUser(address,bool)' $ETH_FROM true
+    DAI_ADM=$(dapp create DSRoles)
+    seth send $DAI_ADM 'setRootUser(address,bool)' $ETH_FROM true
 fi
 
 seth send $DAI_FAB 'makeTokens()'
-seth send $DAI_FAB 'makeVoxTub(address,address,address,address,address)' $SAI_GEM $SAI_GOV $SAI_PIP $SAI_PEP $SAI_PIT
+seth send $DAI_FAB 'makeVoxTub(address,address,address,address,address)' $DAI_GEM $DAI_GOV $DAI_PIP $DAI_PEP $DAI_PIT
 seth send $DAI_FAB 'makeTapTop()'
 seth send $DAI_FAB 'configParams()'
 seth send $DAI_FAB 'verifyParams()'
-seth send $DAI_FAB 'configAuth(address)' $SAI_ADM
+seth send $DAI_FAB 'configAuth(address)' $DAI_ADM
 
 cat > load-env-$(seth chain) << EOF
 #!/bin/bash
 
-# sai deployment on $(seth chain) from $(git rev-parse HEAD)
+# dai deployment on $(seth chain) from $(git rev-parse HEAD)
 # $(date)
 
-export SAI_GEM=$SAI_GEM
-export SAI_GOV=$SAI_GOV
-export SAI_PIP=$SAI_PIP
-export SAI_PEP=$SAI_PEP
-export SAI_PIT=$SAI_PIT
-export SAI_ADM=$SAI_ADM
-export SAI_SAI=0x$(seth call $DAI_FAB 'sai()(address)')
-export SAI_SIN=0x$(seth call $DAI_FAB 'sin()(address)')
-export SAI_SKR=0x$(seth call $DAI_FAB 'skr()(address)')
-export SAI_DAD=0x$(seth call $DAI_FAB 'dad()(address)')
-export SAI_MOM=0x$(seth call $DAI_FAB 'mom()(address)')
-export SAI_VOX=0x$(seth call $DAI_FAB 'vox()(address)')
-export SAI_TUB=0x$(seth call $DAI_FAB 'tub()(address)')
-export SAI_TAP=0x$(seth call $DAI_FAB 'tap()(address)')
-export SAI_TOP=0x$(seth call $DAI_FAB 'top()(address)')
+export DAI_GEM=$DAI_GEM
+export DAI_GOV=$DAI_GOV
+export DAI_PIP=$DAI_PIP
+export DAI_PEP=$DAI_PEP
+export DAI_PIT=$DAI_PIT
+export DAI_ADM=$DAI_ADM
+export DAI_DAI=0x$(seth call $DAI_FAB 'dai()(address)')
+export DAI_SIN=0x$(seth call $DAI_FAB 'sin()(address)')
+export DAI_PETH=0x$(seth call $DAI_FAB 'peth()(address)')
+export DAI_DAD=0x$(seth call $DAI_FAB 'dad()(address)')
+export DAI_MOM=0x$(seth call $DAI_FAB 'mom()(address)')
+export DAI_VOX=0x$(seth call $DAI_FAB 'vox()(address)')
+export DAI_TUB=0x$(seth call $DAI_FAB 'tub()(address)')
+export DAI_TAP=0x$(seth call $DAI_FAB 'tap()(address)')
+export DAI_TOP=0x$(seth call $DAI_FAB 'top()(address)')
 EOF

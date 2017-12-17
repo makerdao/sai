@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-setTubGap -- update the spread on `join` and `exit`
+### Usage: dai setTubGap <new-gap>
+set -e
+[ $# = 1 ] || dai setTubGap --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Setting tubGap to $wad..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_MOM?}" "setTubGap(uint256)" "$wad")

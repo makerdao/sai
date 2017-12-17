@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-tapGap -- get the spread on `boom` and `bust`
-set -e
-wad=$(seth call "${SAI_TAP?}" "gap()")
-sai wad -h "$wad"

@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-axe -- get the liquidation penalty
+set -e
+ray=$(seth call "${DAI_TUB?}" "axe()")
+dai ray -h "$ray"

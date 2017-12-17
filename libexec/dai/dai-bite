@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-bite -- initiate liquidation of an undercollateral cup
+### Usage: dai --cup=<id> bite
+set -e
+[ ! -z "$DAI_CUP" ] || dai bite --usage
+echo >&2 "Attempting to bite cup id $((${DAI_CUP?}))..."
+safe=$(dai safe)
+[[ $safe = true ]] && { echo >&2 "${0##*/}: error: cup not unsafe"; exit 1; }
+(set -x; seth send "${DAI_TUB?}" "bite(bytes32)" "$DAI_CUP")

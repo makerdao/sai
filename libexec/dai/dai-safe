@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-safe -- determine if a cup is safe
+### Usage: dai --cup=<id> safe
+set -e
+[ ! -z "$DAI_CUP" ] || dai safe --usage
+safe=$(seth call "${DAI_TUB?}" 'safe(bytes32)' "${DAI_CUP?}")
+seth --abi-decode 'f(bytes32)(bool)' "$safe"

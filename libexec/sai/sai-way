@@ -1,7 +1,0 @@
-#!/usr/bin/env bash
-### sai-way -- get the holder fee (interest rate)
-set -e
-vox=$(seth call "${SAI_TUB?}" 'vox()')
-vox_address="0x$(seth --abi-decode 'f()(address)' "$vox")"
-ray=$(seth call "$vox_address" "way()")
-sai ray -h "$ray"

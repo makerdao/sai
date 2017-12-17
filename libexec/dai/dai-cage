@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+### dai-cage -- lock the system and initiate settlement
+### Usage: dai cage [<final-price>]
+###   if <final-price> is not specified, the last value from the feed will be used
+set -e
+if [ $# = 0 ]
+then
+  echo >&2 "Caging the tub, using the final price from the feed"
+  (set -x; seth send "${DAI_TOP?}" "cage()")
+elif [ $# = 1 ]
+then
+  wad=$(dai wad -h "$1")
+  echo >&2 "Caging the tub, final price $wad"
+  wad=$(dai wad "$1")
+  (set -x; seth send "${DAI_TOP?}" "cage(uint256)" "$wad")
+else
+  dai cage --usage
+fi

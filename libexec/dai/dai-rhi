@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+### dai-rhi -- get the internal debt price including governance fee
+set -e
+ray=$(seth call "${DAI_TUB?}" "rhi()")
+dai ray -h "$ray"

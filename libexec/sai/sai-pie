@@ -1,5 +1,0 @@
-#!/usr/bin/env bash
-### sai-pie -- get the amount of raw collateral
-set -e
-wad=$(seth call "${SAI_TUB?}" "pie()")
-sai wad -h "$wad"

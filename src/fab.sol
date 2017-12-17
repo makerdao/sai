@@ -16,36 +16,36 @@ contract GemFab {
 }
 
 contract VoxFab {
-    function newVox() public returns (SaiVox vox) {
-        vox = new SaiVox(10 ** 27);
+    function newVox() public returns (DaiVox vox) {
+        vox = new DaiVox(10 ** 27);
         vox.setOwner(msg.sender);
     }
 }
 
 contract TubFab {
-    function newTub(DSToken sai, DSToken sin, DSToken skr, ERC20 gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
-        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
+    function newTub(DSToken dai, DSToken sin, DSToken peth, ERC20 gem, DSToken gov, DSValue pip, DSValue pep, DaiVox vox, address pit) public returns (DaiTub tub) {
+        tub = new DaiTub(dai, sin, peth, gem, gov, pip, pep, vox, pit);
         tub.setOwner(msg.sender);
     }
 }
 
 contract TapFab {
-    function newTap(SaiTub tub) public returns (SaiTap tap) {
-        tap = new SaiTap(tub);
+    function newTap(DaiTub tub) public returns (DaiTap tap) {
+        tap = new DaiTap(tub);
         tap.setOwner(msg.sender);
     }
 }
 
 contract TopFab {
-    function newTop(SaiTub tub, SaiTap tap) public returns (SaiTop top) {
-        top = new SaiTop(tub, tap);
+    function newTop(DaiTub tub, DaiTap tap) public returns (DaiTop top) {
+        top = new DaiTop(tub, tap);
         top.setOwner(msg.sender);
     }
 }
 
 contract MomFab {
-    function newMom(SaiTub tub, SaiTap tap, SaiVox vox) public returns (SaiMom mom) {
-        mom = new SaiMom(tub, tap, vox);
+    function newMom(DaiTub tub, DaiTap tap, DaiVox vox) public returns (DaiMom mom) {
+        mom = new DaiMom(tub, tap, vox);
         mom.setOwner(msg.sender);
     }
 }
@@ -66,16 +66,16 @@ contract DaiFab is DSAuth {
     MomFab public momFab;
     DadFab public dadFab;
 
-    DSToken public sai;
+    DSToken public dai;
     DSToken public sin;
-    DSToken public skr;
+    DSToken public peth;
 
-    SaiVox public vox;
-    SaiTub public tub;
-    SaiTap public tap;
-    SaiTop public top;
+    DaiVox public vox;
+    DaiTub public tub;
+    DaiTap public tap;
+    DaiTop public top;
 
-    SaiMom public mom;
+    DaiMom public mom;
     DSGuard public dad;
 
     uint8 public step = 0;
@@ -92,9 +92,9 @@ contract DaiFab is DSAuth {
 
     function makeTokens() public auth {
         require(step == 0);
-        sai = gemFab.newTok('DAI');
+        dai = gemFab.newTok('DAI');
         sin = gemFab.newTok('SIN');
-        skr = gemFab.newTok('PETH');
+        peth = gemFab.newTok('PETH');
         step += 1;
     }
 
@@ -106,7 +106,7 @@ contract DaiFab is DSAuth {
         require(address(pep) != 0x0);
         require(pit != 0x0);
         vox = voxFab.newVox();
-        tub = tubFab.newTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
+        tub = tubFab.newTub(dai, sin, peth, gem, gov, pip, pep, vox, pit);
         step += 1;
     }
 
@@ -179,12 +179,12 @@ contract DaiFab is DSAuth {
         tub.setOwner(0);
         tap.setAuthority(dad);
         tap.setOwner(0);
-        sai.setAuthority(dad);
-        sai.setOwner(0);
+        dai.setAuthority(dad);
+        dai.setOwner(0);
         sin.setAuthority(dad);
         sin.setOwner(0);
-        skr.setAuthority(dad);
-        skr.setOwner(0);
+        peth.setAuthority(dad);
+        peth.setOwner(0);
 
         top.setAuthority(authority);
         top.setOwner(0);
@@ -195,22 +195,22 @@ contract DaiFab is DSAuth {
         dad.permit(top, tub, S("flow()"));
         dad.permit(top, tap, S("cage(uint256)"));
 
-        dad.permit(tub, skr, S('mint(address,uint256)'));
-        dad.permit(tub, skr, S('burn(address,uint256)'));
+        dad.permit(tub, peth, S('mint(address,uint256)'));
+        dad.permit(tub, peth, S('burn(address,uint256)'));
 
-        dad.permit(tub, sai, S('mint(address,uint256)'));
-        dad.permit(tub, sai, S('burn(address,uint256)'));
+        dad.permit(tub, dai, S('mint(address,uint256)'));
+        dad.permit(tub, dai, S('burn(address,uint256)'));
 
         dad.permit(tub, sin, S('mint(address,uint256)'));
 
-        dad.permit(tap, sai, S('mint(address,uint256)'));
-        dad.permit(tap, sai, S('burn(address,uint256)'));
-        dad.permit(tap, sai, S('burn(uint256)'));
+        dad.permit(tap, dai, S('mint(address,uint256)'));
+        dad.permit(tap, dai, S('burn(address,uint256)'));
+        dad.permit(tap, dai, S('burn(uint256)'));
         dad.permit(tap, sin, S('burn(uint256)'));
 
-        dad.permit(tap, skr, S('mint(uint256)'));
-        dad.permit(tap, skr, S('burn(uint256)'));
-        dad.permit(tap, skr, S('burn(address,uint256)'));
+        dad.permit(tap, peth, S('mint(uint256)'));
+        dad.permit(tap, peth, S('burn(uint256)'));
+        dad.permit(tap, peth, S('burn(address,uint256)'));
 
         dad.permit(mom, vox, S("mold(bytes32,uint256)"));
         dad.permit(mom, vox, S("tune(uint256)"));

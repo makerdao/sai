@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+### dai-join -- buy PETH for gems
+### Usage: dai join <amount-in-peth>
+set -e
+[ $# = 1 ] || dai join --usage
+jam=$(dai wad -h "$1")
+echo >&2 "Generating $jam PETH depositing GEM..."
+jam=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "join(uint256)" "$jam")

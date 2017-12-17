@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+### dai-give -- transfer ownership of a cup
+### Usage: dai --cup=<id> give <address>
+set -e
+[ $# = 1 ] || dai give --usage
+[ ! -z "$DAI_CUP" ] || dai give --usage
+echo >&2 "Giving cup $((${DAI_CUP?})) to \"${1?}\"..."
+(set -x; seth send "${DAI_TUB?}" "give(bytes32,address)" "$DAI_CUP" "$1")

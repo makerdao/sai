@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+### dai-rap -- get the amount of governance debt
+### Usage: dai --cup=<id> rap
+set -e
+[ ! -z "$DAI_CUP" ] || dai rap --usage
+wad=$(seth call "${DAI_TUB?}" "rap(bytes32)" "${DAI_CUP?}")
+dai wad -h "$wad"

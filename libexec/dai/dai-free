@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+### dai-free -- remove excess PETH collateral from a cup
+### Usage: dai --cup=<id> free <amount-in-peth>
+set -e
+[ $# = 1 ] || dai free --usage
+[ ! -z "$DAI_CUP" ] || dai free --usage
+wad=$(dai wad -h "$1")
+echo >&2 "Freeing $wad PETH from cup $((${DAI_CUP?}))..."
+wad=$(dai wad "$1")
+(set -x; seth send "${DAI_TUB?}" "free(bytes32,uint256)" "$DAI_CUP" "$wad")

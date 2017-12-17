@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+### dai -- command-line Ethereum RPC client
+### Usage: dai [<options>] <command> [<args>]
+###    or: dai <command> --help
+###
+### Dai is a simple version of the diversely collateralized Dai stablecoin.
+###
+### In this model there is one type of underlying collateral (called gems).
+### The PETH token represents claims on the system's excess gems, and is the
+### only admissible type of collateral.  Gems can be converted to/from PETH.
+###
+### Any transfers of dai or PETH are done using the normal ERC20 interface;
+### until settlement mode is triggered, dai users should only need ERC20.
+###
+### To conveniently perform ERC20 transfers, see the token(1) program
+### available at <https://github.com/dapphub/token>.
+###
+### Dai options:
+###
+###    -C, --cup=<id>             ID of cup to perform operation on
+###        --tub=<address>        address of Tub to perform operation on
+###        --tap=<address>        address of Tap to perform operation on
+###        --top=<address>        address of Top to perform operation on
+###
+### Transaction options:
+###
+###    -F, --from=<account>       account from which to send transaction
+###    -G, --gas=<number>         amount of gas to provide with transaction
+
+OPTS="dai [<options>] <command> [<args>]
+dai <command> --help
+--
+  Options
+C,cup=id             ID of cup to perform operation on
+tub=address          address of Tub to perform operation on
+tap=address          address of Tap to perform operation on
+top=address          address of Top to perform operation on
+F,from=address       account from which to send transaction
+G,gas=number         amount of gas to provide with transaction
+h                    display output in human-readable form
+"
+
+set -e
+
+if [[ $2 = --help ]]; then
+  exec "${0##*/}" help -- "$1"
+elif [[ $2 = --usage ]]; then
+  "${0##*/}" help -- "$1"
+  exit 1
+elif [[ $3 = --usage ]]; then
+  "${0##*/}" help -- "$1-$2"
+  exit 1
+elif [[ $1 = -* ]] && which "${0##*/}-$1" &>/dev/null; then
+  exec "${0##*/}-$1" "${@:2}"
+fi
+
+eval "$(git rev-parse --parseopt -- "$@" <<<"$OPTS" || echo exit $?)"
+
+while [[ $1 ]]; do
+  case $1 in
+    --)              shift; break;;
+
+    -C|--cup)        shift; export DAI_CUP="$(seth --to-hexdata "$(seth --to-uint256 "$1")")";;
+       --tub)        shift; export DAI_TUB=$1;;
+       --tap)        shift; export DAI_TAP=$1;;
+       --top)        shift; export DAI_TOP=$1;;
+
+    -F|--from)       shift; export ETH_FROM=$1;;
+    -G|--gas)        shift; export ETH_GAS=$1;;
+    
+    -h)                     export DAI_HUMAN=1;;
+
+    *) printf "${0##*/}: internal error: %q\n" "$1"; exit 1
+  esac; shift
+done
+
+export DAI_TUB=${DAI_TUB:-@dai_tub}
+export DAI_TAP=${DAI_TAP:-@dai_tap}
+export DAI_TOP=${DAI_TOP:-@dai_top}
+
+"${0##*/}-${1-help}" "${@:2}"
