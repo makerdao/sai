@@ -270,6 +270,11 @@ contract SaiTubTest is SaiTestBase {
         assertTrue( mom.call(setAxe, ray(2 ether)));
         assertTrue(!mom.call(setMat, ray(1 ether)));
     }
+    function testTune() public {
+        assertEq(vox.how(), 0);
+        mom.setHow(2 * 10 ** 25);
+        assertEq(vox.how(), 2 * 10 ** 25);
+    }
     function testPriceFeedSetters() public {
         var setPip = bytes4(keccak256('setPip(address)'));
         var setPep = bytes4(keccak256('setPep(address)'));

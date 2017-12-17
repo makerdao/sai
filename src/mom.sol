@@ -95,4 +95,7 @@ contract SaiMom is DSThing {
         require(ray > 9998 * 10 ** 23);
         vox.mold("way", ray);
     }
+    function setHow(uint ray) public note auth {
+        vox.tune(ray);
+    }
 }
