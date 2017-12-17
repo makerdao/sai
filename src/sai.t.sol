@@ -1916,8 +1916,8 @@ contract WayTest is SaiTestBase {
         warp(1 days);
         assertEq(wad(vox.par()), 0.95 ether);
 
-        mom.setWay(1000008022568992670911001251);  // 200% / day
-        warp(1 days);
+        mom.setWay(1000000021979553151239153027);  // 200% / year
+        warp(1 years);
         assertEq(wad(vox.par()), 1.90 ether);
     }
     function testWayDecreasingPrincipal() public {
@@ -1936,8 +1936,8 @@ contract WayTest is SaiTestBase {
     function testWayCage() public {
         waySetup();
 
-        mom.setWay(1000008022568992670911001251);  // 200% / day
-        warp(1 days);  // par now 2
+        mom.setWay(1000000021979553151239153027);  // 200% / year
+        warp(1 years);  // par now 2
 
         // we have 100 sai
         // gem is worth 10 ref
@@ -1951,8 +1951,8 @@ contract WayTest is SaiTestBase {
         assertEq(sai.balanceOf(tap),     0 ether);
         tap.cash(sai.balanceOf(this));
         assertEq(gem.balanceOf(this), 1020 ether);
-        assertEq(sai.balanceOf(this),   0 ether);
-        assertEq(sai.balanceOf(tap),    0 ether);
+        assertEq(sai.balanceOf(this),    0 ether);
+        assertEq(sai.balanceOf(tap),     0 ether);
     }
 
     // `boom` and `bust` as par is now needed to determine
@@ -1973,8 +1973,8 @@ contract WayTest is SaiTestBase {
         assertEq(tap.woe(),  75 ether);
         assertEq(sai.balanceOf(this), 75 ether);
 
-        mom.setWay(999991977495368425989823173);  // -50% / day
-        warp(1 days);
+        mom.setWay(999999978020447331861593082);  // -50% / year
+        warp(1 years);
         assertEq(wad(vox.par()), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
@@ -1983,33 +1983,6 @@ contract WayTest is SaiTestBase {
         assertEq(tap.fog(),   0 ether);
         assertEq(tap.woe(),  25 ether);
         assertEq(sai.balanceOf(this), 25 ether);
-    }
-    function testWayBoom() public {
-        var cup = waySetup();
-        tub.join(100 ether);       // give us some spare skr
-        sai.push(tap, 100 ether);  // force some joy into the tap
-        assertEq(tap.joy(), 100 ether);
-
-        mark(2 ether);
-        mom.setWay(1000008022568992670911001251);  // 200% / day
-        warp(1 days);
-        assertEq(wad(vox.par()), 2 ether);
-        tap.boom(100 ether);
-        assertEq(tap.joy(),   0 ether);
-        assertEq(tub.per(), ray(2 ether));
-
-        tub.join(100 ether);
-        tub.draw(cup, 100 ether);
-        sai.push(tap, 100 ether);  // force some joy into the tap
-
-        // n.b. per is now 2
-        assertEq(tap.joy(), 100 ether);
-        mark(2 ether);
-        mom.setWay(999991977495368425989823173);  // -50% / day
-        warp(2 days);
-        assertEq(wad(vox.par()), 0.5 ether);
-        tap.boom(12.5 ether);
-        assertEq(tap.joy(),   0 ether);
     }
 }
 

@@ -50,14 +50,14 @@ contract SaiMom is DSThing {
         tub.mold("tax", ray);
         var tax = tub.tax();
         require(RAY <= tax);
-        require(tax < 10002 * 10 ** 23);  // ~200% per hour
+        require(tax < 1000001100000000000000000000);  // 10% / day
     }
     // Governance fee
     function setFee(uint ray) public note auth {
         tub.mold("fee", ray);
         var fee = tub.fee();
         require(RAY <= fee);
-        require(fee < 10002 * 10 ** 23);  // ~200% per hour
+        require(fee < 1000001100000000000000000000);  // 10% / day
     }
     // Liquidation fee
     function setAxe(uint ray) public note auth {
@@ -91,8 +91,8 @@ contract SaiMom is DSThing {
     }
     // Rate of change of target price (per second)
     function setWay(uint ray) public note auth {
-        require(ray < 10002 * 10 ** 23);  // ~200% per hour
-        require(ray > 9998 * 10 ** 23);
+        require(ray < 1000001100000000000000000000);  // 10% / day
+        require(ray >  999998800000000000000000000);
         vox.mold("way", ray);
     }
     function setHow(uint ray) public note auth {
