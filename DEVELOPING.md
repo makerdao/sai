@@ -290,28 +290,47 @@ change in a future release).
 
 ## Auth setup
 
-ds-auth is used, with no owners and a ds-guard authority.
+Sai is designed with two authorities, `dad` and `chief`.
 
-The auth setup looks as follows: sai-auth.jpeg [XXX: do this in graphviz]
+- `dad` is a DSGuard, and is used for internal contract-contract
+  permissions, allowing e.g. the `tub` to `mint` and `burn` Sai. `dad`
+  is the authority of the `tub` and `tap`, and also `sai`, `sin` and
+  `skr`.
 
-
-### Sai v1 features
-
-- `drip` == 1 (optimisation)
-- `auth` on all functions
-
-### Changes in Sai v2
-
-- `auth` only on admin functions
-- updated to latest dappsys
-- simplified contract layout
+- `chief` restricts access to `top` and `mom`, which are the admin
+  interfaces to the system. `chief` is intended to be a DSRoles
+  instance, but any authority implementation could be used.
 
 
 ## Deployment
 
-Scripts, scripts, scripts.. also see test setup.
+Sai is a complex multi-contract system and has a slightly involved
+deployment process. The prerequisities to the deployment are:
 
-Script output gist
+1. `pip`, a collateral price feed
+2. `pep`, a governance price feed
+3. `gem`, a collateral token
+4. `pit`, a token burner
+5. `chief`, the external authority
+
+For testing purposes, `bin/deploy` will create the prerequisites for you
+if you don't supply them.
+
+In addition, Sai utilises on-chain deployers, called fabs, for creating
+fresh basic components on chain. These are defined in `fab.sol`.
+
+The main contract deployment is defined in `DaiFab`, and requires
+multiple calls because of the size of the contracts.
+
+The full contracts can be deployed to e.g.  ethlive with the following,
+after which the contract addresses will be saved in `load-env-ethlive`.
+
+```
+bin/deploy-fab
+. load-fab-ethlive
+bin/deploy
+```
+
 
 ## Glossary
 
