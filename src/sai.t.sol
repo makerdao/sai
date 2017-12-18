@@ -2545,3 +2545,15 @@ contract DustTest is SaiTestBase {
         tub.free(cup, 0.995 ether);
     }
 }
+
+contract SymbologyTest is SaiTestBase {
+    function testSymbology() public {
+        assertEq(sai.symbol(), 'DAI');
+        assertEq(sin.symbol(), 'SIN');
+        assertEq(skr.symbol(), 'PETH');
+
+        assertEq(sai.name(), 'Dai Stablecoin v1.0');
+        assertEq(sin.name(), 'SIN');
+        assertEq(skr.name(), 'Pooled Ether');
+    }
+}

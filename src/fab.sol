@@ -95,6 +95,9 @@ contract DaiFab is DSAuth {
         sai = gemFab.newTok('DAI');
         sin = gemFab.newTok('SIN');
         skr = gemFab.newTok('PETH');
+        sai.setName('Dai Stablecoin v1.0');
+        sin.setName('SIN');
+        skr.setName('Pooled Ether');
         step += 1;
     }
 
