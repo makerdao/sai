@@ -1,5 +1,6 @@
 all:; dapp build
 test:; dapp test
+nix:; nix-build -o nix dapp.nix
 
 SHELL = bash
 dirs = {bin,libexec}
