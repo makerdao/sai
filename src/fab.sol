@@ -80,7 +80,7 @@ contract DaiFab is DSAuth {
 
     uint8 public step = 0;
 
-    function DaiFab(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
+    constructor(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
         gemFab = gemFab_;
         voxFab = voxFab_;
         tubFab = tubFab_;
@@ -122,7 +122,7 @@ contract DaiFab is DSAuth {
     }
 
     function S(string s) internal pure returns (bytes4) {
-        return bytes4(keccak256(s));
+        return bytes4(keccak256(abi.encodePacked(s)));
     }
 
     function ray(uint256 wad) internal pure returns (uint256) {

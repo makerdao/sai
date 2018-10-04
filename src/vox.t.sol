@@ -7,7 +7,7 @@ import './vox.sol';
 contract TestWarp is DSNote {
     uint  _era;
 
-    function TestWarp() public {
+    constructor() public {
         _era = uint(now);
     }
 
@@ -22,7 +22,7 @@ contract TestWarp is DSNote {
 }
 
 contract DevVox is SaiVox, TestWarp {
-    function DevVox(uint par_) SaiVox(par_) public {}
+    constructor(uint par_) SaiVox(par_) public {}
 }
 
 contract VoxTest is DSTest, DSMath {

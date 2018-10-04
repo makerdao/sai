@@ -23,8 +23,8 @@ contract SpellTest is DSTest {
     DSChief c;
     DSSpell s;
     function setUp() public {
-        var gov = new DSToken("GOV");
-        var iou = new DSToken("IOU");
+        DSToken gov = new DSToken("GOV");
+        DSToken iou = new DSToken("IOU");
         t = new Target();
         c = new DSChief(gov, iou, 1);
     }

@@ -29,7 +29,7 @@ contract SaiMom is DSThing {
     SaiTap  public  tap;
     SaiVox  public  vox;
 
-    function SaiMom(SaiTub tub_, SaiTap tap_, SaiVox vox_) public {
+    constructor(SaiTub tub_, SaiTap tap_, SaiVox vox_) public {
         tub = tub_;
         tap = tap_;
         vox = vox_;
@@ -41,29 +41,29 @@ contract SaiMom is DSThing {
     // Liquidation ratio
     function setMat(uint ray) public note auth {
         tub.mold("mat", ray);
-        var axe = tub.axe();
-        var mat = tub.mat();
+        uint axe = tub.axe();
+        uint mat = tub.mat();
         require(axe >= RAY && axe <= mat);
     }
     // Stability fee
     function setTax(uint ray) public note auth {
         tub.mold("tax", ray);
-        var tax = tub.tax();
+        uint tax = tub.tax();
         require(RAY <= tax);
         require(tax < 1000001100000000000000000000);  // 10% / day
     }
     // Governance fee
     function setFee(uint ray) public note auth {
         tub.mold("fee", ray);
-        var fee = tub.fee();
+        uint fee = tub.fee();
         require(RAY <= fee);
         require(fee < 1000001100000000000000000000);  // 10% / day
     }
     // Liquidation fee
     function setAxe(uint ray) public note auth {
         tub.mold("axe", ray);
-        var axe = tub.axe();
-        var mat = tub.mat();
+        uint axe = tub.axe();
+        uint mat = tub.mat();
         require(axe >= RAY && axe <= mat);
     }
     // Join/Exit Spread
@@ -85,7 +85,7 @@ contract SaiMom is DSThing {
     // Boom/Bust Spread
     function setTapGap(uint wad) public note auth {
         tap.mold("gap", wad);
-        var gap = tap.gap();
+        uint gap = tap.gap();
         require(gap <= 1.05 ether);
         require(gap >= 0.95 ether);
     }

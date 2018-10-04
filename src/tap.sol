@@ -46,8 +46,7 @@ contract SaiTap is DSThing {
         return skr.balanceOf(this);
     }
 
-
-    function SaiTap(SaiTub tub_) public {
+    constructor(SaiTub tub_) public {
         tub = tub_;
 
         sai = tub.sai();
@@ -66,15 +65,15 @@ contract SaiTap is DSThing {
     // Cancel debt
     function heal() public note {
         if (joy() == 0 || woe() == 0) return;  // optimised
-        var wad = min(joy(), woe());
+        uint wad = min(joy(), woe());
         sai.burn(wad);
         sin.burn(wad);
     }
 
     // Feed price (sai per skr)
     function s2s() public returns (uint) {
-        var tag = tub.tag();    // ref per skr
-        var par = vox.par();    // ref per sai
+        uint tag = tub.tag();    // ref per skr
+        uint par = vox.par();    // ref per sai
         return rdiv(tag, par);  // sai per skr
     }
     // Boom price (sai per skr)
