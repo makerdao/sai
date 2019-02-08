@@ -5,7 +5,7 @@ export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
 export ETH_GAS=${ETH_GAS:-"3500000"}
 export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
 
-dapp build
+dapp --use solc:0.4.25 build
 
 # ETHUSD feed
 export SAI_PIP='0x729D19f657BD0614b4985Cf1D82531c67569197B'
