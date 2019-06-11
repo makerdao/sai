@@ -276,7 +276,7 @@ Mainnet:
 ```bash
 # sai deployment on ethlive from c2031c0f9f3a186e90b6a3c1905282f7cc58b9f5
 # Mon 18 Dec 03:12:57 GMT 2017
-# SAI_ADM updated 2018-06-11
+# SAI_ADM updated 2019-06-11
 
 export SAI_GEM=0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2
 export SAI_GOV=0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2
