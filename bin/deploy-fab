@@ -5,7 +5,7 @@ export SOLC_FLAGS=${SOLC_FLAGS:-"--optimize"}
 export ETH_GAS=${ETH_GAS:-"3500000"}
 export ETH_FROM=${ETH_FROM:-$(seth rpc eth_coinbase)}
 
-dapp --use solc:0.4.25 build
+dapp --use solc:0.4.25 build --extract
 
 export SETH_ASYNC=yes
 
@@ -19,15 +19,15 @@ DAD_FABtx=$(dapp create DadFab)
 
 export SETH_ASYNC=no
 
-GEM_FAB=$(seth receipt $GEM_FABtx contractAddress)
-VOX_FAB=$(seth receipt $VOX_FABtx contractAddress)
-TUB_FAB=$(seth receipt $TUB_FABtx contractAddress)
-TAP_FAB=$(seth receipt $TAP_FABtx contractAddress)
-TOP_FAB=$(seth receipt $TOP_FABtx contractAddress)
-MOM_FAB=$(seth receipt $MOM_FABtx contractAddress)
-DAD_FAB=$(seth receipt $DAD_FABtx contractAddress)
+GEM_FAB=$(seth receipt "$GEM_FABtx" contractAddress)
+VOX_FAB=$(seth receipt "$VOX_FABtx" contractAddress)
+TUB_FAB=$(seth receipt "$TUB_FABtx" contractAddress)
+TAP_FAB=$(seth receipt "$TAP_FABtx" contractAddress)
+TOP_FAB=$(seth receipt "$TOP_FABtx" contractAddress)
+MOM_FAB=$(seth receipt "$MOM_FABtx" contractAddress)
+DAD_FAB=$(seth receipt "$DAD_FABtx" contractAddress)
 
-cat > load-fab-$(seth chain) << EOF
+cat > "load-fab-$(seth chain)" << EOF
 #!/bin/bash
 
 # fab deployment on $(seth chain) from $(git rev-parse HEAD)
