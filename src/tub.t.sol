@@ -1,6 +1,6 @@
 /// tub.t.sol -- Unit tests for tub.sol
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import './tub.sol';
 import './tap.sol';
@@ -33,42 +33,42 @@ contract TubTest is DSTest, DSThing {
         pep = new DSValue();
         dad = new DSGuard();
         vox = new SaiVox(RAY);
-        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, 0x123);
-        tap = 0x456;
+        tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, address(0x123));
+        tap = address(0x456);
         tub.turn(tap);
 
         //Set whitelist authority
         skr.setAuthority(dad);
 
         //Permit tub to 'mint' and 'burn' SKR
-        dad.permit(tub, skr, bytes4(keccak256('mint(address,uint256)')));
-        dad.permit(tub, skr, bytes4(keccak256('burn(address,uint256)')));
+        dad.permit(address(tub), address(skr), bytes32(bytes4(keccak256('mint(address,uint256)'))));
+        dad.permit(address(tub), address(skr), bytes32(bytes4(keccak256('burn(address,uint256)'))));
 
         //Allow tub to mint, burn, and transfer gem/skr without approval
-        gem.approve(tub);
-        skr.approve(tub);
-        sai.approve(tub);
+        gem.approve(address(tub));
+        skr.approve(address(tub));
+        sai.approve(address(tub));
 
         gem.mint(6 ether);
 
         //Verify initial token balances
-        assertEq(gem.balanceOf(this), 6 ether);
-        assertEq(gem.balanceOf(tub), 0 ether);
+        assertEq(gem.balanceOf(address(this)), 6 ether);
+        assertEq(gem.balanceOf(address(tub)), 0 ether);
         assertEq(skr.totalSupply(), 0 ether);
 
         assert(!tub.off());
     }
 
     function testFailTurnAgain() public {
-        tub.turn(0x789);
+        tub.turn(address(0x789));
     }
 
     function testPie() public {
-        assertEq(tub.pie(), gem.balanceOf(tub));
+        assertEq(tub.pie(), gem.balanceOf(address(tub)));
         assertEq(tub.pie(), 0 ether);
         gem.mint(75 ether);
         tub.join(72 ether);
-        assertEq(tub.pie(), gem.balanceOf(tub));
+        assertEq(tub.pie(), gem.balanceOf(address(tub)));
         assertEq(tub.pie(), 72 ether);
     }
 
@@ -79,11 +79,11 @@ contract TubTest is DSTest, DSThing {
     }
 
     function testTag() public {
-        tub.pip().poke(bytes32(1 ether));
-        assertEq(tub.pip().read(), bytes32(1 ether));
+        tub.pip().poke(bytes32(uint(1 ether)));
+        assertEq(tub.pip().read(), bytes32(uint(1 ether)));
         assertEq(wmul(tub.per(), uint(tub.pip().read())), tub.tag());
-        tub.pip().poke(bytes32(5 ether));
-        assertEq(tub.pip().read(), bytes32(5 ether));
+        tub.pip().poke(bytes32(uint(5 ether)));
+        assertEq(tub.pip().read(), bytes32(uint(5 ether)));
         assertEq(wmul(tub.per(), uint(tub.pip().read())), tub.tag());
     }
 
@@ -109,44 +109,44 @@ contract TubTest is DSTest, DSThing {
 
     function testJoin() public {
         tub.join(3 ether);
-        assertEq(gem.balanceOf(this), 3 ether);
-        assertEq(gem.balanceOf(tub), 3 ether);
+        assertEq(gem.balanceOf(address(this)), 3 ether);
+        assertEq(gem.balanceOf(address(tub)), 3 ether);
         assertEq(skr.totalSupply(), 3 ether);
         tub.join(1 ether);
-        assertEq(gem.balanceOf(this), 2 ether);
-        assertEq(gem.balanceOf(tub), 4 ether);
+        assertEq(gem.balanceOf(address(this)), 2 ether);
+        assertEq(gem.balanceOf(address(tub)), 4 ether);
         assertEq(skr.totalSupply(), 4 ether);
     }
 
     function testExit() public {
         gem.mint(10 ether);
-        assertEq(gem.balanceOf(this), 16 ether);
+        assertEq(gem.balanceOf(address(this)), 16 ether);
 
         tub.join(12 ether);
-        assertEq(gem.balanceOf(tub), 12 ether);
-        assertEq(gem.balanceOf(this), 4 ether);
+        assertEq(gem.balanceOf(address(tub)), 12 ether);
+        assertEq(gem.balanceOf(address(this)), 4 ether);
         assertEq(skr.totalSupply(), 12 ether);
 
         tub.exit(3 ether);
-        assertEq(gem.balanceOf(tub), 9 ether);
-        assertEq(gem.balanceOf(this), 7 ether);
+        assertEq(gem.balanceOf(address(tub)), 9 ether);
+        assertEq(gem.balanceOf(address(this)), 7 ether);
         assertEq(skr.totalSupply(), 9 ether);
 
         tub.exit(7 ether);
-        assertEq(gem.balanceOf(tub), 2 ether);
-        assertEq(gem.balanceOf(this), 14 ether);
+        assertEq(gem.balanceOf(address(tub)), 2 ether);
+        assertEq(gem.balanceOf(address(this)), 14 ether);
         assertEq(skr.totalSupply(), 2 ether);
     }
 
     function testCage() public {
         tub.join(5 ether);
-        assertEq(gem.balanceOf(tub), 5 ether);
-        assertEq(gem.balanceOf(this), 1 ether);
+        assertEq(gem.balanceOf(address(tub)), 5 ether);
+        assertEq(gem.balanceOf(address(this)), 1 ether);
         assertEq(skr.totalSupply(), 5 ether);
         assert(!tub.off());
 
         tub.cage(tub.per(), 5 ether);
-        assertEq(gem.balanceOf(tub), 0 ether);
+        assertEq(gem.balanceOf(address(tub)), 0 ether);
         assertEq(gem.balanceOf(tap), 5 ether);
         assertEq(skr.totalSupply(), 5 ether);
         assert(tub.off());

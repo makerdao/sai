@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import "ds-auth/auth.sol";
 import 'ds-token/token.sol';
@@ -80,7 +80,7 @@ contract DaiFab is DSAuth {
 
     uint8 public step = 0;
 
-    function DaiFab(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
+    constructor(GemFab gemFab_, VoxFab voxFab_, TubFab tubFab_, TapFab tapFab_, TopFab topFab_, MomFab momFab_, DadFab dadFab_) public {
         gemFab = gemFab_;
         voxFab = voxFab_;
         tubFab = tubFab_;
@@ -103,11 +103,11 @@ contract DaiFab is DSAuth {
 
     function makeVoxTub(ERC20 gem, DSToken gov, DSValue pip, DSValue pep, address pit) public auth {
         require(step == 1);
-        require(address(gem) != 0x0);
-        require(address(gov) != 0x0);
-        require(address(pip) != 0x0);
-        require(address(pep) != 0x0);
-        require(pit != 0x0);
+        require(address(gem) != address(0));
+        require(address(gov) != address(0));
+        require(address(pip) != address(0));
+        require(address(pep) != address(0));
+        require(pit != address(0));
         vox = voxFab.newVox();
         tub = tubFab.newTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
         step += 1;
@@ -116,13 +116,13 @@ contract DaiFab is DSAuth {
     function makeTapTop() public auth {
         require(step == 2);
         tap = tapFab.newTap(tub);
-        tub.turn(tap);
+        tub.turn(address(tap));
         top = topFab.newTop(tub, tap);
         step += 1;
     }
 
-    function S(string s) internal pure returns (bytes4) {
-        return bytes4(keccak256(s));
+    function S(bytes memory s) internal pure returns (bytes32) {
+        return bytes32(bytes4(keccak256(s)));
     }
 
     function ray(uint256 wad) internal pure returns (uint256) {
@@ -171,59 +171,59 @@ contract DaiFab is DSAuth {
 
     function configAuth(DSAuthority authority) public auth {
         require(step == 5);
-        require(address(authority) != 0x0);
+        require(address(authority) != address(0));
 
         mom = momFab.newMom(tub, tap, vox);
         dad = dadFab.newDad();
 
         vox.setAuthority(dad);
-        vox.setOwner(0);
+        vox.setOwner(address(0));
         tub.setAuthority(dad);
-        tub.setOwner(0);
+        tub.setOwner(address(0));
         tap.setAuthority(dad);
-        tap.setOwner(0);
+        tap.setOwner(address(0));
         sai.setAuthority(dad);
-        sai.setOwner(0);
+        sai.setOwner(address(0));
         sin.setAuthority(dad);
-        sin.setOwner(0);
+        sin.setOwner(address(0));
         skr.setAuthority(dad);
-        skr.setOwner(0);
+        skr.setOwner(address(0));
 
         top.setAuthority(authority);
-        top.setOwner(0);
+        top.setOwner(address(0));
         mom.setAuthority(authority);
-        mom.setOwner(0);
+        mom.setOwner(address(0));
 
-        dad.permit(top, tub, S("cage(uint256,uint256)"));
-        dad.permit(top, tub, S("flow()"));
-        dad.permit(top, tap, S("cage(uint256)"));
+        dad.permit(address(top), address(tub), S("cage(uint256,uint256)"));
+        dad.permit(address(top), address(tub), S("flow()"));
+        dad.permit(address(top), address(tap), S("cage(uint256)"));
 
-        dad.permit(tub, skr, S('mint(address,uint256)'));
-        dad.permit(tub, skr, S('burn(address,uint256)'));
+        dad.permit(address(tub), address(skr), S('mint(address,uint256)'));
+        dad.permit(address(tub), address(skr), S('burn(address,uint256)'));
 
-        dad.permit(tub, sai, S('mint(address,uint256)'));
-        dad.permit(tub, sai, S('burn(address,uint256)'));
+        dad.permit(address(tub), address(sai), S('mint(address,uint256)'));
+        dad.permit(address(tub), address(sai), S('burn(address,uint256)'));
 
-        dad.permit(tub, sin, S('mint(address,uint256)'));
+        dad.permit(address(tub), address(sin), S('mint(address,uint256)'));
 
-        dad.permit(tap, sai, S('mint(address,uint256)'));
-        dad.permit(tap, sai, S('burn(address,uint256)'));
-        dad.permit(tap, sai, S('burn(uint256)'));
-        dad.permit(tap, sin, S('burn(uint256)'));
+        dad.permit(address(tap), address(sai), S('mint(address,uint256)'));
+        dad.permit(address(tap), address(sai), S('burn(address,uint256)'));
+        dad.permit(address(tap), address(sai), S('burn(uint256)'));
+        dad.permit(address(tap), address(sin), S('burn(uint256)'));
 
-        dad.permit(tap, skr, S('mint(uint256)'));
-        dad.permit(tap, skr, S('burn(uint256)'));
-        dad.permit(tap, skr, S('burn(address,uint256)'));
+        dad.permit(address(tap), address(skr), S('mint(uint256)'));
+        dad.permit(address(tap), address(skr), S('burn(uint256)'));
+        dad.permit(address(tap), address(skr), S('burn(address,uint256)'));
 
-        dad.permit(mom, vox, S("mold(bytes32,uint256)"));
-        dad.permit(mom, vox, S("tune(uint256)"));
-        dad.permit(mom, tub, S("mold(bytes32,uint256)"));
-        dad.permit(mom, tap, S("mold(bytes32,uint256)"));
-        dad.permit(mom, tub, S("setPip(address)"));
-        dad.permit(mom, tub, S("setPep(address)"));
-        dad.permit(mom, tub, S("setVox(address)"));
+        dad.permit(address(mom), address(vox), S("mold(bytes32,uint256)"));
+        dad.permit(address(mom), address(vox), S("tune(uint256)"));
+        dad.permit(address(mom), address(tub), S("mold(bytes32,uint256)"));
+        dad.permit(address(mom), address(tap), S("mold(bytes32,uint256)"));
+        dad.permit(address(mom), address(tub), S("setPip(address)"));
+        dad.permit(address(mom), address(tub), S("setPep(address)"));
+        dad.permit(address(mom), address(tub), S("setVox(address)"));
 
-        dad.setOwner(0);
+        dad.setOwner(address(0));
         step += 1;
     }
 }

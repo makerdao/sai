@@ -1,4 +1,4 @@
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import "ds-test/test.sol";
 import "ds-math/math.sol";
@@ -7,7 +7,7 @@ import './vox.sol';
 contract TestWarp is DSNote {
     uint  _era;
 
-    function TestWarp() public {
+    constructor() public {
         _era = uint(now);
     }
 
@@ -22,7 +22,7 @@ contract TestWarp is DSNote {
 }
 
 contract DevVox is SaiVox, TestWarp {
-    function DevVox(uint par_) SaiVox(par_) public {}
+    constructor(uint par_) SaiVox(par_) public {}
 }
 
 contract VoxTest is DSTest, DSMath {

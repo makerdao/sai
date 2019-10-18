@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import "./tub.sol";
 import "./tap.sol";
@@ -37,7 +37,7 @@ contract SaiTop is DSThing {
     uint256  public  caged;
     uint256  public  cooldown = 6 hours;
 
-    function SaiTop(SaiTub tub_, SaiTap tap_) public {
+    constructor(SaiTub tub_, SaiTap tap_) public {
         tub = tub_;
         tap = tap_;
 
@@ -85,8 +85,8 @@ contract SaiTop is DSThing {
 
     function flow() public note {
         require(tub.off());
-        var empty = tub.din() == 0 && tap.fog() == 0;
-        var ended = era() > caged + cooldown;
+        bool empty = tub.din() == 0 && tap.fog() == 0;
+        bool ended = era() > caged + cooldown;
         require(empty || ended);
         tub.flow();
     }

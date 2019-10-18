@@ -15,12 +15,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import "ds-token/token.sol";
 
 contract GemPit {
     function burn(DSToken gem) public {
-        gem.burn(gem.balanceOf(this));
+        gem.burn(gem.balanceOf(address(this)));
     }
 }

@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity ^0.5.11;
 
 import "ds-thing/thing.sol";
 import "ds-token/token.sol";
@@ -91,16 +91,16 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     // Backing collateral
     function air() public view returns (uint) {
-        return skr.balanceOf(this);
+        return skr.balanceOf(address(this));
     }
     // Raw collateral
     function pie() public view returns (uint) {
-        return gem.balanceOf(this);
+        return gem.balanceOf(address(this));
     }
 
     //------------------------------------------------------------------
 
-    function SaiTub(
+    constructor(
         DSToken  sai_,
         DSToken  sin_,
         DSToken  skr_,
@@ -136,7 +136,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         rho = era();
     }
 
-    function era() public constant returns (uint) {
+    function era() public view returns (uint) {
         return block.timestamp;
     }
 
@@ -166,8 +166,8 @@ contract SaiTub is DSThing, SaiTubEvents {
 
     //--Tap-setter------------------------------------------------------
     function turn(address tap_) public note {
-        require(tap  == 0);
-        require(tap_ != 0);
+        require(tap  == address(0));
+        require(tap_ != address(0));
         tap = tap_;
     }
 
@@ -188,7 +188,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     function join(uint wad) public note {
         require(!off);
         require(ask(wad) > 0);
-        require(gem.transferFrom(msg.sender, this, ask(wad)));
+        require(gem.transferFrom(msg.sender, address(this), ask(wad)));
         skr.mint(msg.sender, wad);
     }
     function exit(uint wad) public note {
@@ -211,15 +211,15 @@ contract SaiTub is DSThing, SaiTubEvents {
     function drip() public note {
         if (off) return;
 
-        var rho_ = era();
-        var age = rho_ - rho;
+        uint rho_ = era();
+        uint age = rho_ - rho;
         if (age == 0) return;    // optimised
         rho = rho_;
 
-        var inc = RAY;
+        uint inc = RAY;
 
         if (tax != RAY) {  // optimised
-            var _chi_ = _chi;
+            uint _chi_ = _chi;
             inc = rpow(tax, age);
             _chi = rmul(_chi, inc);
             sai.mint(tap, rmul(sub(_chi, _chi_), rum));
@@ -239,9 +239,9 @@ contract SaiTub is DSThing, SaiTubEvents {
     }
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) public returns (bool) {
-        var pro = rmul(tag(), ink(cup));
-        var con = rmul(vox.par(), tab(cup));
-        var min = rmul(con, mat);
+        uint pro = rmul(tag(), ink(cup));
+        uint con = rmul(vox.par(), tab(cup));
+        uint min = rmul(con, mat);
         return pro >= min;
     }
 
@@ -253,11 +253,11 @@ contract SaiTub is DSThing, SaiTubEvents {
         cupi = add(cupi, 1);
         cup = bytes32(cupi);
         cups[cup].lad = msg.sender;
-        LogNewCup(msg.sender, cup);
+        emit LogNewCup(msg.sender, cup);
     }
     function give(bytes32 cup, address guy) public note {
         require(msg.sender == cups[cup].lad);
-        require(guy != 0);
+        require(guy != address(0));
         cups[cup].lad = guy;
     }
 
@@ -292,7 +292,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     function wipe(bytes32 cup, uint wad) public note {
         require(!off);
 
-        var owe = rmul(wad, rdiv(rap(cup), tab(cup)));
+        uint owe = rmul(wad, rdiv(rap(cup), tab(cup)));
 
         cups[cup].art = sub(cups[cup].art, rdiv(wad, chi()));
         rum = sub(rum, rdiv(wad, chi()));
@@ -300,7 +300,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].ire = sub(cups[cup].ire, rdiv(add(wad, owe), rhi()));
         sai.burn(msg.sender, wad);
 
-        var (val, ok) = pep.peek();
+        (bytes32 val, bool ok) = pep.peek();
         if (ok && val != 0) gov.move(msg.sender, pit, wdiv(owe, uint(val)));
     }
 
@@ -316,14 +316,14 @@ contract SaiTub is DSThing, SaiTubEvents {
         require(!safe(cup) || off);
 
         // Take on all of the debt, except unpaid fees
-        var rue = tab(cup);
+        uint rue = tab(cup);
         sin.mint(tap, rue);
         rum = sub(rum, cups[cup].art);
         cups[cup].art = 0;
         cups[cup].ire = 0;
 
         // Amount owed in SKR, including liquidation penalty
-        var owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
+        uint owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
 
         if (owe > cups[cup].ink) {
             owe = cups[cup].ink;
