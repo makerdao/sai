@@ -9,13 +9,14 @@ dapp --use solc:0.4.25 build --extract
 
 export SETH_ASYNC=yes
 
-GEM_FABtx=$(dapp create GemFab)
-VOX_FABtx=$(dapp create VoxFab)
-TUB_FABtx=$(dapp create TubFab)
-TAP_FABtx=$(dapp create TapFab)
-TOP_FABtx=$(dapp create TopFab)
-MOM_FABtx=$(dapp create MomFab)
-DAD_FABtx=$(dapp create DadFab)
+ETH_NONCE=$(seth nonce "$ETH_FROM")
+GEM_FABtx=$(ETH_NONCE=$ETH_NONCE dapp create GemFab)
+VOX_FABtx=$(ETH_NONCE=$((ETH_NONCE + 1)) dapp create VoxFab)
+TUB_FABtx=$(ETH_NONCE=$((ETH_NONCE + 2)) dapp create TubFab)
+TAP_FABtx=$(ETH_NONCE=$((ETH_NONCE + 3)) dapp create TapFab)
+TOP_FABtx=$(ETH_NONCE=$((ETH_NONCE + 4)) dapp create TopFab)
+MOM_FABtx=$(ETH_NONCE=$((ETH_NONCE + 5)) dapp create MomFab)
+DAD_FABtx=$(ETH_NONCE=$((ETH_NONCE + 6)) dapp create DadFab)
 
 export SETH_ASYNC=no
 
