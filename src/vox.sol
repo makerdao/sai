@@ -17,9 +17,9 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity >=0.8.0;
 
-import "ds-thing/thing.sol";
+import "./ds-thing/thing.sol";
 
 contract SaiVox is DSThing {
     uint256  _par;
@@ -29,13 +29,13 @@ contract SaiVox is DSThing {
     uint256  public  how;
     uint256  public  tau;
 
-    function SaiVox(uint par_) public {
+    constructor(uint par_) {
         _par = fix = par_;
         _way = RAY;
         tau  = era();
     }
 
-    function era() public view returns (uint) {
+    function era() public view virtual returns (uint) {
         return block.timestamp;
     }
 
@@ -61,23 +61,23 @@ contract SaiVox is DSThing {
     }
 
     function prod() public note {
-        var age = era() - tau;
+        uint age = era() - tau;
         if (age == 0) return;  // optimised
         tau = era();
 
         if (_way != RAY) _par = rmul(_par, rpow(_way, age));  // optimised
 
         if (how == 0) return;  // optimised
-        var wag = int128(how * age);
+        int256 wag = int256(how * age);
         _way = inj(prj(_way) + (fix < _par ? wag : -wag));
     }
 
-    function inj(int128 x) internal pure returns (uint256) {
+    function inj(int256 x) internal pure returns (uint256) {
         return x >= 0 ? uint256(x) + RAY
             : rdiv(RAY, RAY + uint256(-x));
     }
-    function prj(uint256 x) internal pure returns (int128) {
-        return x >= RAY ? int128(x - RAY)
-            : int128(RAY) - int128(rdiv(RAY, x));
+    function prj(uint256 x) internal pure returns (int256) {
+        return x >= RAY ? int256(x - RAY)
+            : int256(RAY) - int256(rdiv(RAY, x));
     }
 }

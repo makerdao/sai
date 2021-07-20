@@ -1,18 +1,18 @@
-pragma solidity ^0.4.18;
+pragma solidity >=0.8.0;
 
-import "ds-test/test.sol";
-import "ds-math/math.sol";
+import "./ds-test/test.sol";
+import "./ds-math/math.sol";
 import './vox.sol';
 
 contract TestWarp is DSNote {
     uint  _era;
 
-    function TestWarp() public {
-        _era = uint(now);
+    constructor() {
+        _era = uint(block.timestamp);
     }
 
-    function era() public view returns (uint) {
-        return _era == 0 ? now : _era;
+    function era() public view virtual returns (uint) {
+        return _era == 0 ? block.timestamp : _era;
     }
 
     function warp(uint age) public note {
@@ -22,7 +22,11 @@ contract TestWarp is DSNote {
 }
 
 contract DevVox is SaiVox, TestWarp {
-    function DevVox(uint par_) SaiVox(par_) public {}
+    constructor(uint par_) SaiVox(par_) {}
+
+    function era() public view override(SaiVox, TestWarp) returns (uint256) {
+      return TestWarp.era();
+    }
 }
 
 contract VoxTest is DSTest, DSMath {

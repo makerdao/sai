@@ -2,3 +2,6 @@
 load-env*
 load-fab*
 addresses.json
+node_modules
+cache
+artifacts

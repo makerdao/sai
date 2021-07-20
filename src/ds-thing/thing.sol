@@ -1,6 +1,6 @@
-/// pit.sol -- a simple token burner
+// thing.sol - `auth` with handy mixins. your things should be DSThings
 
-// Copyright (C) 2017  Rain Break <rainbreak@riseup.net>
+// Copyright (C) 2017  DappHub, LLC
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,13 @@
 
 pragma solidity >=0.8.0;
 
-import "./ds-token/token.sol";
+import '../ds-auth/auth.sol';
+import '../ds-note/note.sol';
+import '../ds-math/math.sol';
 
-contract GemPit {
-    function burn(DSToken gem) public {
-        gem.burn(gem.balanceOf(address(this)));
+contract DSThing is DSAuth, DSNote, DSMath {
+    function S(string memory s) internal pure returns (bytes4) {
+        return bytes4(keccak256(abi.encodePacked(s)));
     }
+
 }

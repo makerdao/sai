@@ -1,6 +1,4 @@
-/// pit.sol -- a simple token burner
-
-// Copyright (C) 2017  Rain Break <rainbreak@riseup.net>
+/// note.sol -- the `note' modifier, for logging calls as events
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +15,29 @@
 
 pragma solidity >=0.8.0;
 
-import "./ds-token/token.sol";
+contract DSNote {
+    event LogNote(
+        bytes4   indexed  sig,
+        address  indexed  guy,
+        bytes32  indexed  foo,
+        bytes32  indexed  bar,
+        uint256           wad,
+        bytes             fax
+    ) anonymous;
 
-contract GemPit {
-    function burn(DSToken gem) public {
-        gem.burn(gem.balanceOf(address(this)));
+    modifier note {
+        bytes32 foo;
+        bytes32 bar;
+        uint256 wad;
+
+        assembly {
+            foo := calldataload(4)
+            bar := calldataload(36)
+            wad := callvalue()
+        }
+
+        _;
+
+        emit LogNote(msg.sig, msg.sender, foo, bar, wad, msg.data);
     }
 }

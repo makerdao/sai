@@ -17,10 +17,12 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity >=0.8.0;
 
 import "./tub.sol";
 import "./tap.sol";
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract SaiTop is DSThing {
     SaiVox   public  vox;
@@ -30,14 +32,14 @@ contract SaiTop is DSThing {
     DSToken  public  sai;
     DSToken  public  sin;
     DSToken  public  skr;
-    ERC20    public  gem;
+    IERC20    public  gem;
 
     uint256  public  fix;  // sai cage price (gem per sai)
     uint256  public  fit;  // skr cage price (ref per skr)
     uint256  public  caged;
     uint256  public  cooldown = 6 hours;
 
-    function SaiTop(SaiTub tub_, SaiTap tap_) public {
+    constructor(SaiTub tub_, SaiTap tap_) public {
         tub = tub_;
         tap = tap_;
 
@@ -49,7 +51,7 @@ contract SaiTop is DSThing {
         gem = tub.gem();
     }
 
-    function era() public view returns (uint) {
+    function era() public view virtual returns (uint) {
         return block.timestamp;
     }
 
@@ -85,8 +87,8 @@ contract SaiTop is DSThing {
 
     function flow() public note {
         require(tub.off());
-        var empty = tub.din() == 0 && tap.fog() == 0;
-        var ended = era() > caged + cooldown;
+        bool empty = tub.din() == 0 && tap.fog() == 0;
+        bool ended = era() > caged + cooldown;
         require(empty || ended);
         tub.flow();
     }

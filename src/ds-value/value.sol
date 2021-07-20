@@ -1,6 +1,6 @@
-/// pit.sol -- a simple token burner
+/// value.sol - a value is a simple thing, it can be get and set
 
-// Copyright (C) 2017  Rain Break <rainbreak@riseup.net>
+// Copyright (C) 2017  DappHub, LLC
 
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,10 +17,25 @@
 
 pragma solidity >=0.8.0;
 
-import "./ds-token/token.sol";
+import '../ds-thing/thing.sol';
 
-contract GemPit {
-    function burn(DSToken gem) public {
-        gem.burn(gem.balanceOf(address(this)));
+contract DSValue is DSThing {
+    bool    has;
+    bytes32 val;
+    function peek() public view returns (bytes32, bool) {
+        return (val,has);
+    }
+    function read() public view returns (bytes32) {
+        bytes32 wut; bool haz;
+        (wut, haz) = peek();
+        require(haz, "haz-not");
+        return wut;
+    }
+    function poke(bytes32 wut) public note auth {
+        val = wut;
+        has = true;
+    }
+    function void() public note auth {  // unset the value
+        has = false;
     }
 }

@@ -17,7 +17,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-pragma solidity ^0.4.18;
+pragma solidity >=0.8.0;
 
 import "./tub.sol";
 
@@ -35,19 +35,19 @@ contract SaiTap is DSThing {
 
     // Surplus
     function joy() public view returns (uint) {
-        return sai.balanceOf(this);
+        return sai.balanceOf(address(this));
     }
     // Bad debt
     function woe() public view returns (uint) {
-        return sin.balanceOf(this);
+        return sin.balanceOf(address(this));
     }
     // Collateral pending liquidation
     function fog() public view returns (uint) {
-        return skr.balanceOf(this);
+        return skr.balanceOf(address(this));
     }
 
 
-    function SaiTap(SaiTub tub_) public {
+    constructor(SaiTub tub_) {
         tub = tub_;
 
         sai = tub.sai();
@@ -66,15 +66,15 @@ contract SaiTap is DSThing {
     // Cancel debt
     function heal() public note {
         if (joy() == 0 || woe() == 0) return;  // optimised
-        var wad = min(joy(), woe());
+        uint wad = min(joy(), woe());
         sai.burn(wad);
         sin.burn(wad);
     }
 
     // Feed price (sai per skr)
     function s2s() public returns (uint) {
-        var tag = tub.tag();    // ref per skr
-        var par = vox.par();    // ref per sai
+        uint tag = tub.tag();    // ref per skr
+        uint par = vox.par();    // ref per sai
         return rdiv(tag, par);  // sai per skr
     }
     // Boom price (sai per skr)
@@ -126,7 +126,7 @@ contract SaiTap is DSThing {
     function mock(uint wad) public note {
         require(off);
         sai.mint(msg.sender, wad);
-        require(tub.gem().transferFrom(msg.sender, this, rmul(wad, fix)));
+        require(tub.gem().transferFrom(msg.sender, address(this), rmul(wad, fix)));
     }
     function vent() public note {
         require(off);
