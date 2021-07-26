@@ -8,7 +8,7 @@ contract TestWarp is DSNote {
     uint  _era;
 
     constructor() {
-        _era = uint(block.timestamp);
+        _era = block.timestamp;
     }
 
     function era() public view virtual returns (uint) {
@@ -22,10 +22,10 @@ contract TestWarp is DSNote {
 }
 
 contract DevVox is SaiVox, TestWarp {
-    constructor(uint par_) SaiVox(par_) {}
+    constructor(uint par_) SaiVox(par_) TestWarp() {}
 
     function era() public view override(SaiVox, TestWarp) returns (uint256) {
-      return TestWarp.era();
+      return super.era();
     }
 }
 

@@ -23,7 +23,7 @@ import "./ds-thing/thing.sol";
 import "./ds-token/token.sol";
 import "./ds-value/value.sol";
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 
 import "./vox.sol";

@@ -22,7 +22,7 @@ pragma solidity >=0.8.0;
 import "./tub.sol";
 import "./tap.sol";
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract SaiTop is DSThing {
     SaiVox   public  vox;
