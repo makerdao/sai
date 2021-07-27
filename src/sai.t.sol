@@ -28,7 +28,6 @@ contract TestWarp is DSNote {
     }
 
     function warp(uint age) public note {
-        require(_era != 0);
         _era = age == 0 ? 0 : _era + age;
     }
 }

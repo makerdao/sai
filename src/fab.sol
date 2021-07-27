@@ -11,9 +11,8 @@ import './mom.sol';
 import "../node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract GemFab {
-    function newTok(bytes32 name) public returns (DSToken token) {
-        string memory _name = string(abi.encodePacked(name));
-        token = new DSToken(_name);
+    function newTok(string memory name) public returns (DSToken token) {
+        token = new DSToken(name);
         token.setOwner(msg.sender);
     }
 }
