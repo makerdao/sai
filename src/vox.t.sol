@@ -39,14 +39,14 @@ contract VoxTest is DSTest, DSMath {
         vox = new DevVox(RAY);
     }
     function testVoxDefaultPar() public {
-        assertEq(vox.par(), RAY);
+        assertEq(vox.targetPrice(), RAY);
     }
     function testVoxDefaultWay() public {
-        assertEq(vox.way(), RAY);
+        assertEq(vox.rateOfChangePerSecond(), RAY);
     }
     function testVoxCoax() public {
         vox.mold('way', 999999406327787478619865402);  // -5% / day
-        assertEq(vox.way(), 999999406327787478619865402);
+        assertEq(vox.rateOfChangePerSecond(), 999999406327787478619865402);
     }
     function testVoxProd() public {
         vox.mold('way', 999999406327787478619865402);  // -5% / day
@@ -60,12 +60,12 @@ contract VoxTest is DSTest, DSMath {
     function testVoxParAfterWarp1day() public {
         vox.mold('way', 999999406327787478619865402);  // -5% / day
         vox.warp(1 days);
-        assertEq(wad(vox.par()), 0.95 ether);
+        assertEq(wad(vox.targetPrice()), 0.95 ether);
     }
     function testVoxProdAfterWarp2day() public {
         vox.mold('way', 999991977495368425989823173);  // -50% / day
         vox.warp(2 days);
-        assertEq(wad(vox.par()), 0.25 ether);
+        assertEq(wad(vox.targetPrice()), 0.25 ether);
     }
 }
 
@@ -82,16 +82,16 @@ contract VoxHowTest is DSTest, DSMath {
     function test_price_too_low() public {
         vox.tell(ray(0.70 ether));
         vox.warp(1 seconds);
-        assertEq(vox.way(), ray(1.002 ether));
+        assertEq(vox.rateOfChangePerSecond(), ray(1.002 ether));
         vox.warp(2 seconds);
-        assertEq(vox.way(), ray(1.006 ether));
+        assertEq(vox.rateOfChangePerSecond(), ray(1.006 ether));
     }
 
     function test_price_too_high() public {
         vox.tell(ray(0.80 ether));
         vox.warp(1 seconds);
-        assertEq(vox.way(), 998003992015968063872255489);
+        assertEq(vox.rateOfChangePerSecond(), 998003992015968063872255489);
         vox.warp(2 seconds);
-        assertEq(vox.way(), 994035785288270377733598410);
+        assertEq(vox.rateOfChangePerSecond(), 994035785288270377733598410);
     }
 }

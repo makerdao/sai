@@ -243,7 +243,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     // Returns true if cup is well-collateralized
     function safe(bytes32 cup) public returns (bool) {
         uint pro = rmul(tag(), ink(cup));
-        uint con = rmul(vox.par(), tab(cup));
+        uint con = rmul(vox.targetPrice(), tab(cup));
         uint min = rmul(con, mat);
         return pro >= min;
     }
@@ -326,7 +326,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         cups[cup].ire = 0;
 
         // Amount owed in SKR, including liquidation penalty
-        uint owe = rdiv(rmul(rmul(rue, axe), vox.par()), tag());
+        uint owe = rdiv(rmul(rmul(rue, axe), vox.targetPrice()), tag());
 
         if (owe > cups[cup].ink) {
             owe = cups[cup].ink;

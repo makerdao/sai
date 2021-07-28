@@ -66,7 +66,7 @@ contract SaiTop is DSThing {
         tub.drip();  // collect remaining fees
         tap.heal();  // absorb any pending fees
 
-        fit = rmul(wmul(price, vox.par()), tub.per());
+        fit = rmul(wmul(price, vox.targetPrice()), tub.per());
         // Most gems we can get per sai is the full balance of the tub.
         // If there is no sai issued, we should still be able to cage.
         if (sai.totalSupply() == 0) {
@@ -82,7 +82,7 @@ contract SaiTop is DSThing {
     }
     // cage by reading the last value from the feed for the price
     function cage() public note auth {
-        cage(rdiv(uint(tub.pip().read()), vox.par()));
+        cage(rdiv(uint(tub.pip().read()), vox.targetPrice()));
     }
 
     function flow() public note {

@@ -1267,7 +1267,7 @@ contract LiquidationTest is SaiTestBase {
     function liq(bytes32 cup) internal returns (uint256) {
         // compute the liquidation price of a cup
         uint jam = rmul(tub.ink(cup), tub.per());  // this many eth
-        uint con = rmul(tub.tab(cup), vox.par());  // this much ref debt
+        uint con = rmul(tub.tab(cup), vox.targetPrice());  // this much ref debt
         uint min = rmul(con, tub.mat());        // minimum ref debt
         return wdiv(min, jam);
     }
@@ -1301,7 +1301,7 @@ contract LiquidationTest is SaiTestBase {
     function collat(bytes32 cup) internal returns (uint256) {
         // compute the collateralised fraction of a cup
         uint pro = rmul(tub.ink(cup), tub.tag());
-        uint con = rmul(tub.tab(cup), vox.par());
+        uint con = rmul(tub.tab(cup), vox.targetPrice());
         return wdiv(pro, con);
     }
     function testCollat() public {
@@ -1939,13 +1939,13 @@ contract WayTest is SaiTestBase {
     function testWayPar() public {
         mom.setWay(999999406327787478619865402);  // -5% / day
 
-        assertEq(wad(vox.par()), 1.00 ether);
+        assertEq(wad(vox.targetPrice()), 1.00 ether);
         warp(1 days);
-        assertEq(wad(vox.par()), 0.95 ether);
+        assertEq(wad(vox.targetPrice()), 0.95 ether);
 
         mom.setWay(1000000021979553151239153027);  // 200% / year
         warp(365 days);
-        assertEq(wad(vox.par()), 1.90 ether);
+        assertEq(wad(vox.targetPrice()), 1.90 ether);
     }
     function testWayDecreasingPrincipal() public {
         bytes32 cup = waySetup();
@@ -2002,7 +2002,7 @@ contract WayTest is SaiTestBase {
 
         mom.setWay(999999978020447331861593082);  // -50% / year
         warp(365 days);
-        assertEq(wad(vox.par()), 0.5 ether);
+        assertEq(wad(vox.targetPrice()), 0.5 ether);
         // sai now worth half as much, so we cover twice as much debt
         // for the same skr
         tap.bust(50 ether);

@@ -165,7 +165,7 @@ contract DaiFab is DSAuth {
 
         require(tap.gap() == 970000000000000000);
 
-        require(vox.par() == 1000000000000000000000000000);
+        require(vox.targetPrice() == 1000000000000000000000000000);
         require(vox.how() == 0);
 
         step += 1;

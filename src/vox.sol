@@ -44,11 +44,11 @@ contract SaiTargetPriceFeed is DSThing {
     }
 
     // Dai Target Price (ref per dai)
-    function par() public returns (uint) {
+    function targetPrice() public returns (uint) {
         prod();
         return _targetPrice;
     }
-    function way() public returns (uint) {
+    function rateOfChangePerSecond() public returns (uint) {
         prod();
         return _rateOfChangePerSecond;
     }

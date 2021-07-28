@@ -74,7 +74,7 @@ contract SaiTap is DSThing {
     // Feed price (sai per skr)
     function s2s() public returns (uint) {
         uint tag = tub.tag();    // ref per skr
-        uint par = vox.par();    // ref per sai
+        uint par = vox.targetPrice();    // ref per sai
         return rdiv(tag, par);  // sai per skr
     }
     // Boom price (sai per skr)
