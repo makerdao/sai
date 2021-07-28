@@ -10,7 +10,7 @@ import "./ds-test/test.sol";
 contract TubTest is DSTest, DSThing {
     address tap;
     SaiTub  tub;
-    SaiVox  vox;
+    SaiTargetPriceFeed  vox;
 
     DSGuard dad;
 
@@ -32,7 +32,7 @@ contract TubTest is DSTest, DSThing {
         pip = new DSValue();
         pep = new DSValue();
         dad = new DSGuard();
-        vox = new SaiVox(RAY);
+        vox = new SaiTargetPriceFeed(RAY);
         tub = new SaiTub(sai, sin, skr, IERC20(address(gem)), gov, pip, pep, vox, address(0x123));
         tap = address(0x456);
         tub.turn(tap);

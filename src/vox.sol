@@ -21,17 +21,17 @@ pragma solidity >=0.8.0;
 
 import "./ds-thing/thing.sol";
 
-contract SaiVox is DSThing {
-    uint256  _par;
-    uint256  _way;
+contract SaiTargetPriceFeed is DSThing {
+    uint256  _targetPrice;
+    uint256  _rateOfChangePerSecond;
 
     uint256  public  fix;
     uint256  public  how;
     uint256  public  tau;
 
-    constructor(uint par_) {
-        _par = fix = par_;
-        _way = RAY;
+    constructor(uint targetPrice_) {
+        _targetPrice = fix = targetPrice_;
+        _rateOfChangePerSecond = RAY;
         tau  = era();
     }
 
@@ -40,17 +40,17 @@ contract SaiVox is DSThing {
     }
 
     function mold(bytes32 param, uint val) public note auth {
-        if (param == 'way') _way = val;
+        if (param == 'way') _rateOfChangePerSecond = val;
     }
 
     // Dai Target Price (ref per dai)
     function par() public returns (uint) {
         prod();
-        return _par;
+        return _targetPrice;
     }
     function way() public returns (uint) {
         prod();
-        return _way;
+        return _rateOfChangePerSecond;
     }
 
     function tell(uint256 ray) public note auth {
@@ -65,11 +65,11 @@ contract SaiVox is DSThing {
         if (age == 0) return;  // optimised
         tau = era();
 
-        if (_way != RAY) _par = rmul(_par, rpow(_way, age));  // optimised
+        if (_rateOfChangePerSecond != RAY) _targetPrice = rmul(_targetPrice, rpow(_rateOfChangePerSecond, age));  // optimised
 
         if (how == 0) return;  // optimised
         int256 wag = int256(how * age);
-        _way = inj(prj(_way) + (fix < _par ? wag : -wag));
+        _rateOfChangePerSecond = inj(prj(_rateOfChangePerSecond) + (fix < _targetPrice ? wag : -wag));
     }
 
     function inj(int256 x) internal pure returns (uint256) {

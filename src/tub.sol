@@ -37,13 +37,13 @@ contract SaiTub is DSThing, SaiTubEvents {
     DSToken  public  sin;  // Debt (negative sai)
 
     DSToken  public  skr;  // Abstracted collateral
-    IERC20    public  gem;  // Underlying collateral
+    IERC20   public  gem;  // Underlying collateral
 
     DSToken  public  gov;  // Governance token
 
-    SaiVox   public  vox;  // Target price feed
-    DSValue  public  pip;  // Reference price feed
-    DSValue  public  pep;  // Governance price feed
+    SaiTargetPriceFeed  public  vox;  // Target price feed
+    DSValue             public  pip;  // Reference price feed
+    DSValue             public  pep;  // Governance price feed
 
     address  public  tap;  // Liquidator
     address  public  pit;  // Governance Vault
@@ -111,7 +111,7 @@ contract SaiTub is DSThing, SaiTubEvents {
         DSToken  gov_,
         DSValue  pip_,
         DSValue  pep_,
-        SaiVox   vox_,
+        SaiTargetPriceFeed   vox_,
         address  pit_
     ) {
         gem = gem_;
@@ -163,7 +163,7 @@ contract SaiTub is DSThing, SaiTubEvents {
     function setPep(DSValue pep_) public note auth {
         pep = pep_;
     }
-    function setVox(SaiVox vox_) public note auth {
+    function setVox(SaiTargetPriceFeed vox_) public note auth {
         vox = vox_;
     }
 

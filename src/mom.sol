@@ -27,9 +27,9 @@ import './tap.sol';
 contract SaiMom is DSThing {
     SaiTub  public  tub;
     SaiTap  public  tap;
-    SaiVox  public  vox;
+    SaiTargetPriceFeed  public  vox;
 
-    constructor(SaiTub tub_, SaiTap tap_, SaiVox vox_) public {
+    constructor(SaiTub tub_, SaiTap tap_, SaiTargetPriceFeed vox_) public {
         tub = tub_;
         tap = tap_;
         vox = vox_;
@@ -79,7 +79,7 @@ contract SaiMom is DSThing {
         tub.setPep(pep_);
     }
     // TRFM
-    function setVox(SaiVox vox_) public note auth {
+    function setVox(SaiTargetPriceFeed vox_) public note auth {
         tub.setVox(vox_);
     }
     // Boom/Bust Spread

@@ -18,14 +18,14 @@ contract GemFab {
 }
 
 contract VoxFab {
-    function newVox() public returns (SaiVox vox) {
-        vox = new SaiVox(10 ** 27);
+    function newVox() public returns (SaiTargetPriceFeed vox) {
+        vox = new SaiTargetPriceFeed(10 ** 27);
         vox.setOwner(msg.sender);
     }
 }
 
 contract TubFab {
-    function newTub(DSToken sai, DSToken sin, DSToken skr, IERC20 gem, DSToken gov, DSValue pip, DSValue pep, SaiVox vox, address pit) public returns (SaiTub tub) {
+    function newTub(DSToken sai, DSToken sin, DSToken skr, IERC20 gem, DSToken gov, DSValue pip, DSValue pep, SaiTargetPriceFeed vox, address pit) public returns (SaiTub tub) {
         tub = new SaiTub(sai, sin, skr, gem, gov, pip, pep, vox, pit);
         tub.setOwner(msg.sender);
     }
@@ -46,7 +46,7 @@ contract TopFab {
 }
 
 contract MomFab {
-    function newMom(SaiTub tub, SaiTap tap, SaiVox vox) public returns (SaiMom mom) {
+    function newMom(SaiTub tub, SaiTap tap, SaiTargetPriceFeed vox) public returns (SaiMom mom) {
         mom = new SaiMom(tub, tap, vox);
         mom.setOwner(msg.sender);
     }
@@ -72,7 +72,7 @@ contract DaiFab is DSAuth {
     DSToken public sin;
     DSToken public skr;
 
-    SaiVox public vox;
+    SaiTargetPriceFeed public vox;
     SaiTub public tub;
     SaiTap public tap;
     SaiTop public top;

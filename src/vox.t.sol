@@ -20,10 +20,10 @@ contract TestWarp is DSNote {
     }
 }
 
-contract DevVox is SaiVox, TestWarp {
-    constructor(uint par_) SaiVox(par_) TestWarp() {}
+contract DevVox is SaiTargetPriceFeed, TestWarp {
+    constructor(uint par_) SaiTargetPriceFeed(par_) TestWarp() {}
 
-    function era() public view override(SaiVox, TestWarp) returns (uint256) {
+    function era() public view override(SaiTargetPriceFeed, TestWarp) returns (uint256) {
       return super.era();
     }
 }

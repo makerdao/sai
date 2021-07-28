@@ -26,7 +26,7 @@ contract SaiTap is DSThing {
     DSToken  public  sin;
     DSToken  public  skr;
 
-    SaiVox   public  vox;
+    SaiTargetPriceFeed   public  vox;
     SaiTub   public  tub;
 
     uint256  public  gap;  // Boom-Bust Spread
